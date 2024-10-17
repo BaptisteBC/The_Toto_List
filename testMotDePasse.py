@@ -2,7 +2,11 @@ import re
 
 def evaluerMotDePasse(MDP):
     # Initialiser les critères
-    longueurMotDePasse = len(MDP) >= 8
+    if len(MDP) >=8:
+        longueurMotDePasse = 1
+    else:
+        #pour etre sur que le mot de passe apparait dans "faible"
+        longueurMotDePasse =-3
     critereMinuscule = bool(re.search(r'[a-z]', MDP))
     critereMajuscule = bool(re.search(r'[A-Z]', MDP))
     critereChiffre = bool(re.search(r'\d', MDP))
