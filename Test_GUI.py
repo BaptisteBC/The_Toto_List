@@ -1,0 +1,205 @@
+from PyQt6.QtWidgets import (
+    QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel,
+    QLineEdit, QDateEdit, QMessageBox, QTreeWidgetItem, QTreeWidget, QMenu
+)
+from PyQt6.QtCore import Qt
+import sys
+from datetime import datetime
+
+
+class SettingsWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Paramètres")
+        self.setGeometry(150, 150, 300, 200)
+
+        # Layout pour les paramètres
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Réglages de l'application"))
+        layout.addWidget(QLabel("Ici, vous pouvez configurer vos préférences."))
+
+        # Bouton pour fermer la fenêtre de paramètres
+        close_button = QPushButton("Fermer")
+        close_button.clicked.connect(self.close)
+        layout.addWidget(close_button)
+
+        self.setLayout(layout)
+
+
+class TodoListApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("To-Do List Application")
+        self.setGeometry(100, 100, 800, 400)
+
+        # Initialiser la variable pour la fenêtre de paramètres
+        self.settings_window = None
+
+        # Layout principal
+        main_layout = QVBoxLayout()  # Utiliser un QVBoxLayout pour le layout principal
+
+        # Barre de navigation
+        nav_layout = QHBoxLayout()
+
+        self.login_button = QPushButton("Connexion")
+        self.offline_button = QPushButton("Hors Ligne")
+        self.home_button = QPushButton("Accueil")
+        self.dashboard_button = QPushButton("Tableau de Bord")
+        self.settings_button = QPushButton("Paramètres")
+        self.help_button = QPushButton("Aide")
+
+        # Connecter le bouton Paramètres à la méthode d'ouverture
+        self.settings_button.clicked.connect(self.open_settings)
+
+        # Ajouter les boutons à la barre de navigation
+        nav_layout.addWidget(self.login_button)
+        nav_layout.addWidget(self.offline_button)
+        nav_layout.addWidget(self.home_button)
+        nav_layout.addWidget(self.dashboard_button)
+        nav_layout.addWidget(self.settings_button)
+        nav_layout.addWidget(self.help_button)
+
+        # Ajouter la barre de navigation au layout principal
+        main_layout.addLayout(nav_layout)
+
+        # Arborescence des tâches
+        self.task_tree = QTreeWidget()
+        self.task_tree.setHeaderLabels(["Tâches"])
+        self.task_tree.setMinimumWidth(200)
+
+        # Connecter le clic droit pour le menu contextuel
+        self.task_tree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.task_tree.customContextMenuRequested.connect(self.show_context_menu)
+
+        # Formulaire pour ajouter une tâche
+        self.task_input = QLineEdit()
+        self.task_input.setPlaceholderText("Ajouter une nouvelle tâche...")
+
+        self.due_date_input = QDateEdit()
+        self.due_date_input.setDate(datetime.now())
+
+        add_task_button = QPushButton("Ajouter Tâche")
+        add_task_button.clicked.connect(self.add_task)
+
+        # Layout pour les éléments de tâche
+        task_layout = QVBoxLayout()
+        task_layout.addWidget(QLabel("Nouvelle Tâche:"))
+        task_layout.addWidget(self.task_input)
+        task_layout.addWidget(QLabel("Date d'Échéance:"))
+        task_layout.addWidget(self.due_date_input)
+        task_layout.addWidget(add_task_button)
+
+        # Ajouter les éléments au layout principal
+        main_layout.addWidget(self.task_tree)  # Placer l'arborescence des tâches à gauche
+        main_layout.addLayout(task_layout)
+
+        # Configuration des boutons pour supprimer et modifier
+        delete_task_button = QPushButton("Supprimer Tâche")
+        delete_task_button.clicked.connect(self.delete_task)
+
+        modify_task_button = QPushButton("Modifier Tâche")
+        modify_task_button.clicked.connect(self.modify_task)
+
+        # Ajouter les boutons de modification et suppression
+        main_layout.addWidget(delete_task_button)
+        main_layout.addWidget(modify_task_button)
+
+        # Appliquer le layout à la fenêtre
+        self.setLayout(main_layout)
+
+    def open_settings(self):
+        # Ouvrir la fenêtre des paramètres si elle n'est pas déjà ouverte
+        if self.settings_window is None:
+            self.settings_window = SettingsWindow()
+        self.settings_window.show()
+
+    def add_task(self):
+        task_text = self.task_input.text()
+        due_date = self.due_date_input.date().toString("dd/MM/yyyy")
+        if task_text:
+            # Ajouter une nouvelle tâche à l'arborescence
+            task_item = QTreeWidgetItem(self.task_tree)
+            task_item.setText(0, f"{task_text} (Échéance: {due_date})")
+            self.task_tree.addTopLevelItem(task_item)
+            self.task_input.clear()
+        else:
+            QMessageBox.warning(self, "Erreur", "Veuillez entrer une tâche.")
+
+    def delete_task(self):
+        selected_items = self.task_tree.selectedItems()
+        if not selected_items:
+            QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une tâche à supprimer.")
+            return
+        for item in selected_items:
+            index = self.task_tree.indexOfTopLevelItem(item)
+            if index != -1:  # Si c'est une tâche principale
+                self.task_tree.takeTopLevelItem(index)
+            else:  # Si c'est une sous-tâche
+                parent_item = item.parent()
+                if parent_item:
+                    parent_item.removeChild(item)
+
+    def modify_task(self):
+        selected_items = self.task_tree.selectedItems()
+        if not selected_items:
+            QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une tâche à modifier.")
+            return
+        for item in selected_items:
+            new_task_text = self.task_input.text()
+            if new_task_text:
+                due_date = self.due_date_input.date().toString("dd/MM/yyyy")
+                item.setText(0, f"{new_task_text} (Échéance: {due_date})")
+                self.task_input.clear()
+            else:
+                QMessageBox.warning(self, "Erreur", "Veuillez entrer une nouvelle tâche.")
+
+    def show_context_menu(self, position):
+        context_menu = QMenu(self)
+        add_subtask_action = context_menu.addAction("Ajouter Sous-Tâche")
+        action = context_menu.exec(self.task_tree.viewport().mapToGlobal(position))
+
+        if action == add_subtask_action:
+            self.prepare_for_subtask()
+
+    def prepare_for_subtask(self):
+        selected_items = self.task_tree.selectedItems()
+        if not selected_items:
+            QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une tâche pour ajouter une sous-tâche.")
+            return
+
+        # Changer le texte de l'entrée pour indiquer l'ajout d'une sous-tâche
+        self.task_input.setPlaceholderText("Ajout d'une sous-tâche...")
+        self.task_input.clear()  # Effacer le texte de l'entrée pour permettre une nouvelle saisie
+
+        # Saisir la sous-tâche à ajouter
+        self.task_input.setFocus()  # Mettre le focus sur le champ de saisie
+
+        # Connexion de l'action de l'ajout de la sous-tâche à un bouton "Ajouter"
+        add_subtask_button = QPushButton("Ajouter Sous-Tâche")
+        add_subtask_button.clicked.connect(self.add_subtask)
+
+        # Ajouter le bouton à la fenêtre
+        self.layout().addWidget(add_subtask_button)
+
+    def add_subtask(self):
+        selected_items = self.task_tree.selectedItems()
+        task_text = self.task_input.text()
+        if not selected_items or not task_text:
+            QMessageBox.warning(self, "Erreur", "Veuillez entrer une sous-tâche valide.")
+            return
+
+        for item in selected_items:
+            if item:  # Assurez-vous qu'il y a un élément sélectionné
+                subtask_item = QTreeWidgetItem(item)  # Créer une sous-tâche
+                subtask_item.setText(0, f"{task_text} (Échéance: {self.due_date_input.date().toString('dd/MM/yyyy')})")
+                self.task_input.clear()
+
+        # Réinitialiser le placeholder
+        self.task_input.setPlaceholderText("Ajouter une nouvelle tâche...")
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+    window = TodoListApp()
+    window.show()
+    sys.exit(app.exec())
