@@ -65,29 +65,30 @@ class TodoListApp(QWidget):
         # Arborescence des tâches
         self.task_tree = QTreeWidget()
         self.task_tree.setHeaderLabels(["Tâches"])
-        self.task_tree.setMinimumWidth(200)
+        self.task_tree.setMinimumWidth(300)
 
         # Connecter le clic droit pour le menu contextuel
         self.task_tree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.task_tree.customContextMenuRequested.connect(self.show_context_menu)
 
         # Formulaire pour ajouter une tâche
+        self.task_label = QLabel("Nouvelle Tâche:")
         self.task_input = QLineEdit()
         self.task_input.setPlaceholderText("Ajouter une nouvelle tâche...")
 
         self.due_date_input = QDateEdit()
         self.due_date_input.setDate(datetime.now())
 
-        add_task_button = QPushButton("Ajouter Tâche")
-        add_task_button.clicked.connect(self.add_task)
+        self.add_task_button = QPushButton("Ajouter Tâche")
+        self.add_task_button.clicked.connect(self.add_task)
 
         # Layout pour les éléments de tâche
         task_layout = QVBoxLayout()
-        task_layout.addWidget(QLabel("Nouvelle Tâche:"))
+        task_layout.addWidget(self.task_label)
         task_layout.addWidget(self.task_input)
         task_layout.addWidget(QLabel("Date d'Échéance:"))
         task_layout.addWidget(self.due_date_input)
-        task_layout.addWidget(add_task_button)
+        task_layout.addWidget(self.add_task_button)
 
         # Ajouter les éléments au layout principal
         main_layout.addWidget(self.task_tree)  # Placer l'arborescence des tâches à gauche
@@ -107,6 +108,9 @@ class TodoListApp(QWidget):
         # Appliquer le layout à la fenêtre
         self.setLayout(main_layout)
 
+        # État de l'application
+        self.is_subtask_mode = False  # Indicateur pour savoir si nous sommes en mode sous-tâche
+
     def open_settings(self):
         # Ouvrir la fenêtre des paramètres si elle n'est pas déjà ouverte
         if self.settings_window is None:
@@ -116,12 +120,22 @@ class TodoListApp(QWidget):
     def add_task(self):
         task_text = self.task_input.text()
         due_date = self.due_date_input.date().toString("dd/MM/yyyy")
+
         if task_text:
-            # Ajouter une nouvelle tâche à l'arborescence
-            task_item = QTreeWidgetItem(self.task_tree)
-            task_item.setText(0, f"{task_text} (Échéance: {due_date})")
-            self.task_tree.addTopLevelItem(task_item)
-            self.task_input.clear()
+            selected_items = self.task_tree.selectedItems()
+            if self.is_subtask_mode and selected_items:
+                # Si nous sommes en mode sous-tâche, ajouter comme sous-tâche
+                parent_item = selected_items[0]
+                subtask_item = QTreeWidgetItem(parent_item)
+                subtask_item.setText(0, f"{task_text} (Échéance: {due_date})")
+            else:
+                # Sinon, ajouter comme tâche principale
+                task_item = QTreeWidgetItem(self.task_tree)
+                task_item.setText(0, f"{task_text} (Échéance: {due_date})")
+                self.task_tree.addTopLevelItem(task_item)
+
+            self.task_input.clear()  # Réinitialiser le champ d'entrée
+            self.reset_task_input()  # Réinitialiser le label et le mode
         else:
             QMessageBox.warning(self, "Erreur", "Veuillez entrer une tâche.")
 
@@ -150,6 +164,7 @@ class TodoListApp(QWidget):
                 due_date = self.due_date_input.date().toString("dd/MM/yyyy")
                 item.setText(0, f"{new_task_text} (Échéance: {due_date})")
                 self.task_input.clear()
+                self.reset_task_input()  # Réinitialiser le label et le mode
             else:
                 QMessageBox.warning(self, "Erreur", "Veuillez entrer une nouvelle tâche.")
 
@@ -168,34 +183,15 @@ class TodoListApp(QWidget):
             return
 
         # Changer le texte de l'entrée pour indiquer l'ajout d'une sous-tâche
-        self.task_input.setPlaceholderText("Ajout d'une sous-tâche...")
+        self.is_subtask_mode = True  # Activer le mode sous-tâche
+        self.task_label.setText("Ajouter Sous-Tâche:")
         self.task_input.clear()  # Effacer le texte de l'entrée pour permettre une nouvelle saisie
-
-        # Saisir la sous-tâche à ajouter
         self.task_input.setFocus()  # Mettre le focus sur le champ de saisie
 
-        # Connexion de l'action de l'ajout de la sous-tâche à un bouton "Ajouter"
-        add_subtask_button = QPushButton("Ajouter Sous-Tâche")
-        add_subtask_button.clicked.connect(self.add_subtask)
-
-        # Ajouter le bouton à la fenêtre
-        self.layout().addWidget(add_subtask_button)
-
-    def add_subtask(self):
-        selected_items = self.task_tree.selectedItems()
-        task_text = self.task_input.text()
-        if not selected_items or not task_text:
-            QMessageBox.warning(self, "Erreur", "Veuillez entrer une sous-tâche valide.")
-            return
-
-        for item in selected_items:
-            if item:  # Assurez-vous qu'il y a un élément sélectionné
-                subtask_item = QTreeWidgetItem(item)  # Créer une sous-tâche
-                subtask_item.setText(0, f"{task_text} (Échéance: {self.due_date_input.date().toString('dd/MM/yyyy')})")
-                self.task_input.clear()
-
-        # Réinitialiser le placeholder
-        self.task_input.setPlaceholderText("Ajouter une nouvelle tâche...")
+    def reset_task_input(self):
+        self.task_input.clear()
+        self.task_label.setText("Nouvelle Tâche:")
+        self.is_subtask_mode = False  # Réinitialiser le mode sous-tâche
 
 
 if __name__ == "__main__":
