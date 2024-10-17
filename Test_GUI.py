@@ -26,6 +26,56 @@ class SettingsWindow(QWidget):
         self.setLayout(layout)
 
 
+class HelpWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Aide")
+        self.setGeometry(150, 150, 400, 300)
+
+        # Layout pour l'aide
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Aide de l'application"))
+        layout.addWidget(QLabel(
+            "Bienvenue dans l'aide de l'application To-Do List.\n\n"
+            "Voici quelques instructions pour utiliser l'application :\n"
+            "- Pour ajouter une tâche, utilisez le champ de saisie et cliquez sur 'Ajouter Tâche'.\n"
+            "- Pour ajouter une sous-tâche, faites un clic droit sur une tâche et sélectionnez 'Ajouter Sous-Tâche'.\n"
+            "- Pour supprimer ou modifier une tâche, sélectionnez-la et utilisez les boutons correspondants.\n"
+            "- Utilisez les boutons de navigation en haut pour accéder à différents menus."
+        ))
+
+        # Bouton pour fermer la fenêtre de paramètres
+        close_button = QPushButton("Fermer")
+        close_button.clicked.connect(self.close)
+        layout.addWidget(close_button)
+
+        self.setLayout(layout)
+
+class CreditsWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Aide")
+        self.setGeometry(150, 150, 400, 300)
+
+        # Layout pour l'aide
+        layout = QVBoxLayout()
+        layout.addWidget(QLabel("Crédits de l'application"))
+        layout.addWidget(QLabel(
+            "Bienvenue dans l'aide de l'application To-Do List.\n\n"
+            "Voici quelques instructions pour utiliser l'application :\n"
+            "- Pour ajouter une tâche, utilisez le champ de saisie et cliquez sur 'Ajouter Tâche'.\n"
+            "- Pour ajouter une sous-tâche, faites un clic droit sur une tâche et sélectionnez 'Ajouter Sous-Tâche'.\n"
+            "- Pour supprimer ou modifier une tâche, sélectionnez-la et utilisez les boutons correspondants.\n"
+            "- Utilisez les boutons de navigation en haut pour accéder à différents menus."
+        ))
+
+        # Bouton pour fermer la fenêtre de paramètres
+        close_button = QPushButton("Fermer")
+        close_button.clicked.connect(self.close)
+        layout.addWidget(close_button)
+
+        self.setLayout(layout)
+        
 class TodoListApp(QWidget):
     def __init__(self):
         super().__init__()
@@ -34,6 +84,8 @@ class TodoListApp(QWidget):
 
         # Initialiser la variable pour la fenêtre de paramètres
         self.settings_window = None
+        self.help_window = None
+        self.credits_window = None
 
         # Layout principal
         main_layout = QVBoxLayout()  # Utiliser un QVBoxLayout pour le layout principal
@@ -47,9 +99,12 @@ class TodoListApp(QWidget):
         self.dashboard_button = QPushButton("Tableau de Bord")
         self.settings_button = QPushButton("Paramètres")
         self.help_button = QPushButton("Aide")
+        self.credits_button = QPushButton("Crédits")
 
-        # Connecter le bouton Paramètres à la méthode d'ouverture
+        # Connecter les boutons à la méthode d'ouverture
         self.settings_button.clicked.connect(self.open_settings)
+        self.help_button.clicked.connect(self.open_help)
+        self.credits_button.clicked.connect(self.open_credits)
 
         # Ajouter les boutons à la barre de navigation
         nav_layout.addWidget(self.login_button)
@@ -58,6 +113,7 @@ class TodoListApp(QWidget):
         nav_layout.addWidget(self.dashboard_button)
         nav_layout.addWidget(self.settings_button)
         nav_layout.addWidget(self.help_button)
+        nav_layout.addWidget(self.credits_button)
 
         # Ajouter la barre de navigation au layout principal
         main_layout.addLayout(nav_layout)
@@ -116,6 +172,18 @@ class TodoListApp(QWidget):
         if self.settings_window is None:
             self.settings_window = SettingsWindow()
         self.settings_window.show()
+
+    def open_credits(self):
+        # Ouvrir la fenêtre des paramètres si elle n'est pas déjà ouverte
+        if self.credits_window is None:
+            self.credits_window = CreditsWindow()
+        self.credits_window.show()
+
+    def open_help(self):
+        # Ouvrir la fenêtre d'aide si elle n'est pas déjà ouverte
+        if self.help_window is None:
+            self.help_window = HelpWindow()
+        self.help_window.show()
 
     def add_task(self):
         task_text = self.task_input.text()
