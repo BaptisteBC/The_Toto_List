@@ -8,7 +8,6 @@ V0.1 BETA
 class CreerUtilisateur:
     '''
     Constructeur de la classe, permet d'initialiser toutes les variables propres à la création d'utilisateurs
-
     '''
     def __init__(self):
         try:
