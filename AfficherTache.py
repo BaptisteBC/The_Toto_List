@@ -3,7 +3,8 @@ import threading
 
 import pymysql
 from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QWidget, QGridLayout, QTextEdit, QApplication, QLabel, QPushButton
+from PyQt5.QtWidgets import QWidget, QGridLayout, QTextEdit, QApplication, QLabel, QPushButton, QTextBrowser, \
+    QListWidget
 
 
 class Principal(QWidget):
@@ -24,18 +25,22 @@ class Principal(QWidget):
         self.resize(300, 150)
 
         self.titre = QLabel("Mes tâches")
-        self.taches = QTextEdit()
-        self.taches.setReadOnly(True)
+        #self.taches = QTextBrowser()
+        #self.taches.setOpenLinks(True)
+        self.taches = QListWidget()
+        #self.taches.setReadOnly(True)
         self.bouton_quitter = QPushButton("Quitter")
         self.bouton_actualiser = QPushButton("Actualiser")
 
         grid.addWidget(self.titre)
+        grid.addWidget(self.bouton_actualiser)
         grid.addWidget(self.taches)
         grid.addWidget(self.bouton_quitter)
-        grid.addWidget(self.bouton_actualiser)
+
 
         self.bouton_quitter.clicked.connect(self.quitter)
         self.bouton_actualiser.clicked.connect(self.actualiser)
+        self.taches.itemClicked.connect(self.tache_cliquee)
 
         self.host = host
         self.user = user
@@ -51,8 +56,15 @@ class Principal(QWidget):
         curseur = self.cnx.cursor()
         curseur.execute("SELECT titre FROM taches;")
         resultat = curseur.fetchall()
-        print(resultat[0][0])
-        self.taches.append(resultat[0][0])
+        self.taches.clear()
+        for i in range(0, len(resultat)):
+            tache = resultat[i][0]
+        #    self.taches.append(tache)
+            self.taches.addItem(tache)
+
+    def tache_cliquee(self):
+        print("ça fonctionne !")
+
 
 
 
