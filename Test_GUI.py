@@ -1,10 +1,257 @@
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel,
-    QLineEdit, QDateEdit, QMessageBox, QTreeWidgetItem, QTreeWidget, QMenu
+    QTreeWidgetItem, QTreeWidget, QDateEdit, QTextEdit, QComboBox, QMessageBox, QLineEdit
 )
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QDate
+from PyQt5.QtGui import QPalette, QColor
 import sys
 from datetime import datetime
+
+
+class FormulaireTache(QWidget):
+    def __init__(self, parent=None):
+        super().__init__()
+        self.parent = parent
+
+        self.setWindowTitle("Formulaire de Tâche")
+        self.setGeometry(100, 100, 300, 300)
+
+        layout = QVBoxLayout()
+
+        # Champ pour le nom de la tâche
+        self.label_nom = QLabel("Nom de la tâche :")
+        self.champ_nom = QLineEdit()
+        layout.addWidget(self.label_nom)
+        layout.addWidget(self.champ_nom)
+
+        # Champ pour la description
+        self.label_description = QLabel("Description :")
+        self.champ_description = QTextEdit()
+        layout.addWidget(self.label_description)
+        layout.addWidget(self.champ_description)
+
+        # Champ pour la date
+        self.label_date = QLabel("Date :")
+        self.champ_date = QDateEdit()
+        self.champ_date.setDate(QDate.currentDate())
+        layout.addWidget(self.label_date)
+        layout.addWidget(self.champ_date)
+
+        # Champ pour la catégorie
+        self.label_categorie = QLabel("Catégorie :")
+        self.champ_categorie = QComboBox()
+        self.champ_categorie.addItems(["Travail", "Personnel", "Urgent", "Autre"])
+        layout.addWidget(self.champ_categorie)
+        layout.addWidget(self.champ_categorie)
+
+        # Bouton pour soumettre
+        self.bouton_soumettre = QPushButton("Soumettre")
+        self.bouton_soumettre.clicked.connect(self.SoumettreFormulaire)
+        layout.addWidget(self.bouton_soumettre)
+
+        self.setLayout(layout)
+
+    def SoumettreFormulaire(self):
+        # Récupérer les données du formulaire
+        nom_tache = self.champ_nom.text()
+        description = self.champ_description.toPlainText()
+        date = self.champ_date.date().toString("dd/MM/yyyy")
+        categorie = self.champ_categorie.currentText()
+
+        # Vérifier que les champs obligatoires sont remplis
+        if not nom_tache:
+            QMessageBox.warning(self, "Erreur", "Le nom de la tâche est obligatoire.")
+            return
+
+        # Ajouter la tâche à la liste temporaire de l'application principale
+        self.parent.add_task_to_tree(nom_tache, date, description, categorie)
+        self.close()  # Fermer le formulaire après soumission
+
+
+class TodoListApp(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("The ToDo List")
+        self.setGeometry(100, 100, 800, 400)
+
+        # Liste temporaire pour stocker les tâches
+        self.tasks = []
+
+        self.formulaire_window = None
+        self.settings_window = None
+        self.help_window = None
+        self.credits_window = None
+        self.is_dark_mode = False  # Indicateur pour savoir si le mode sombre est activé
+
+        main_layout = QVBoxLayout()
+
+        # Barre de navigation
+        nav_layout = QHBoxLayout()
+
+        self.home_button = QPushButton("Accueil")
+        self.form_button = QPushButton("Ouvrir Formulaire")
+        self.theme_button = QPushButton("Mode Sombre")
+        self.settings_button = QPushButton("Paramètres")
+        self.help_button = QPushButton("Aide")
+        self.credits_button = QPushButton("Crédits")
+
+        self.form_button.clicked.connect(self.open_formulaire)
+        self.theme_button.clicked.connect(self.toggle_theme)
+        self.settings_button.clicked.connect(self.open_settings)
+        self.help_button.clicked.connect(self.open_help)
+        self.credits_button.clicked.connect(self.open_credits)
+
+        nav_layout.addWidget(self.home_button)
+        nav_layout.addWidget(self.form_button)
+        nav_layout.addWidget(self.theme_button)
+        nav_layout.addWidget(self.settings_button)
+        nav_layout.addWidget(self.help_button)
+        nav_layout.addWidget(self.credits_button)
+
+        main_layout.addLayout(nav_layout)
+
+        # Arborescence des tâches
+        self.task_tree = QTreeWidget()
+        self.task_tree.setHeaderLabels(["Tâches", "Échéance", "Description", "Catégorie"])
+        self.task_tree.setMinimumWidth(300)
+        main_layout.addWidget(self.task_tree)
+
+        self.setLayout(main_layout)
+
+    def open_formulaire(self):
+        if self.formulaire_window is None:
+            self.formulaire_window = FormulaireTache(parent=self)
+        self.formulaire_window.show()
+
+    def toggle_theme(self):
+        if not self.is_dark_mode:
+            # Activer le mode sombre
+            self.set_dark_mode()
+            self.theme_button.setText("Mode Clair")
+        else:
+            # Désactiver le mode sombre (mode clair)
+            self.set_light_mode()
+            self.theme_button.setText("Mode Sombre")
+
+        self.is_dark_mode = not self.is_dark_mode
+
+    def set_dark_mode(self):
+        dark_palette = QPalette()
+        dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+        dark_palette.setColor(QPalette.WindowText, Qt.white)
+        dark_palette.setColor(QPalette.Base, QColor(35, 35, 35))
+        dark_palette.setColor(QPalette.AlternateBase, QColor(53, 53, 53))
+        dark_palette.setColor(QPalette.ToolTipBase, Qt.white)
+        dark_palette.setColor(QPalette.ToolTipText, Qt.white)
+        dark_palette.setColor(QPalette.Text, Qt.white)
+        dark_palette.setColor(QPalette.Button, QColor(53, 53, 53))
+        dark_palette.setColor(QPalette.ButtonText, Qt.white)
+        dark_palette.setColor(QPalette.BrightText, Qt.red)
+        dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
+        dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
+        dark_palette.setColor(QPalette.HighlightedText, Qt.white)
+        dark_palette.setColor(QPalette.PlaceholderText, Qt.lightGray)
+
+        # Appliquer le style sombre à l'application
+        QApplication.instance().setPalette(dark_palette)
+
+        # Appliquer les styles directement pour la vue de la liste des tâches et les boutons
+        self.task_tree.setStyleSheet("""
+            QTreeWidget {
+                background-color: #353535;
+                color: white;
+            }
+            QHeaderView::section {
+                background-color: #444444;
+                color: white;
+                padding: 4px;
+                border: 1px solid #222222;
+            }
+        """)
+
+        # Style pour les boutons en mode sombre
+        button_style = """
+            QPushButton {
+                background-color: #444444;
+                color: white;
+                border: 1px solid #555555;
+                padding: 5px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #555555;
+            }
+            QPushButton:pressed {
+                background-color: #333333;
+            }
+        """
+
+        # Appliquer le style aux boutons
+        self.home_button.setStyleSheet(button_style)
+        self.form_button.setStyleSheet(button_style)
+        self.settings_button.setStyleSheet(button_style)
+        self.help_button.setStyleSheet(button_style)
+        self.credits_button.setStyleSheet(button_style)
+        self.theme_button.setStyleSheet(button_style)  # Correction ici
+
+    def set_light_mode(self):
+        # Réinitialiser le style de l'application au style par défaut
+        QApplication.instance().setPalette(QApplication.style().standardPalette())
+
+        # Appliquer le style clair pour le QTreeWidget
+        self.task_tree.setStyleSheet("")  # Réinitialise le style du QTreeWidget
+
+        # Appliquer le style clair aux boutons
+        button_style = """
+            QPushButton {
+                background-color: #f0f0f0;
+                color: black;
+                border: 1px solid #cccccc;
+                padding: 5px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+            QPushButton:pressed {
+                background-color: #d0d0d0;
+            }
+        """
+
+        # Appliquer le style clair aux boutons
+        self.home_button.setStyleSheet(button_style)
+        self.form_button.setStyleSheet(button_style)
+        self.settings_button.setStyleSheet(button_style)
+        self.help_button.setStyleSheet(button_style)
+        self.credits_button.setStyleSheet(button_style)
+        self.theme_button.setStyleSheet(button_style)  # Réinitialise le style du bouton
+
+    def add_task_to_tree(self, nom, date, description, categorie):
+        # Stocker la tâche temporairement dans une liste
+        self.tasks.append({
+            "nom": nom,
+            "date": date,
+            "description": description,
+            "categorie": categorie
+        })
+        # Ajouter la tâche à l'arborescence des tâches
+        task_item = QTreeWidgetItem([nom, date, description, categorie])
+        self.task_tree.addTopLevelItem(task_item)
+
+    def open_settings(self):
+        if self.settings_window is None:
+            self.settings_window = SettingsWindow()
+        self.settings_window.show()
+
+    def open_help(self):
+        if self.help_window is None:
+            self.help_window = HelpWindow()
+        self.help_window.show()
+
+    def open_credits(self):
+        if self.credits_window is None:
+            self.credits_window = CreditsWindow()
+        self.credits_window.show()
 
 
 class SettingsWindow(QWidget):
@@ -13,12 +260,10 @@ class SettingsWindow(QWidget):
         self.setWindowTitle("Paramètres")
         self.setGeometry(150, 150, 300, 200)
 
-        # Layout pour les paramètres
         layout = QVBoxLayout()
         layout.addWidget(QLabel("Réglages de l'application"))
         layout.addWidget(QLabel("Ici, vous pouvez configurer vos préférences."))
 
-        # Bouton pour fermer la fenêtre de paramètres
         close_button = QPushButton("Fermer")
         close_button.clicked.connect(self.close)
         layout.addWidget(close_button)
@@ -32,235 +277,30 @@ class HelpWindow(QWidget):
         self.setWindowTitle("Aide")
         self.setGeometry(150, 150, 400, 300)
 
-        # Layout pour l'aide
         layout = QVBoxLayout()
         layout.addWidget(QLabel("Aide de l'application"))
-        layout.addWidget(QLabel(
-            "Bienvenue dans l'aide de l'application To-Do List.\n\n"
-            "Voici quelques instructions pour utiliser l'application :\n"
-            "- Pour ajouter une tâche, utilisez le champ de saisie et cliquez sur 'Ajouter Tâche'.\n"
-            "- Pour ajouter une sous-tâche, faites un clic droit sur une tâche et sélectionnez 'Ajouter Sous-Tâche'.\n"
-            "- Pour supprimer ou modifier une tâche, sélectionnez-la et utilisez les boutons correspondants.\n"
-            "- Utilisez les boutons de navigation en haut pour accéder à différents menus."
-        ))
 
-        # Bouton pour fermer la fenêtre de paramètres
         close_button = QPushButton("Fermer")
         close_button.clicked.connect(self.close)
         layout.addWidget(close_button)
 
         self.setLayout(layout)
+
 
 class CreditsWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Aide")
+        self.setWindowTitle("Crédits")
         self.setGeometry(150, 150, 400, 300)
 
-        # Layout pour l'aide
         layout = QVBoxLayout()
         layout.addWidget(QLabel("Crédits de l'application"))
-        layout.addWidget(QLabel(
-            "Bienvenue dans l'aide de l'application To-Do List.\n\n"
-            "Voici quelques instructions pour utiliser l'application :\n"
-            "- Pour ajouter une tâche, utilisez le champ de saisie et cliquez sur 'Ajouter Tâche'.\n"
-            "- Pour ajouter une sous-tâche, faites un clic droit sur une tâche et sélectionnez 'Ajouter Sous-Tâche'.\n"
-            "- Pour supprimer ou modifier une tâche, sélectionnez-la et utilisez les boutons correspondants.\n"
-            "- Utilisez les boutons de navigation en haut pour accéder à différents menus."
-        ))
 
-        # Bouton pour fermer la fenêtre de paramètres
         close_button = QPushButton("Fermer")
         close_button.clicked.connect(self.close)
         layout.addWidget(close_button)
 
         self.setLayout(layout)
-        
-class TodoListApp(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("To-Do List Application")
-        self.setGeometry(100, 100, 800, 400)
-
-        # Initialiser la variable pour la fenêtre de paramètres
-        self.settings_window = None
-        self.help_window = None
-        self.credits_window = None
-
-        # Layout principal
-        main_layout = QVBoxLayout()  # Utiliser un QVBoxLayout pour le layout principal
-
-        # Barre de navigation
-        nav_layout = QHBoxLayout()
-
-        self.login_button = QPushButton("Connexion")
-        self.offline_button = QPushButton("Hors Ligne")
-        self.home_button = QPushButton("Accueil")
-        self.dashboard_button = QPushButton("Tableau de Bord")
-        self.settings_button = QPushButton("Paramètres")
-        self.help_button = QPushButton("Aide")
-        self.credits_button = QPushButton("Crédits")
-
-        # Connecter les boutons à la méthode d'ouverture
-        self.settings_button.clicked.connect(self.open_settings)
-        self.help_button.clicked.connect(self.open_help)
-        self.credits_button.clicked.connect(self.open_credits)
-
-        # Ajouter les boutons à la barre de navigation
-        nav_layout.addWidget(self.login_button)
-        nav_layout.addWidget(self.offline_button)
-        nav_layout.addWidget(self.home_button)
-        nav_layout.addWidget(self.dashboard_button)
-        nav_layout.addWidget(self.settings_button)
-        nav_layout.addWidget(self.help_button)
-        nav_layout.addWidget(self.credits_button)
-
-        # Ajouter la barre de navigation au layout principal
-        main_layout.addLayout(nav_layout)
-
-        # Arborescence des tâches
-        self.task_tree = QTreeWidget()
-        self.task_tree.setHeaderLabels(["Tâches"])
-        self.task_tree.setMinimumWidth(300)
-
-        # Connecter le clic droit pour le menu contextuel
-        self.task_tree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.task_tree.customContextMenuRequested.connect(self.show_context_menu)
-
-        # Formulaire pour ajouter une tâche
-        self.task_label = QLabel("Nouvelle Tâche:")
-        self.task_input = QLineEdit()
-        self.task_input.setPlaceholderText("Ajouter une nouvelle tâche...")
-
-        self.due_date_input = QDateEdit()
-        self.due_date_input.setDate(datetime.now())
-
-        self.add_task_button = QPushButton("Ajouter Tâche")
-        self.add_task_button.clicked.connect(self.add_task)
-
-        # Layout pour les éléments de tâche
-        task_layout = QVBoxLayout()
-        task_layout.addWidget(self.task_label)
-        task_layout.addWidget(self.task_input)
-        task_layout.addWidget(QLabel("Date d'Échéance:"))
-        task_layout.addWidget(self.due_date_input)
-        task_layout.addWidget(self.add_task_button)
-
-        # Ajouter les éléments au layout principal
-        main_layout.addWidget(self.task_tree)  # Placer l'arborescence des tâches à gauche
-        main_layout.addLayout(task_layout)
-
-        # Configuration des boutons pour supprimer et modifier
-        delete_task_button = QPushButton("Supprimer Tâche")
-        delete_task_button.clicked.connect(self.delete_task)
-
-        modify_task_button = QPushButton("Modifier Tâche")
-        modify_task_button.clicked.connect(self.modify_task)
-
-        # Ajouter les boutons de modification et suppression
-        main_layout.addWidget(delete_task_button)
-        main_layout.addWidget(modify_task_button)
-
-        # Appliquer le layout à la fenêtre
-        self.setLayout(main_layout)
-
-        # État de l'application
-        self.is_subtask_mode = False  # Indicateur pour savoir si nous sommes en mode sous-tâche
-
-    def open_settings(self):
-        # Ouvrir la fenêtre des paramètres si elle n'est pas déjà ouverte
-        if self.settings_window is None:
-            self.settings_window = SettingsWindow()
-        self.settings_window.show()
-
-    def open_credits(self):
-        # Ouvrir la fenêtre des paramètres si elle n'est pas déjà ouverte
-        if self.credits_window is None:
-            self.credits_window = CreditsWindow()
-        self.credits_window.show()
-
-    def open_help(self):
-        # Ouvrir la fenêtre d'aide si elle n'est pas déjà ouverte
-        if self.help_window is None:
-            self.help_window = HelpWindow()
-        self.help_window.show()
-
-    def add_task(self):
-        task_text = self.task_input.text()
-        due_date = self.due_date_input.date().toString("dd/MM/yyyy")
-
-        if task_text:
-            selected_items = self.task_tree.selectedItems()
-            if self.is_subtask_mode and selected_items:
-                # Si nous sommes en mode sous-tâche, ajouter comme sous-tâche
-                parent_item = selected_items[0]
-                subtask_item = QTreeWidgetItem(parent_item)
-                subtask_item.setText(0, f"{task_text} (Échéance: {due_date})")
-            else:
-                # Sinon, ajouter comme tâche principale
-                task_item = QTreeWidgetItem(self.task_tree)
-                task_item.setText(0, f"{task_text} (Échéance: {due_date})")
-                self.task_tree.addTopLevelItem(task_item)
-
-            self.task_input.clear()  # Réinitialiser le champ d'entrée
-            self.reset_task_input()  # Réinitialiser le label et le mode
-        else:
-            QMessageBox.warning(self, "Erreur", "Veuillez entrer une tâche.")
-
-    def delete_task(self):
-        selected_items = self.task_tree.selectedItems()
-        if not selected_items:
-            QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une tâche à supprimer.")
-            return
-        for item in selected_items:
-            index = self.task_tree.indexOfTopLevelItem(item)
-            if index != -1:  # Si c'est une tâche principale
-                self.task_tree.takeTopLevelItem(index)
-            else:  # Si c'est une sous-tâche
-                parent_item = item.parent()
-                if parent_item:
-                    parent_item.removeChild(item)
-
-    def modify_task(self):
-        selected_items = self.task_tree.selectedItems()
-        if not selected_items:
-            QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une tâche à modifier.")
-            return
-        for item in selected_items:
-            new_task_text = self.task_input.text()
-            if new_task_text:
-                due_date = self.due_date_input.date().toString("dd/MM/yyyy")
-                item.setText(0, f"{new_task_text} (Échéance: {due_date})")
-                self.task_input.clear()
-                self.reset_task_input()  # Réinitialiser le label et le mode
-            else:
-                QMessageBox.warning(self, "Erreur", "Veuillez entrer une nouvelle tâche.")
-
-    def show_context_menu(self, position):
-        context_menu = QMenu(self)
-        add_subtask_action = context_menu.addAction("Ajouter Sous-Tâche")
-        action = context_menu.exec(self.task_tree.viewport().mapToGlobal(position))
-
-        if action == add_subtask_action:
-            self.prepare_for_subtask()
-
-    def prepare_for_subtask(self):
-        selected_items = self.task_tree.selectedItems()
-        if not selected_items:
-            QMessageBox.warning(self, "Erreur", "Veuillez sélectionner une tâche pour ajouter une sous-tâche.")
-            return
-
-        # Changer le texte de l'entrée pour indiquer l'ajout d'une sous-tâche
-        self.is_subtask_mode = True  # Activer le mode sous-tâche
-        self.task_label.setText("Ajouter Sous-Tâche:")
-        self.task_input.clear()  # Effacer le texte de l'entrée pour permettre une nouvelle saisie
-        self.task_input.setFocus()  # Mettre le focus sur le champ de saisie
-
-    def reset_task_input(self):
-        self.task_input.clear()
-        self.task_label.setText("Nouvelle Tâche:")
-        self.is_subtask_mode = False  # Réinitialiser le mode sous-tâche
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
