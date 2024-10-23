@@ -43,11 +43,11 @@ class Principal(QWidget):
 
     def actualiser(self):
         curseur = self.cnx.cursor()
-        curseur.execute("SELECT idTache, titre FROM taches;")
+        curseur.execute("SELECT idTache, titre, validation FROM taches;")  # On récupère aussi le champ validation
         resultat = curseur.fetchall()
         self.taches.clear()
-        for task_id, task_title in resultat:
-            task_widget = TaskWidget(task_title, task_id, self)
+        for task_id, task_title, validation in resultat:
+            task_widget = TaskWidget(task_title, task_id, validation, self)  # On passe le statut validation
             list_item = QListWidgetItem()  # Créez un QListWidgetItem vide
             list_item.setSizeHint(task_widget.sizeHint())  # Définir la taille du QListWidgetItem
             self.taches.addItem(list_item)  # Ajoutez le QListWidgetItem
@@ -68,8 +68,20 @@ class Principal(QWidget):
         finally:
             curseur.close()
 
+    def update_validation(self, task_id, validation_status):
+        """Met à jour le champ validation de la tâche dans la base de données."""
+        try:
+            curseur = self.cnx.cursor()
+            curseur.execute("UPDATE taches SET validation = %s WHERE idTache = %s;", (validation_status, task_id))
+            self.cnx.commit()
+            print(f"Tâche {task_id} mise à jour avec validation = {validation_status}")
+        except pymysql.MySQLError as e:
+            print(f"Erreur MySQL lors de la mise à jour de la validation de la tâche {task_id} : {e}")
+        finally:
+            curseur.close()
+
 class TaskWidget(QWidget):
-    def __init__(self, task_title, task_id, parent=None):
+    def __init__(self, task_title, task_id, validation, parent=None):
         super(TaskWidget, self).__init__(parent)
         self.task_id = task_id  # Stocker l'ID de la tâche
         self.parent_widget = parent  # Conserver une référence au parent
@@ -77,9 +89,12 @@ class TaskWidget(QWidget):
         layout = QHBoxLayout(self)
 
         self.checkbox = QCheckBox()
+        self.checkbox.setChecked(validation == 1)  # Définir la case en fonction de la validation
         self.checkbox.stateChanged.connect(self.update_style)  # Connecter l'état de la case à cocher
 
         self.task_label = QLabel(task_title)
+        if validation == 1:
+            self.task_label.setStyleSheet("text-decoration: line-through; color: gray;")  # Appliquer le style si déjà validé
 
         self.more_button = QPushButton("...")
         self.more_button.setFixedWidth(30)
@@ -97,11 +112,13 @@ class TaskWidget(QWidget):
 
         modify_action = QAction("Modifier", self)
         delete_action = QAction("Supprimer", self)
+        nouvEnf_action = QAction("Nouvelle tache enfant", self)
 
         delete_action.triggered.connect(self.delete_task)
 
         menu.addAction(modify_action)
         menu.addAction(delete_action)
+        menu.addAction(nouvEnf_action)
 
         menu.exec_(self.mapToGlobal(self.more_button.pos()))
 
@@ -112,8 +129,10 @@ class TaskWidget(QWidget):
     def update_style(self):
         if self.checkbox.isChecked():
             self.task_label.setStyleSheet("text-decoration: line-through; color: gray;")
+            self.parent_widget.update_validation(self.task_id, 1)  # Marquer comme validée dans la DB
         else:
             self.task_label.setStyleSheet("")
+            self.parent_widget.update_validation(self.task_id, 0)  # Marquer comme non validée dans la DB
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
