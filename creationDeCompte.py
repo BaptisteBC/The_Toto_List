@@ -1,5 +1,11 @@
+from logging import exception
+
 import pymysql
 import sys
+import bcrypt
+from docutils.nodes import entry
+
+
 '''
 ATTENTION, ce programme est a modifier lors de la mise en production et lorsqu'on a le GUI
 V0.1 BETA
@@ -32,8 +38,16 @@ class CreerUtilisateur:
         pseudo = input("Entrez un pseudo : ")
         nom = input("Entrez un nom : ")
         prenom = input("Entrez un prénom : ")
+        motDePasse= input("Entrez un mot de passe : ")
+
         #hasher le mot de passe
-        motDePasse = input("Entrez un mot de passe : ")
+        motDePasse = motDePasse.encode('utf-8')
+        try :
+            motDePasse = bcrypt.hashpw(motDePasse,bcrypt.gensalt())
+
+            print(motDePasse)
+        except exception as err :
+            print(f"Erreur lors de l'encodage du mot de passe : {err}")
         return email, pseudo, nom, prenom, motDePasse
 
     def creerUtilisateur(self):
