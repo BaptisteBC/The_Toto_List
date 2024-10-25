@@ -44,8 +44,6 @@ class CreerUtilisateur:
         motDePasse = motDePasse.encode('utf-8')
         try :
             motDePasse = bcrypt.hashpw(motDePasse,bcrypt.gensalt())
-
-            print(motDePasse)
         except exception as err :
             print(f"Erreur lors de l'encodage du mot de passe : {err}")
         return email, pseudo, nom, prenom, motDePasse
