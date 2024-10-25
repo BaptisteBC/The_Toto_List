@@ -1,4 +1,4 @@
-import mysql.connector
+import pymysql
 import sys
 '''
 ATTENTION, ce programme est a modifier lors de la mise en production et lorsqu'on a le GUI
@@ -11,14 +11,14 @@ class CreerUtilisateur:
     '''
     def __init__(self):
         try:
-            self.db_connection = mysql.connector.connect(
+            self.db_connection = pymysql.connect(
                 host='localhost',
                 user='root',
                 password='',
                 database='thetotodb'
             )
             self.cursor = self.db_connection.cursor()
-        except mysql.connector.Error as err:
+        except pymysql.Error as err:
             print(f"Erreur de connexion à la base de données : {err}")
             sys.exit(1)
 
@@ -47,7 +47,7 @@ class CreerUtilisateur:
             self.cursor.execute(query, (email, pseudo, nom, prenom, motDePasse))
             self.db_connection.commit()
             print("Utilisateur créé avec succès !")
-        except mysql.connector.Error as err:
+        except pymysql.Error as err:
             print(f"Erreur lors de la création de l'utilisateur : {err}")
         finally:
             self.fermerConnexion()
