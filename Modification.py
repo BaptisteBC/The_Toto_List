@@ -4,168 +4,235 @@ from PyQt5.QtCore import QCoreApplication, Qt, QDate, QDateTime
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QListWidget,
     QHBoxLayout, QCheckBox, QAction, QMenu, QApplication, QListWidgetItem, QDialog,
-    QLineEdit, QDialogButtonBox, QFormLayout, QDateEdit, QComboBox, QDateTimeEdit
+    QLineEdit, QDialogButtonBox, QFormLayout, QDateEdit, QComboBox, QDateTimeEdit, QMessageBox
 )
 
-class Principal(QWidget):
-    def __init__(self, host: str = '127.0.0.1', user: str = 'root', password='toto', database: str = 'thetotodb'):
+class PagePrincipale(QWidget):
+    """
+    Classe principale gérant l'interface de dev pour la gestion des modifications.
+
+    :param hote: Adresse de l'hôte de la base de données, défaut '127.0.0.1'
+    :type hote: str, optional
+    :param utilisateur: Nom d'utilisateur pour la base de données, défaut 'root'
+    :type utilisateur: str, optional
+    :param motDePasse: Mot de passe pour la base de données, défaut 'toto'
+    :type motDePasse: str, optional
+    :param baseDeDonnees: Nom de la base de données, défaut 'thetotodb'
+    :type baseDeDonnees: str, optional
+    """
+    def __init__(self, hote: str = '127.0.0.1', utilisateur: str = 'root', motDePasse='toto', baseDeDonnees: str = 'thetotodb'):
         super().__init__()
 
         self.setWindowTitle("Page Principale")
         self.layout = QVBoxLayout(self)
-        self.resize(400, 300)  # Augmenter la taille pour plus d'espace
+        self.resize(400, 300)
 
-        self.titre = QLabel("Mes tâches")
-        self.bouton_actualiser = QPushButton("Actualiser")
-        self.bouton_quitter = QPushButton("Quitter")
+        self.titre = QLabel("Mes Tâches")
+        self.boutonActualiser = QPushButton("Actualiser")
+        self.boutonQuitter = QPushButton("Quitter")
 
-        self.taches = QListWidget()
+        self.listeTaches = QListWidget()
 
         self.layout.addWidget(self.titre)
-        self.layout.addWidget(self.bouton_actualiser)
-        self.layout.addWidget(self.taches)
-        self.layout.addWidget(self.bouton_quitter)
+        self.layout.addWidget(self.boutonActualiser)
+        self.layout.addWidget(self.listeTaches)
+        self.layout.addWidget(self.boutonQuitter)
 
-        self.bouton_quitter.clicked.connect(self.quitter)
-        self.bouton_actualiser.clicked.connect(self.actualiser)
+        self.boutonQuitter.clicked.connect(self.quitter)
+        self.boutonActualiser.clicked.connect(self.actualiser)
 
-        self.host = host
-        self.user = user
-        self.password = password
-        self.database = database
+        self.hote = hote
+        self.utilisateur = utilisateur
+        self.motDePasse = motDePasse
+        self.baseDeDonnees = baseDeDonnees
 
-        self.cnx = pymysql.connect(host=host, user=user, password=password, database=database)
+        self.cnx = pymysql.connect(host=hote, user=utilisateur, password=motDePasse, database=baseDeDonnees)
 
-        self.actualiser()  # Charger les tâches au démarrage
+        self.actualiser()
 
     def quitter(self):
+        """
+        Quitte l'application.
+        """
         QCoreApplication.exit(0)
 
     def actualiser(self):
+        """
+        Actualise la liste des tâches depuis la base de données.
+        """
         curseur = self.cnx.cursor()
         curseur.execute("SELECT idTache, titre, validation FROM taches;")
         resultat = curseur.fetchall()
-        self.taches.clear()
-        for task_id, task_title, validation in resultat:
-            self.ajouter_tache(task_title, task_id, validation)
+        self.listeTaches.clear()
+        for idTache, titreTache, validation in resultat:
+            self.ajouterTache(titreTache, idTache, validation)
 
-    def ajouter_tache(self, task_title, task_id, validation):
-        """Ajoute une tâche sous forme de widget personnalisé dans la liste"""
-        task_widget = QWidget()
-        layout = QHBoxLayout(task_widget)
+    def ajouterTache(self, titreTache, idTache, validation):
+        """
+        Ajoute une tâche à la liste des tâches (graphique).
 
-        checkbox = QCheckBox()
-        checkbox.setChecked(validation == 1)  # Définir la case en fonction de la validation
-        task_label = QLabel(task_title)
+        :param titreTache: Titre de la tâche à ajouter
+        :type titreTache: str
+        :param idTache: Identifiant unique de la tâche
+        :type idTache: int
+        :param validation: Statut de validation de la tâche (0 ou 1)
+        :type validation: int
+        """
+        widgetTache = QWidget()
+        layout = QHBoxLayout(widgetTache)
+
+        caseCoche = QCheckBox()
+        caseCoche.setChecked(validation == 1)
+        labelTache = QLabel(titreTache)
 
         if validation == 1:
-            task_label.setStyleSheet("text-decoration: line-through; color: gray;")
+            labelTache.setStyleSheet("text-decoration: line-through; color: gray;")
 
-        more_button = QPushButton("...")
-        more_button.setFixedWidth(30)
+        boutonPlus = QPushButton("...")
+        boutonPlus.setFixedWidth(30)
 
-        layout.addWidget(checkbox)
-        layout.addWidget(task_label)
-        layout.addWidget(more_button)
+        layout.addWidget(caseCoche)
+        layout.addWidget(labelTache)
+        layout.addWidget(boutonPlus)
         layout.addStretch()
 
-        # Connexion des signaux
-        checkbox.stateChanged.connect(lambda: self.update_style(task_label, task_id, checkbox.isChecked()))
-        more_button.clicked.connect(lambda: self.show_menu(task_id, task_title, task_widget))
+        caseCoche.stateChanged.connect(lambda: self.mettreAJourStyle(labelTache, idTache, caseCoche.isChecked()))
+        boutonPlus.clicked.connect(lambda: self.afficherMenu(idTache, titreTache, widgetTache))
 
-        list_item = QListWidgetItem()
-        list_item.setSizeHint(task_widget.sizeHint())
-        self.taches.addItem(list_item)
-        self.taches.setItemWidget(list_item, task_widget)
+        elementListe = QListWidgetItem()
+        elementListe.setSizeHint(widgetTache.sizeHint())
+        self.listeTaches.addItem(elementListe)
+        self.listeTaches.setItemWidget(elementListe, widgetTache)
 
-    def update_style(self, task_label, task_id, checked):
-        """Mise à jour du style visuel et de la validation dans la base de données"""
-        if checked:
-            task_label.setStyleSheet("text-decoration: line-through; color: gray;")
-            self.update_validation(task_id, 1)
+    def mettreAJourStyle(self, labelTache, idTache, coche):
+        """
+        Met à jour le style de la tâche et son statut de validation dans la base de données.
+
+        :param labelTache: Widget QLabel représentant le titre de la tâche
+        :type labelTache: QLabel
+        :param idTache: Identifiant unique de la tâche
+        :type idTache: int
+        :param coche: Statut de la case cochée (True si cochée, False sinon)
+        :type coche: bool
+        """
+        if coche:
+            labelTache.setStyleSheet("text-decoration: line-through; color: gray;")
+            self.mettreAJourValidation(idTache, 1)
         else:
-            task_label.setStyleSheet("")
-            self.update_validation(task_id, 0)
+            labelTache.setStyleSheet("")
+            self.mettreAJourValidation(idTache, 0)
 
-    def update_validation(self, task_id, validation_status):
-        """Met à jour le champ validation de la tâche dans la base de données"""
+    def mettreAJourValidation(self, idTache, statutValidation):
+        """
+        Met à jour le champ validation de la tâche dans la base de données.
+
+        :param idTache: Identifiant unique de la tâche
+        :type idTache: int
+        :param statutValidation: Nouveau statut de validation (0 ou 1)
+        :type statutValidation: int
+        :raises pymysql.MySQLError: En cas d'erreur lors de la mise à jour de la base de données
+        """
         try:
             curseur = self.cnx.cursor()
-            curseur.execute("UPDATE taches SET validation = %s WHERE idTache = %s;", (validation_status, task_id))
+            curseur.execute("UPDATE taches SET validation = %s WHERE idTache = %s;", (statutValidation, idTache))
             self.cnx.commit()
-            print(f"Tâche {task_id} mise à jour avec validation = {validation_status}")
         except pymysql.MySQLError as e:
-            print(f"Erreur MySQL lors de la mise à jour de la validation de la tâche {task_id} : {e}")
+            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la mise à jour de la validation de la tâche {idTache} : {e}')
         finally:
             curseur.close()
 
-    def show_menu(self, task_id, task_title, task_widget):
-        """Affiche un menu contextuel pour la tâche"""
-        menu = QMenu(task_widget)
+    def afficherMenu(self, idTache, titreTache, widgetTache):
+        """
+        Affiche un menu contextuel pour une tâche.
 
-        modify_action = QAction("Modifier", task_widget)
-        delete_action = QAction("Supprimer", task_widget)
-        nouvEnf_action = QAction("Nouvelle tâche enfant", task_widget)
+        :param idTache: Identifiant unique de la tâche
+        :type idTache: int
+        :param titreTache: Titre de la tâche
+        :type titreTache: str
+        :param widgetTache: Widget représentant la tâche dans l'interface
+        :type widgetTache: QWidget
+        """
+        menu = QMenu(widgetTache)
 
-        modify_action.triggered.connect(lambda: self.modifier_tache(task_id))  # Ouvre la popup de modification
-        delete_action.triggered.connect(lambda: self.delete_task(task_id))
+        actionModifier = QAction("Modifier", widgetTache)
+        actionSupprimer = QAction("Supprimer", widgetTache)
+        actionNouvelleSousTache = QAction("Nouvelle tâche enfant", widgetTache)
 
-        menu.addAction(modify_action)
-        menu.addAction(delete_action)
-        menu.addAction(nouvEnf_action)
+        actionModifier.triggered.connect(lambda: self.modifierTache(idTache))
+        actionSupprimer.triggered.connect(lambda: self.supprimerTache(idTache))
+        actionNouvelleSousTache.triggered.connect(lambda: self.ajouterSousTache(idTache))
 
-        menu.exec_(self.mapToGlobal(task_widget.pos()))
+        menu.addAction(actionModifier)
+        menu.addAction(actionSupprimer)
+        menu.addAction(actionNouvelleSousTache)
 
-    def modifier_tache(self, task_id):
-        """Ouvre la boîte de dialogue de modification avec des champs datetime et prise en charge des valeurs NULL"""
+        menu.exec_(self.mapToGlobal(widgetTache.pos()))
+
+    def modifierTache(self, idTache):
+        """
+        Modifie les détails d'une tâche existante.
+
+        :param idTache: Identifiant unique de la tâche à modifier
+        :type idTache: int
+        """
         try:
-            # Récupérer les données de la tâche depuis la base de données
             curseur = self.cnx.cursor()
             curseur.execute("""
                 SELECT titre, description, dateFin, recurence, typeRecurence, idUtilisateurAffecte, idTag, dateRappel 
                 FROM taches 
                 WHERE idTache = %s
-            """, (task_id,))
+            """, (idTache,))
             tache = curseur.fetchone()
 
             if tache:
-                # Gestion des dates et des heures - Détecter les NULL
-                date_fin_str = tache[2].strftime("%Y-%m-%d %H:%M:%S") if tache[2] else None
-                date_rappel_str = tache[7].strftime("%Y-%m-%d %H:%M:%S") if tache[7] else None
+                dateFinStr = tache[2].strftime("%Y-%m-%d %H:%M:%S") if tache[2] else None
+                dateRappelStr = tache[7].strftime("%Y-%m-%d %H:%M:%S") if tache[7] else None
 
-                # Si les dates sont NULL, définir les QDateTime avec des valeurs par défaut
-                date_fin = QDateTime.fromString(date_fin_str,
-                                                "yyyy-MM-dd HH:mm:ss") if date_fin_str else QDateTime.currentDateTime()
-                date_rappel = QDateTime.fromString(date_rappel_str,
-                                                   "yyyy-MM-dd HH:mm:ss") if date_rappel_str else QDateTime.currentDateTime()
+                dateFin = QDateTime.fromString(dateFinStr, "yyyy-MM-dd HH:mm:ss") if dateFinStr else QDateTime.currentDateTime()
+                dateRappel = QDateTime.fromString(dateRappelStr, "yyyy-MM-dd HH:mm:ss") if dateRappelStr else QDateTime.currentDateTime()
 
-                # Lancer la boîte de dialogue de modification avec les données récupérées
-                dialog = ModificationDialog(task_id, tache, date_fin, date_rappel, self)
+                dialog = DialogueModification(idTache, tache, dateFin, dateRappel, self)
 
-                # Cocher les cases "Mettre la date à NULL" si la date est NULL dans la base de données
-                if not date_fin_str:
-                    dialog.date_fin_null_checkbox.setChecked(True)
-                    dialog.date_fin_edit.setEnabled(False)  # Désactiver le champ date si NULL
-                if not date_rappel_str:
-                    dialog.date_rappel_null_checkbox.setChecked(True)
-                    dialog.date_rappel_edit.setEnabled(False)  # Désactiver le champ date si NULL
+                if not dateFinStr:
+                    dialog.caseDateFinNull.setChecked(True)
+                    dialog.dateFinEdit.setEnabled(False)
+                if not dateRappelStr:
+                    dialog.caseDateRappelNull.setChecked(True)
+                    dialog.dateRappelEdit.setEnabled(False)
 
-                # Si l'utilisateur valide la boîte de dialogue
                 if dialog.exec_() == QDialog.Accepted:
-                    # Récupérer les nouvelles données du formulaire
-                    nouveau_donnees = dialog.get_task_data()
-
-                    # Mettre à jour la tâche dans la base de données avec les nouvelles données
-                    self.update_tache(task_id, *nouveau_donnees)
+                    nouvellesDonnees = dialog.getDonneesTache()
+                    self.mettreAJourTache(idTache, *nouvellesDonnees)
 
         except Exception as e:
-            print(f"Erreur lors de la récupération des données de la tâche : {e}")
+            QMessageBox.critical(self, 'Erreur', f'Erreur lors de la récupération des données de la tâche : {e}')
         finally:
             curseur.close()
 
-    def update_tache(self, task_id, titre, description, date_fin, recurence, type_recurence, utilisateur, tag,
-                     date_rappel):
-        """Met à jour la tâche dans la base de données"""
+    def mettreAJourTache(self, idTache, titre, description, dateFin, recurence, typeRecurence, utilisateur, tag, dateRappel):
+        """
+        Met à jour les détails d'une tâche existante dans la base de données.
+
+        :param idTache: Identifiant unique de la tâche
+        :type idTache: int
+        :param titre: Nouveau titre de la tâche
+        :type titre: str
+        :param description: Nouvelle description de la tâche
+        :type description: str
+        :param dateFin: Nouvelle date de fin de la tâche
+        :type dateFin: str ou None
+        :param recurence: Indicateur de récurrence (0 ou 1)
+        :type recurence: int
+        :param typeRecurence: Type de récurrence
+        :type typeRecurence: int
+        :param utilisateur: Identifiant de l'utilisateur assigné à la tâche
+        :type utilisateur: int
+        :param tag: Identifiant du tag associé à la tâche
+        :type tag: int
+        :param dateRappel: Nouvelle date de rappel de la tâche
+        :type dateRappel: str ou None
+        :raises pymysql.MySQLError: En cas d'erreur lors de la mise à jour de la base de données
+        """
         try:
             curseur = self.cnx.cursor()
             curseur.execute("""
@@ -179,191 +246,357 @@ class Principal(QWidget):
                     idTag = %s, 
                     dateRappel = %s
                 WHERE idTache = %s;
-            """, (titre, description, date_fin, recurence, type_recurence, utilisateur, tag, date_rappel, task_id))
+            """, (titre, description, dateFin, recurence, typeRecurence, utilisateur, tag, dateRappel, idTache))
             self.cnx.commit()
-            print(f"Tâche {task_id} mise à jour avec succès.")
-            self.actualiser()  # Rafraîchir la liste des tâches
         except pymysql.MySQLError as e:
-            print(f"Erreur MySQL lors de la mise à jour de la tâche {task_id} : {e}")
+            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la mise à jour de la tâche {idTache} : {e}')
         finally:
             curseur.close()
 
-    def get_utilisateurs(self):
-        """Récupère tous les utilisateurs (idUtilisateur, pseudonyme) depuis la table utilisateurs"""
+    def getUtilisateurs(self):
+        """
+        Récupère tous les utilisateurs (idUtilisateur, pseudonyme) depuis la table utilisateurs.
+
+        :return: Liste des utilisateurs (idUtilisateur, pseudonyme)
+        :rtype: list of tuple
+        :raises pymysql.MySQLError: En cas d'erreur lors de la récupération des utilisateurs
+        """
         try:
             curseur = self.cnx.cursor()
             curseur.execute("SELECT idUtilisateur, pseudonyme FROM utilisateurs;")
             utilisateurs = curseur.fetchall()
             return utilisateurs
         except pymysql.MySQLError as e:
-            print(f"Erreur MySQL lors de la récupération des utilisateurs : {e}")
+            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la récupération des utilisateurs : {e}')
             return []
         finally:
             curseur.close()
 
-    def get_tags(self):
-        """Récupère tous les tags (idTag, nomTag) depuis la table tag"""
+    def getTags(self):
+        """
+        Récupère tous les tags (idTag, nomTag) depuis la table tag.
+
+        :return: Liste des tags (idTag, nomTag)
+        :rtype: list of tuple
+        :raises pymysql.MySQLError: En cas d'erreur lors de la récupération des tags
+        """
         try:
             curseur = self.cnx.cursor()
             curseur.execute("SELECT idTag, nomTag FROM tag;")
             tags = curseur.fetchall()
             return tags
         except pymysql.MySQLError as e:
-            print(f"Erreur MySQL lors de la récupération des tags : {e}")
+            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la récupération des tags : {e}')
             return []
         finally:
             curseur.close()
 
-    def delete_task(self, task_id):
-        """Supprime une tâche et l'ajoute à la corbeille uniquement si elle n'est pas déjà supprimée"""
-        print(f"Tentative de suppression de la tâche avec ID: {task_id}")
+    def supprimerSousTache(self, idSousTache):
+        """
+        Supprime une sous-tâche en fonction de son ID depuis la base de données.
+
+        :param idSousTache: Identifiant unique de la sous-tâche à supprimer
+        :type idSousTache: int
+        :raises pymysql.MySQLError: En cas d'erreur lors de la suppression de la sous-tâche
+        """
         try:
             curseur = self.cnx.cursor()
-
-            # Vérifier si la tâche est déjà dans la corbeille
-            curseur.execute("SELECT COUNT(*) FROM corbeille WHERE idTacheFini = %s;", (task_id,))
-            result = curseur.fetchone()
-
-            if result[0] > 0:
-                print(f"Tâche {task_id} déjà dans la corbeille, suppression impossible.")
-            else:
-                # Insérer l'ID de la tâche et la date de suppression dans la table corbeille
-                curseur.execute("INSERT INTO corbeille (idTacheFini, dateSupression) VALUES (%s, NOW());", (task_id,))
-                self.cnx.commit()
-                print(f"Tâche {task_id} déplacée vers la corbeille.")
-                self.actualiser()  # Rafraîchir la liste des tâches
+            curseur.execute("DELETE FROM sous_taches WHERE idSousTache = %s;", (idSousTache,))
+            self.cnx.commit()
         except pymysql.MySQLError as e:
-            print(f"Erreur MySQL lors de la suppression de la tâche {task_id} : {e}")
+            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la suppression de la sous-tâche {idSousTache} : {e}')
         finally:
             curseur.close()
 
+    def supprimerTache(self, idTache):
+        """
+        Supprime une tâche et l'ajoute à la corbeille uniquement si elle n'est pas déjà supprimée.
 
-class ModificationDialog(QDialog):
-    def __init__(self, task_id, tache_data, date_fin, date_rappel, parent=None):
-        super(ModificationDialog, self).__init__(parent)
-        self.task_id = task_id
-        self.setWindowTitle(f"Modification de '{tache_data[0]}'")
+        :param idTache: Identifiant unique de la tâche à supprimer
+        :type idTache: int
+        :raises pymysql.MySQLError: En cas d'erreur lors de la suppression de la tâche
+        """
+        try:
+            curseur = self.cnx.cursor()
+
+            curseur.execute("SELECT COUNT(*) FROM corbeille WHERE idTacheFini = %s;", (idTache,))
+            resultat = curseur.fetchone()
+
+            if resultat[0] > 0:
+                self.actualiser()
+        except pymysql.MySQLError as e:
+            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la suppression de la tâche {idTache} : {e}')
+        finally:
+            curseur.close()
+
+    def ajouterSousTache(self, idTacheParent):
+        """
+        Ouvre une boîte de dialogue pour ajouter une sous-tâche.
+
+        :param idTacheParent: Identifiant de la tâche parente à laquelle ajouter une sous-tâche
+        :type idTacheParent: int
+        """
+        dialog = DialogueSousTache(idTacheParent, self)
+        if dialog.exec_() == QDialog.Accepted:
+            donneesSousTache = dialog.getDonneesSousTache()
+            self.insererSousTache(donneesSousTache)
+
+    def insererSousTache(self, donneesSousTache):
+        """
+        Insère une sous-tâche dans la base de données avec 'validation' par défaut à 0.
+
+        :param donneesSousTache: Tuple contenant les informations de la sous-tâche à insérer
+        :type donneesSousTache: tuple
+        :raises pymysql.MySQLError: En cas d'erreur lors de l'insertion de la sous-tâche
+        """
+        try:
+            curseur = self.cnx.cursor()
+            curseur.execute("""
+                INSERT INTO soustaches (titre, description, idTacheParent, dateFinSousTache, dateRappel, etiquette, validation)
+                VALUES (%s, %s, %s, %s, %s, %s, 0);
+            """, donneesSousTache)
+            self.cnx.commit()
+        except pymysql.MySQLError as e:
+            QMessageBox.critical(self, 'Erreur', f"Erreur MySQL lors de l'insertion de la sous-tâche : {e}")
+        finally:
+            curseur.close()
+
+class DialogueModification(QDialog):
+    """
+    Boîte de dialogue pour modifier les détails d'une tâche existante.
+
+    :param idTache: Identifiant unique de la tâche à modifier
+    :type idTache: int
+    :param donneesTache: Détails de la tâche existante
+    :type donneesTache: tuple
+    :param dateFin: Date de fin de la tâche
+    :type dateFin: QDateTime
+    :param dateRappel: Date de rappel de la tâche
+    :type dateRappel: QDateTime
+    :param parent: Widget parent
+    :type parent: QWidget, optional
+    """
+    def __init__(self, idTache, donneesTache, dateFin, dateRappel, parent=None):
+        super(DialogueModification, self).__init__(parent)
+        self.idTache = idTache
+        self.setWindowTitle(f"Modification de '{donneesTache[0]}'")
 
         self.setWindowFlags(self.windowFlags() & ~Qt.WindowContextHelpButtonHint)
 
         layout = QFormLayout(self)
 
-        # Champs du formulaire
-        self.titre_edit = QLineEdit(tache_data[0])
-        self.description_edit = QLineEdit(tache_data[1])
+        self.titreEdit = QLineEdit(donneesTache[0])
+        self.descriptionEdit = QLineEdit(donneesTache[1])
 
-        # Gestion de la date de fin
-        self.date_fin_edit = QDateTimeEdit()
-        self.date_fin_edit.setCalendarPopup(True)
-        self.date_fin_edit.setDateTime(date_fin)
+        self.dateFinEdit = QDateTimeEdit()
+        self.dateFinEdit.setCalendarPopup(True)
+        self.dateFinEdit.setDateTime(dateFin)
 
-        # Case à cocher pour mettre la date de fin à NULL
-        self.date_fin_null_checkbox = QCheckBox("Mettre la date de fin à NULL")
-        self.date_fin_null_checkbox.stateChanged.connect(self.toggle_date_fin_edit)
+        self.caseDateFinNull = QCheckBox("Mettre la date de fin à NULL")
+        self.caseDateFinNull.stateChanged.connect(self.cacheDateFinEdit)
 
-        # Gestion de la récurrence
-        self.recurrence_checkbox = QCheckBox("Récurrence")
-        self.recurrence_checkbox.setChecked(tache_data[3] == 1)
+        self.caseRecurrence = QCheckBox("Récurrence")
+        self.caseRecurrence.setChecked(donneesTache[3] == 1)
 
-        self.type_recurrence_combo = QComboBox()
-        self.type_recurrence_combo.addItems(["Tous les jours", "Toutes les semaines", "Tous les mois", "Jours spécifiques"])
-        self.type_recurrence_combo.setEnabled(tache_data[3] == 1)
+        self.comboTypeRecurrence = QComboBox()
+        self.comboTypeRecurrence.addItems(["Tous les jours", "Toutes les semaines", "Tous les mois", "Jours spécifiques"])
+        self.comboTypeRecurrence.setEnabled(donneesTache[3] == 1)
 
-        self.recurrence_checkbox.stateChanged.connect(
-            lambda: self.type_recurrence_combo.setEnabled(self.recurrence_checkbox.isChecked())
+        self.caseRecurrence.stateChanged.connect(
+            lambda: self.comboTypeRecurrence.setEnabled(self.caseRecurrence.isChecked())
         )
 
-        # Liste déroulante pour les utilisateurs affectés
-        self.utilisateur_combo = QComboBox()
-        self.populate_utilisateur_combo(tache_data[5])  # Passe l'utilisateur actuel pour le sélectionner
+        self.comboUtilisateur = QComboBox()
+        self.remplirComboUtilisateur(donneesTache[5])
 
-        # Liste déroulante pour les tags
-        self.tag_combo = QComboBox()
-        self.populate_tag_combo(tache_data[6])  # Passe le tag actuel pour le sélectionner
+        self.comboTag = QComboBox()
+        self.remplirComboTag(donneesTache[6])
 
-        # Gestion de la date de rappel
-        self.date_rappel_edit = QDateTimeEdit()
-        self.date_rappel_edit.setCalendarPopup(True)
-        self.date_rappel_edit.setDateTime(date_rappel)
+        self.dateRappelEdit = QDateTimeEdit()
+        self.dateRappelEdit.setCalendarPopup(True)
+        self.dateRappelEdit.setDateTime(dateRappel)
 
-        # Case à cocher pour mettre la date de rappel à NULL
-        self.date_rappel_null_checkbox = QCheckBox("Mettre la date de rappel à NULL")
-        self.date_rappel_null_checkbox.stateChanged.connect(self.toggle_date_rappel_edit)
+        self.caseDateRappelNull = QCheckBox("Mettre la date de rappel à NULL")
+        self.caseDateRappelNull.stateChanged.connect(self.cacheDateRappelEdit)
 
-        # Ajout des champs dans le layout
-        layout.addRow("Titre", self.titre_edit)
-        layout.addRow("Description", self.description_edit)
-        layout.addRow("Date de fin", self.date_fin_edit)
-        layout.addRow(self.date_fin_null_checkbox)  # Checkbox pour mettre la date de fin à NULL
-        layout.addRow("Récurrence", self.recurrence_checkbox)
-        layout.addRow("Type de récurrence", self.type_recurrence_combo)
-        layout.addRow("Utilisateur affecté", self.utilisateur_combo)  # Utilisation de la QComboBox pour les utilisateurs
-        layout.addRow("Tag", self.tag_combo)  # Utilisation de la QComboBox pour les tags
-        layout.addRow("Date de rappel", self.date_rappel_edit)
-        layout.addRow(self.date_rappel_null_checkbox)  # Checkbox pour mettre la date de rappel à NULL
+        layout.addRow("Titre", self.titreEdit)
+        layout.addRow("Description", self.descriptionEdit)
+        layout.addRow("Date de fin", self.dateFinEdit)
+        layout.addRow(self.caseDateFinNull)
+        layout.addRow("Récurrence", self.caseRecurrence)
+        layout.addRow("Type de récurrence", self.comboTypeRecurrence)
+        layout.addRow("Utilisateur affecté", self.comboUtilisateur)
+        layout.addRow("Tag", self.comboTag)
+        layout.addRow("Date de rappel", self.dateRappelEdit)
+        layout.addRow(self.caseDateRappelNull)
 
-        self.buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-        self.buttons.accepted.connect(self.accept)
-        self.buttons.rejected.connect(self.reject)
+        self.boutons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.boutons.accepted.connect(self.accept)
+        self.boutons.rejected.connect(self.reject)
 
-        layout.addRow(self.buttons)
+        layout.addRow(self.boutons)
 
-    def populate_tag_combo(self, selected_tag_id):
-        """Remplit la liste déroulante avec les tags et sélectionne celui de la tâche"""
-        self.tag_combo.addItem("Aucun", None)
+    def remplirComboTag(self, idTagSelectionne):
+        """
+        Remplit la liste déroulante avec les tags et sélectionne celui de la tâche.
 
-        # Récupérer les tags depuis la base de données
-        tags = self.parent().get_tags()
-
-        # Ajouter chaque tag dans la QComboBox
-        for tag_id, tag_name in tags:
-            self.tag_combo.addItem(tag_name, tag_id)
-
-        # Sélectionner le tag actuel de la tâche
-        index = self.tag_combo.findData(selected_tag_id)
+        :param idTagSelectionne: Identifiant du tag à sélectionner
+        :type idTagSelectionne: int
+        """
+        self.comboTag.addItem("Aucun", None)
+        tags = self.parent().getTags()
+        for idTag, nomTag in tags:
+            self.comboTag.addItem(nomTag, idTag)
+        index = self.comboTag.findData(idTagSelectionne)
         if index >= 0:
-            self.tag_combo.setCurrentIndex(index)
+            self.comboTag.setCurrentIndex(index)
 
-    def populate_utilisateur_combo(self, selected_utilisateur_id):
-        """Remplit la liste déroulante avec les utilisateurs et sélectionne celui de la tâche"""
-        self.utilisateur_combo.addItem("Aucun", 0)
+    def remplirComboUtilisateur(self, idUtilisateurSelectionne):
+        """
+        Remplit la liste déroulante avec les utilisateurs et sélectionne celui de la tâche.
 
-        # Récupérer les utilisateurs depuis la base de données
-        utilisateurs = self.parent().get_utilisateurs()
-
-        # Ajouter chaque utilisateur dans la QComboBox
-        for utilisateur_id, pseudonyme in utilisateurs:
-            self.utilisateur_combo.addItem(pseudonyme, utilisateur_id)
-
-        # Sélectionner l'utilisateur actuel de la tâche
-        index = self.utilisateur_combo.findData(selected_utilisateur_id)
+        :param idUtilisateurSelectionne: Identifiant de l'utilisateur à sélectionner
+        :type idUtilisateurSelectionne: int
+        """
+        self.comboUtilisateur.addItem("Aucun", 0)
+        utilisateurs = self.parent().getUtilisateurs()
+        for idUtilisateur, pseudonyme in utilisateurs:
+            self.comboUtilisateur.addItem(pseudonyme, idUtilisateur)
+        index = self.comboUtilisateur.findData(idUtilisateurSelectionne)
         if index >= 0:
-            self.utilisateur_combo.setCurrentIndex(index)
+            self.comboUtilisateur.setCurrentIndex(index)
 
-    def toggle_date_fin_edit(self, state):
-        """Active ou désactive le champ de la date de fin selon l'état de la case à cocher."""
-        self.date_fin_edit.setEnabled(state == 0)  # désactiver si coché
+    def cacheDateFinEdit(self, etat):
+        """
+        Active ou désactive le champ de la date de fin selon l'état de la case à cocher.
 
-    def toggle_date_rappel_edit(self, state):
-        """Active ou désactive le champ de la date de rappel selon l'état de la case à cocher."""
-        self.date_rappel_edit.setEnabled(state == 0)  # désactiver si coché
+        :param etat: État de la case à cocher (True si coché, False sinon)
+        :type etat: bool
+        """
+        self.dateFinEdit.setEnabled(etat == 0)
 
-    def get_task_data(self):
-        """Retourne les données modifiées sous forme de tuple"""
+    def cacheDateRappelEdit(self, etat):
+        """
+        Active ou désactive le champ de la date de rappel selon l'état de la case à cocher.
+
+        :param etat: État de la case à cocher (True si coché, False sinon)
+        :type etat: bool
+        """
+        self.dateRappelEdit.setEnabled(etat == 0)
+
+    def getDonneesTache(self):
+        """
+        Retourne les données modifiées sous forme de tuple.
+
+        :return: Tuple contenant les nouvelles données de la tâche
+        :rtype: tuple
+        """
         return (
-            self.titre_edit.text(),
-            self.description_edit.text(),
-            None if self.date_fin_null_checkbox.isChecked() else self.date_fin_edit.dateTime().toString("yyyy-MM-dd HH:mm:ss"),
-            1 if self.recurrence_checkbox.isChecked() else 0,
-            self.type_recurrence_combo.currentIndex(),
-            self.utilisateur_combo.currentData(),  # Récupérer l'idUtilisateur sélectionné
-            self.tag_combo.currentData(),  # Récupérer l'idTag sélectionné
-            None if self.date_rappel_null_checkbox.isChecked() else self.date_rappel_edit.dateTime().toString("yyyy-MM-dd HH:mm:ss")
+            self.titreEdit.text(),
+            self.descriptionEdit.text(),
+            None if self.caseDateFinNull.isChecked() else self.dateFinEdit.dateTime().toString("yyyy-MM-dd HH:mm:ss"),
+            1 if self.caseRecurrence.isChecked() else 0,
+            self.comboTypeRecurrence.currentIndex(),
+            self.comboUtilisateur.currentData(),
+            self.comboTag.currentData(),
+            None if self.caseDateRappelNull.isChecked() else self.dateRappelEdit.dateTime().toString("yyyy-MM-dd HH:mm:ss")
         )
 
+class DialogueSousTache(QDialog):
+    """
+    Boîte de dialogue pour ajouter une nouvelle sous-tâche.
+
+    :param idTacheParent: Identifiant de la tâche parente
+    :type idTacheParent: int
+    :param parent: Widget parent
+    :type parent: QWidget, optional
+    """
+    def __init__(self, idTacheParent, parent=None):
+        super(DialogueSousTache, self).__init__(parent)
+        self.idTacheParent = idTacheParent
+        self.setWindowTitle("Nouvelle Sous-Tâche")
+
+        layout = QFormLayout(self)
+
+        self.titreEdit = QLineEdit()
+        self.descriptionEdit = QLineEdit()
+
+        self.dateFinEdit = QDateEdit()
+        self.dateFinEdit.setCalendarPopup(True)
+        self.dateFinEdit.setDate(QDate.currentDate())
+
+        self.caseDateFinNull = QCheckBox("Mettre la date de fin à NULL")
+        self.caseDateFinNull.stateChanged.connect(self.cacherDateFinEdit)
+
+        self.dateRappelEdit = QDateEdit()
+        self.dateRappelEdit.setCalendarPopup(True)
+        self.dateRappelEdit.setDate(QDate.currentDate())
+
+        self.caseDateRappelNull = QCheckBox("Mettre la date de rappel à NULL")
+        self.caseDateRappelNull.stateChanged.connect(self.cacherDateRappelEdit)
+
+        self.comboEtiquette = QComboBox()
+        self.remplirComboEtiquette()
+
+        layout.addRow("Titre", self.titreEdit)
+        layout.addRow("Description", self.descriptionEdit)
+        layout.addRow("Date de fin", self.dateFinEdit)
+        layout.addRow(self.caseDateFinNull)
+        layout.addRow("Date de rappel", self.dateRappelEdit)
+        layout.addRow(self.caseDateRappelNull)
+        layout.addRow("Étiquette", self.comboEtiquette)
+
+        self.boutons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.boutons.accepted.connect(self.accept)
+        self.boutons.rejected.connect(self.reject)
+
+        layout.addRow(self.boutons)
+
+    def remplirComboEtiquette(self):
+        """
+        Remplit la liste déroulante avec les étiquettes disponibles.
+        """
+        self.comboEtiquette.addItem("Aucun", None)
+        etiquettes = self.parent().getTags()
+        for idTag, nomTag in etiquettes:
+            self.comboEtiquette.addItem(nomTag, idTag)
+
+    def cacherDateFinEdit(self, etat):
+        """
+        Active ou désactive le champ de la date de fin selon l'état de la case à cocher.
+
+        :param etat: État de la case à cocher (True si coché, False sinon)
+        :type etat: bool
+        """
+        self.dateFinEdit.setEnabled(etat == 0)
+
+    def cacherDateRappelEdit(self, etat):
+        """
+        Active ou désactive le champ de la date de rappel selon l'état de la case à cocher.
+
+        :param etat: État de la case à cocher (True si coché, False sinon)
+        :type etat: bool
+        """
+        self.dateRappelEdit.setEnabled(etat == 0)
+
+    def getDonneesSousTache(self):
+        """
+        Retourne les données de la sous-tâche sous forme de tuple.
+
+        :return: Tuple contenant les informations de la sous-tâche
+        :rtype: tuple
+        """
+        return (
+            self.titreEdit.text(),
+            self.descriptionEdit.text(),
+            self.idTacheParent,
+            None if self.caseDateFinNull.isChecked() else self.dateFinEdit.date().toString("yyyy-MM-dd"),
+            None if self.caseDateRappelNull.isChecked() else self.dateRappelEdit.date().toString("yyyy-MM-dd"),
+            self.comboEtiquette.currentData()
+        )
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    window = Principal()
-    window.show()
+    fenetre = PagePrincipale()
+    fenetre.show()
     sys.exit(app.exec_())
