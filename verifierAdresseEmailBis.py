@@ -1,9 +1,39 @@
-from typing import Tuple
+from dotenv import load_dotenv
+from typing import Tuple, Dict
 import pymysql
+import os
 import re
 
+def chargerEnvironnement() -> Dict[str, str | int]:
+    """
+    Cette méthode est à usage unique et a pour objectif de :
+        Charger les variables d'environnement pour la connexion à la BDD.
 
-def verifierAdresseEmail(adresseEmailSaisie: str) -> Tuple[str, bool]:
+    Returns:
+        → Dict[str, str | int]: Dictionnaire de configuration de la BDD avec :
+            ▪ Les paramètres de connexion sous forme de chaînes.
+            ▪ Les paramètres numériques sous forme d'entiers.
+    """
+
+    # On charge les variables d'environnement depuis le fichier .env
+    load_dotenv("identifiantsBDD.env.exemple")
+
+    # -------------------------------------------------------------------------
+    # Assemblage des paramètres de connexion à la base de données.
+    # -------------------------------------------------------------------------
+    return {
+        'host': os.getenv('BDD_HOTE'),
+        'port': int(os.getenv('BDD_PORT')),
+        'user': os.getenv('BDD_UTIL'),
+        'password': os.getenv('BDD_MDP'),
+        'database': os.getenv('BDD_NOM'),
+        'charset': os.getenv('BDD_JDC'),
+        'connect_timeout': int(os.getenv('BDD_DELAI'))
+    }
+
+
+def verifierAdresseEmail(adresseEmailSaisie: str,
+                         BDD_CONFIG: Dict[str, str | int]) -> Tuple[str, bool]:
     """
     Cette méthode est à usage unique et a pour objectifs de :
 
@@ -13,6 +43,8 @@ def verifierAdresseEmail(adresseEmailSaisie: str) -> Tuple[str, bool]:
     Args:
         → adresseEmailSaisie (str): L'adresse e-mail qui doit être vérifiée.
             ▪ Celle-ci est récupérée depuis un champ de saisie utilisateur.
+        → BDD_CONFIG (Dict[str, str | int]): Paramètres de connexion à la BDD.
+            ▪ Ils sont stockés sous forme de dictionnaire dans le fichier .env.
 
     Raises:
         → pymysql.err.OperationalError : Erreur opérationnelle avec la BDD.
@@ -37,21 +69,6 @@ def verifierAdresseEmail(adresseEmailSaisie: str) -> Tuple[str, bool]:
     MYSQL_ERROR_CONNECTION_LOST = 2013
     MYSQL_ERROR_CONNECTION_REFUSED = 2003
     MYSQL_ERROR_SERVER_GONE = 2006
-
-    # -------------------------------------------------------------------------
-    # Initialisation des paramètres de connexion à la base de données.
-    # Le port de connexion doit être typé en int, sans être entouré par des ''.
-    # Le timeout doit être typé en int et est définit en secondes.
-    # -------------------------------------------------------------------------
-    BDD_CONFIG = {
-        'host': 'localhost',
-        'port': 3306,
-        'user': 'NOM_UTILISATEUR_BDD',
-        'password': 'MDP_UTILISATEUR_BDD',
-        'database': 'NOM_BDD',
-        'charset': 'utf8mb4',
-        'connect_timeout': 5
-    }
 
     # -------------------------------------------------------------------------
     # Initialisation REGEX du format standard d'une adresse e-mail.
@@ -160,6 +177,11 @@ if __name__ == "__main__":
     # On définit l'adresse e-mail comme étant invalide par défaut.
     adresseEmailValide = False
 
+    # -------------------------------------------------------------------------
+    # Initialisation des paramètres de connexion à la base de données.
+    # -------------------------------------------------------------------------
+    BDD_CONFIG = chargerEnvironnement()
+
     # On boucle dans la fonction tant que l'adresse e-mail n'est pas validée.
     while not adresseEmailValide:
 
@@ -168,7 +190,7 @@ if __name__ == "__main__":
 
         # On récupère l'adresse e-mail saisie et le résultat des vérifications.
         adresseEmailVerifiee, resultatVerifications = (
-            verifierAdresseEmail(adresseEmailSaisie))
+            verifierAdresseEmail(adresseEmailSaisie, BDD_CONFIG))
 
         adresseEmailValide = resultatVerifications
 
