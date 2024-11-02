@@ -7,16 +7,17 @@ import re
 def chargerEnvironnement() -> Dict[str, str | int]:
     """
     Cette méthode est à usage unique et a pour objectif de :
-        Charger les variables d'environnement pour la connexion à la BDD.
+
+        ● Charger les variables d'environnement pour la connexion à la BDD.
 
     Returns:
-        → Dict[str, str | int]: Dictionnaire de configuration de la BDD avec :
+        → Dict[str, str | int]: Dictionnaire des paramètres de la BDD :
             ▪ Les paramètres de connexion sous forme de chaînes.
             ▪ Les paramètres numériques sous forme d'entiers.
     """
 
     # On charge les variables d'environnement depuis le fichier .env
-    load_dotenv("identifiantsBDD.env.exemple")
+    load_dotenv("variablesBDD.env.exemple")
 
     # -------------------------------------------------------------------------
     # Assemblage des paramètres de connexion à la base de données.
@@ -71,16 +72,15 @@ def verifierAdresseEmail(adresseEmailSaisie: str,
     MYSQL_ERROR_SERVER_GONE = 2006
 
     # -------------------------------------------------------------------------
-    # Initialisation REGEX du format standard d'une adresse e-mail.
+    # Logique de vérification du bon formatage de l'adresse e-mail.
+    # On initialise une REGEX du format standard d'une adresse e-mail.
     # Sont permis les caractères suivants : (a-z), (A-Z), (0-9), (.), (-), (_).
     # -------------------------------------------------------------------------
     adresseEmailFormat = (r'^[a-zA-Z0-9][a-zA-Z0-9._-]*'
                           r'@[a-zA-Z0-9][a-zA-Z0-9._-]*'
                           r'\.[a-zA-Z]{2,}$')
 
-    # -------------------------------------------------------------------------
-    # Logique de vérification du bon formatage de l'adresse e-mail.
-    # -------------------------------------------------------------------------
+    # Si la comparaison est un échec, alors l'adresse e-mail est mal formatée.
     if not re.match(adresseEmailFormat, adresseEmailSaisie):
         # ---------------------------------------------------------------------
         # Insérer ici une fonction qui affiche une pop-up d'erreur.
@@ -194,4 +194,7 @@ if __name__ == "__main__":
 
         adresseEmailValide = resultatVerifications
 
+    # -------------------------------------------------------------------------
+    # Insérer ici une fonction qui affiche un pop-up de réussite.
     print(f"Adresse e-mail valide et disponible : {adresseEmailVerifiee}")
+    # -------------------------------------------------------------------------

@@ -42,28 +42,31 @@ def verifierAdresseEmail(adresseEmailSaisie: str) -> Tuple[str, bool]:
     # Initialisation des paramètres de connexion à la base de données.
     # Le port de connexion doit être typé en int, sans être entouré par des ''.
     # Le timeout doit être typé en int et est définit en secondes.
+    # L'argument booléen True doit être passé en dictionnaire au paramètre ssl.
     # -------------------------------------------------------------------------
     BDD_CONFIG = {
         'host': 'localhost',
         'port': 3306,
-        'user': 'NOM_UTILISATEUR_BDD',
-        'password': 'MDP_UTILISATEUR_BDD',
+        'user': 'NOM_UTILISATEUR_SSL_BDD',
+        'password': 'MDP_UTILISATEUR_SSL_BDD',
         'database': 'NOM_BDD',
         'charset': 'utf8mb4',
-        'connect_timeout': 5
+        'connect_timeout': 5,
+        'ssl': {
+            'ssl': True
+        }
     }
 
     # -------------------------------------------------------------------------
-    # Initialisation REGEX du format standard d'une adresse e-mail.
+    # Logique de vérification du bon formatage de l'adresse e-mail.
+    # On initialise une REGEX du format standard d'une adresse e-mail.
     # Sont permis les caractères suivants : (a-z), (A-Z), (0-9), (.), (-), (_).
     # -------------------------------------------------------------------------
     adresseEmailFormat = (r'^[a-zA-Z0-9][a-zA-Z0-9._-]*'
                           r'@[a-zA-Z0-9][a-zA-Z0-9._-]*'
                           r'\.[a-zA-Z]{2,}$')
 
-    # -------------------------------------------------------------------------
-    # Logique de vérification du bon formatage de l'adresse e-mail.
-    # -------------------------------------------------------------------------
+    # Si la comparaison est un échec, alors l'adresse e-mail est mal formatée.
     if not re.match(adresseEmailFormat, adresseEmailSaisie):
         # ---------------------------------------------------------------------
         # Insérer ici une fonction qui affiche une pop-up d'erreur.
@@ -172,4 +175,7 @@ if __name__ == "__main__":
 
         adresseEmailValide = resultatVerifications
 
+    # -------------------------------------------------------------------------
+    # Insérer ici une fonction qui affiche un pop-up de réussite.
     print(f"Adresse e-mail valide et disponible : {adresseEmailVerifiee}")
+    # -------------------------------------------------------------------------
