@@ -12,9 +12,10 @@ class FormulaireTache(QWidget):
     def __init__(self, parent=None):
         super().__init__()
         self.parent = parent
-
         self.setWindowTitle("Formulaire de Tâche")
         self.setGeometry(100, 100, 300, 300)
+
+        self.is_dark_mode = False
 
         layout = QVBoxLayout()
 
@@ -44,6 +45,20 @@ class FormulaireTache(QWidget):
         layout.addWidget(self.champ_categorie)
         layout.addWidget(self.champ_categorie)
 
+        # Champ pour le statut
+        self.label_statut = QLabel("Statut :")
+        self.champ_statut = QComboBox()
+        self.champ_statut.addItems(["À faire", "En cours", "Terminé"])
+        layout.addWidget(self.label_statut)
+        layout.addWidget(self.champ_statut)
+
+        # Champ pour la priorité
+        self.label_priorite = QLabel("Priorité :")
+        self.champ_priorite = QComboBox()
+        self.champ_priorite.addItems(["Basse", "Moyenne", "Haute"])
+        layout.addWidget(self.label_priorite)
+        layout.addWidget(self.champ_priorite)
+
         # Bouton pour soumettre
         self.bouton_soumettre = QPushButton("Soumettre")
         self.bouton_soumettre.clicked.connect(self.SoumettreFormulaire)
@@ -57,6 +72,8 @@ class FormulaireTache(QWidget):
         description = self.champ_description.toPlainText()
         date = self.champ_date.date().toString("dd/MM/yyyy")
         categorie = self.champ_categorie.currentText()
+        priorite = self.champ_priorite.currentText()
+        statut = self.champ_statut.currentText()
 
         # Vérifier que les champs obligatoires sont remplis
         if not nom_tache:
@@ -64,9 +81,73 @@ class FormulaireTache(QWidget):
             return
 
         # Ajouter la tâche à la liste temporaire de l'application principale
-        self.parent.add_task_to_tree(nom_tache, date, description, categorie)
+        self.parent.add_task_to_tree(nom_tache, date, description, categorie, priorite, statut)
         self.close()  # Fermer le formulaire après soumission
 
+    def set_dark_mode(self):
+        self.is_dark_mode = True
+        dark_palette = QPalette()
+        dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
+        dark_palette.setColor(QPalette.WindowText, Qt.white)
+        dark_palette.setColor(QPalette.Base, QColor(35, 35, 35))
+        dark_palette.setColor(QPalette.Text, Qt.white)
+        QApplication.instance().setPalette(dark_palette)
+
+        # Appliquer les styles sombres pour chaque élément de saisie et bouton
+        dark_style = """
+            QLabel {
+                color: white;
+            }
+            QLineEdit, QTextEdit, QComboBox, QDateEdit {
+                background-color: #2b2b2b;
+                color: white;
+                border: 1px solid #555555;
+            }
+            QPushButton {
+                background-color: #444444;
+                color: white;
+                border: 1px solid #555555;
+                padding: 5px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #555555;
+            }
+            QPushButton:pressed {
+                background-color: #333333;
+            }
+        """
+        self.setStyleSheet(dark_style)
+
+    def set_light_mode(self):
+        self.is_dark_mode = False
+        QApplication.instance().setPalette(QApplication.style().standardPalette())
+
+        # Style clair pour tous les éléments de saisie et boutons
+        light_style = """
+            QLabel {
+                color: black;
+            }
+            QLineEdit, QTextEdit, QComboBox, QDateEdit {
+                background-color: white;
+                color: black;
+                border: 1px solid #cccccc;
+            }
+            QPushButton {
+                background-color: #f0f0f0;
+                color: black;
+                border: 1px solid #cccccc;
+                padding: 5px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #e0e0e0;
+            }
+            QPushButton:pressed {
+                background-color: #d0d0d0;
+            }
+        """
+        self.setStyleSheet(light_style)
 
 class TodoListApp(QWidget):
     def __init__(self):
@@ -112,7 +193,7 @@ class TodoListApp(QWidget):
 
         # Arborescence des tâches
         self.task_tree = QTreeWidget()
-        self.task_tree.setHeaderLabels(["Tâches", "Échéance", "Description", "Catégorie"])
+        self.task_tree.setHeaderLabels(["Tâches", "Échéance", "Description", "Catégorie", "Statut","Priorité"])
         self.task_tree.setMinimumWidth(300)
         main_layout.addWidget(self.task_tree)
 
@@ -226,16 +307,18 @@ class TodoListApp(QWidget):
         self.credits_button.setStyleSheet(button_style)
         self.theme_button.setStyleSheet(button_style)  # Réinitialise le style du bouton
 
-    def add_task_to_tree(self, nom, date, description, categorie):
+    def add_task_to_tree(self, nom, date, description, categorie, statut, priorite):
         # Stocker la tâche temporairement dans une liste
         self.tasks.append({
             "nom": nom,
             "date": date,
             "description": description,
-            "categorie": categorie
+            "categorie": categorie,
+            "statut": statut,
+            "priorite": priorite
         })
-        # Ajouter la tâche à l'arborescence des tâches
-        task_item = QTreeWidgetItem([nom, date, description, categorie])
+        # Ajouter la tâche à l'arborescence des tâches avec la priorité
+        task_item = QTreeWidgetItem([nom, date, description, categorie, priorite, statut])
         self.task_tree.addTopLevelItem(task_item)
 
     def open_settings(self):
