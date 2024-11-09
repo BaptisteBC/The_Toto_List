@@ -53,7 +53,7 @@ class Server:
             # Accepter une connexion client
             client_socket, client_address = self.server_socket.accept()
             # Upgrade la connexion à une connexion sécurisée avec AES et Diffie-Hellman
-            self.client_socket = AESsocket(client_socket, is_server=True)
+            #self.client_socket = AESsocket(client_socket, is_server=True)
 
 
             # Ajouter le client à la liste

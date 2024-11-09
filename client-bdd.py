@@ -62,7 +62,7 @@ class AuthWindow(QDialog):
             self.client_socket.connect((self.HOST, self.PORT))
 
             # Upgrade la connexion à une connexion sécurisée avec AES et Diffie-Hellman
-            self.client_socket = AESsocket(self.client_socket, is_server=False)
+            #self.client_socket = AESsocket(self.client_socket, is_server=False)
 
             # Obligation de mettre un délai entre la connexion au socket et l'envoi des messages sinon la fenêtre est bloquée (test)
             time.sleep(2)
