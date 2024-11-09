@@ -8,22 +8,11 @@
 
 * **__Python Client__** : Le livrable
 
-  \
+
 * Python Serveur : Qui fera office de proxy SQL afin que ce ne soit pas le client qui effectue directement les requêtes dans la base de donnée
 
-  \
 * SQL Server : qui fera office de stockage des taches, des utilisateurs et de tout ce qui tourne autour de l'application et des fonctionnalités
 
-
-\
-
-\
-
-\
-
-\
-
-\
 
 
 ---
@@ -47,7 +36,3 @@ La sécurisation passera par le hashage de mot de passe et par le Processus de D
 
 ---
 
-
-\
-
-\
