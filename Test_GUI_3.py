@@ -1,18 +1,18 @@
 from PyQt5.QtWidgets import (
-    QApplication, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel,
+    QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel,
     QTreeWidgetItem, QTreeWidget, QDateEdit, QTextEdit, QComboBox, QMessageBox, QLineEdit
 )
 from PyQt5.QtCore import Qt, QDate
-from PyQt5.QtGui import QPalette, QColor
+from PyQt5.QtGui import QPalette, QColor, QIcon
 import sys
+
 
 class FormulaireTache(QWidget):
     def __init__(self, parent=None):
         super().__init__()
         self.parent = parent
-
         self.setWindowTitle("Formulaire de Tâche")
-        self.setGeometry(100, 100, 300, 400)
+        self.setGeometry(100, 100, 300, 300)
 
         layout = QVBoxLayout()
 
@@ -69,8 +69,8 @@ class FormulaireTache(QWidget):
         description = self.champ_description.toPlainText()
         date = self.champ_date.date().toString("dd/MM/yyyy")
         categorie = self.champ_categorie.currentText()
-        statut = self.champ_statut.currentText()
         priorite = self.champ_priorite.currentText()
+        statut = self.champ_statut.currentText()
 
         # Vérifier que les champs obligatoires sont remplis
         if not nom_tache:
@@ -81,64 +81,96 @@ class FormulaireTache(QWidget):
         self.parent.add_task_to_tree(nom_tache, date, description, categorie, statut, priorite)
         self.close()
 
+    def reset_form(self):
+        """Réinitialiser les champs du formulaire"""
+        self.champ_nom.clear()
+        self.champ_description.clear()
+        self.champ_date.setDate(QDate.currentDate())  # Réinitialiser la date à aujourd'hui
+        self.champ_categorie.setCurrentIndex(0)  # Réinitialiser à la première catégorie
+        self.champ_statut.setCurrentIndex(0)  # Réinitialiser au statut "À faire"
+        self.champ_priorite.setCurrentIndex(0)  # Réinitialiser à la priorité "Basse"
 
-class TodoListApp(QWidget):
+class TodoListApp(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("The ToDo List")
-        self.setGeometry(100, 100, 800, 400)
+        self.setGeometry(100, 100, 1000, 400)
 
-        self.tasks = []
-        self.formulaire_window = None
-        self.settings_window = None
-        self.help_window = None
-        self.credits_window = None
-        self.is_dark_mode = False
+        # Widget central pour le contenu principal
+        central_widget = QWidget()
+        main_layout = QHBoxLayout(central_widget)
 
-        main_layout = QVBoxLayout()
+        # Création de la colonne latérale (sidebar)
+        self.sidebar = QWidget()
+        sidebar_layout = QVBoxLayout(self.sidebar)
 
-        # Barre de navigation
-        nav_layout = QHBoxLayout()
-
-        self.home_button = QPushButton("Accueil")
-        self.form_button = QPushButton("Ouvrir Formulaire")
+        # Boutons déplacés vers la colonne latérale
         self.theme_button = QPushButton("Mode Sombre")
         self.settings_button = QPushButton("Paramètres")
         self.help_button = QPushButton("Aide")
         self.credits_button = QPushButton("Crédits")
 
-        self.home_button.clicked.connect(self.show_home_message)
-        self.form_button.clicked.connect(self.open_formulaire)
+        # Connexion des boutons de la colonne latérale
         self.theme_button.clicked.connect(self.toggle_theme)
         self.settings_button.clicked.connect(self.open_settings)
         self.help_button.clicked.connect(self.open_help)
         self.credits_button.clicked.connect(self.open_credits)
 
-        nav_layout.addWidget(self.home_button)
-        nav_layout.addWidget(self.form_button)
-        nav_layout.addWidget(self.theme_button)
-        nav_layout.addWidget(self.settings_button)
-        nav_layout.addWidget(self.help_button)
-        nav_layout.addWidget(self.credits_button)
+        # Ajout des boutons à la colonne latérale
+        sidebar_layout.addWidget(self.theme_button)
+        sidebar_layout.addWidget(self.settings_button)
+        sidebar_layout.addWidget(self.help_button)
+        sidebar_layout.addWidget(self.credits_button)
 
-        main_layout.addLayout(nav_layout)
+        main_layout.addWidget(self.sidebar)
+
+        # Zone principale de l'application
+        self.main_widget = QWidget()
+        self.main_layout = QVBoxLayout(self.main_widget)
+
+        # Barre de navigation avec le bouton pour afficher/cacher la colonne latérale
+        nav_layout = QHBoxLayout()
+        # Utilisation d'une icône pour le bouton d'affichage de la colonne
+        self.toggle_sidebar_button = QPushButton()
+        self.toggle_sidebar_button.setIcon(QIcon("sidebar-2.png"))  # Utilise une icône par défaut
+        self.toggle_sidebar_button.setFixedSize(30, 30)  # Taille de l'icône
+        self.toggle_sidebar_button.clicked.connect(self.toggle_sidebar)
+
+        # Ajout du bouton icône en haut à gauche
+        nav_layout.addWidget(self.toggle_sidebar_button)
+
+        # Bouton "Ouvrir Formulaire"
+        self.form_button = QPushButton("Ouvrir Formulaire")
+        self.form_button.clicked.connect(self.open_formulaire)
+        nav_layout.addWidget(self.form_button)
+
+        self.main_layout.addLayout(nav_layout)
 
         # Arborescence des tâches
         self.task_tree = QTreeWidget()
         self.task_tree.setHeaderLabels(["Tâches", "Échéance", "Description", "Catégorie", "Statut", "Priorité"])
-        self.task_tree.setMinimumWidth(300)
-        main_layout.addWidget(self.task_tree)
+        self.main_layout.addWidget(self.task_tree)
 
-        self.setLayout(main_layout)
+        main_layout.addWidget(self.main_widget)
 
-    def show_home_message(self):
-        QMessageBox.information(self, "Accueil", "Vous êtes sur la page d'accueil.")
-        self.task_tree.clearSelection()
+        # Définir le widget central pour QMainWindow
+        self.setCentralWidget(central_widget)
+
+        # Liste temporaire pour stocker les tâches
+        self.tasks = []
+        self.formulaire_window = None
+        self.is_dark_mode = False
+
+    def toggle_sidebar(self):
+        # Bascule de la visibilité de la colonne latérale
+        self.sidebar.setVisible(not self.sidebar.isVisible())
 
     def open_formulaire(self):
         if self.formulaire_window is None:
             self.formulaire_window = FormulaireTache(parent=self)
         self.formulaire_window.show()
+        # Réinitialiser les champs du formulaire avant de l'afficher
+        self.formulaire_window.reset_form()
 
     def toggle_theme(self):
         if not self.is_dark_mode:
@@ -164,104 +196,67 @@ class TodoListApp(QWidget):
         dark_palette.setColor(QPalette.Link, QColor(42, 130, 218))
         dark_palette.setColor(QPalette.Highlight, QColor(42, 130, 218))
         dark_palette.setColor(QPalette.HighlightedText, Qt.white)
-        dark_palette.setColor(QPalette.PlaceholderText, Qt.lightGray)
-
         QApplication.instance().setPalette(dark_palette)
 
+        # Appliquer les styles en mode sombre pour les autres widgets
+        dark_style = """
+            QWidget {
+                background-color: #353535;
+                color: white;
+            }
+            QLabel {
+                color: white;
+            }
+            QLineEdit, QTextEdit, QComboBox, QDateEdit {
+                background-color: #2b2b2b;
+                color: white;
+                border: 1px solid #555555;
+            }
+            QPushButton {
+                background-color: #444444;
+                color: white;
+                border: 1px solid #555555;
+                padding: 5px;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #555555;
+            }
+            QPushButton:pressed {
+                background-color: #333333;
+            }
+            QTreeWidget {
+                background-color: #2b2b2b;
+                color: white;
+                border: 1px solid #555555;
+            }
+            QHeaderView::section {
+                background-color: #444444;
+                color: white;
+                padding: 4px;
+                border: 1px solid #222222;
+            }
+        """
+        self.setStyleSheet(dark_style)
+
     def set_light_mode(self):
-        light_palette = QPalette()
-        light_palette.setColor(QPalette.Window, Qt.white)
-        light_palette.setColor(QPalette.WindowText, Qt.black)
-        light_palette.setColor(QPalette.Base, Qt.white)
-        light_palette.setColor(QPalette.AlternateBase, QColor(240, 240, 240))
-        light_palette.setColor(QPalette.ToolTipBase, Qt.black)
-        light_palette.setColor(QPalette.ToolTipText, Qt.black)
-        light_palette.setColor(QPalette.Text, Qt.black)
-        light_palette.setColor(QPalette.Button, Qt.white)
-        light_palette.setColor(QPalette.ButtonText, Qt.black)
-        light_palette.setColor(QPalette.BrightText, Qt.red)
-        light_palette.setColor(QPalette.Link, QColor(0, 0, 255))
-        light_palette.setColor(QPalette.Highlight, QColor(100, 150, 200))
-        light_palette.setColor(QPalette.HighlightedText, Qt.black)
-        light_palette.setColor(QPalette.PlaceholderText, Qt.darkGray)
+        # Réinitialiser le style de l'application au style par défaut
+        QApplication.instance().setPalette(QApplication.style().standardPalette())
+        self.setStyleSheet("")  # Supprimer les styles personnalisés
 
-        QApplication.instance().setPalette(light_palette)
-
-    def add_task_to_tree(self, nom_tache, date, description, categorie, statut, priorite):
-        task_item = QTreeWidgetItem([nom_tache, date, description, categorie, statut, priorite])
+    def add_task_to_tree(self, nom, date, description, categorie, statut, priorite):
+        task_item = QTreeWidgetItem([nom, date, description, categorie, statut, priorite])
         self.task_tree.addTopLevelItem(task_item)
-        self.tasks.append({
-            "nom": nom_tache,
-            "date": date,
-            "description": description,
-            "categorie": categorie,
-            "statut": statut,
-            "priorite": priorite
-        })
 
     def open_settings(self):
-        if self.settings_window is None:
-            self.settings_window = SettingsWindow()
-        self.settings_window.show()
+        QMessageBox.information(self, "Paramètres", "Ouvrir les paramètres")
 
     def open_help(self):
-        if self.help_window is None:
-            self.help_window = HelpWindow()
-        self.help_window.show()
+        QMessageBox.information(self, "Aide", "Ouvrir l'aide")
 
     def open_credits(self):
-        if self.credits_window is None:
-            self.credits_window = CreditsWindow()
-        self.credits_window.show()
+        QMessageBox.information(self, "Crédits", "Ouvrir les crédits")
 
-
-class SettingsWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Paramètres")
-        self.setGeometry(150, 150, 300, 200)
-
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel("Réglages de l'application"))
-        layout.addWidget(QLabel("Ici, vous pouvez configurer vos préférences."))
-
-        close_button = QPushButton("Fermer")
-        close_button.clicked.connect(self.close)
-        layout.addWidget(close_button)
-
-        self.setLayout(layout)
-
-
-class HelpWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Aide")
-        self.setGeometry(150, 150, 400, 300)
-
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel("Aide de l'application"))
-
-        close_button = QPushButton("Fermer")
-        close_button.clicked.connect(self.close)
-        layout.addWidget(close_button)
-
-        self.setLayout(layout)
-
-
-class CreditsWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Crédits")
-        self.setGeometry(150, 150, 400, 300)
-
-        layout = QVBoxLayout()
-        layout.addWidget(QLabel("Crédits de l'application"))
-
-        close_button = QPushButton("Fermer")
-        close_button.clicked.connect(self.close)
-        layout.addWidget(close_button)
-
-        self.setLayout(layout)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
