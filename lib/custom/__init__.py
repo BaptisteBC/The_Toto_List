@@ -78,3 +78,5 @@ class AESsocket:
             return self.aes.decrypt(encrypted_data)
         except (ValueError, TypeError, socket.error) as e:
             raise ConnectionError(f"Erreur lors de la réception des données : {e}")
+    def close(self):
+        self.socket.close()
