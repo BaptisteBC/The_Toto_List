@@ -29,7 +29,7 @@ def server_function(ready_event):
     except ConnectionError as e:
         print(f"Erreur de connexion: {e}")
     finally:
-        client_socket.close()
+        aes_socket.close()
         server_socket.close()
 
 @pytest.fixture(scope="function")
@@ -63,7 +63,7 @@ def test_aes_socket(setup_server):
 
     response = aes_socket.recv(1024)
     assert response == "Message du serveur"
-    client_socket.close()
+    aes_socket.close()
 
 def test_aes_socket_empty_message(setup_server):
     client_socket = connect_to_server()
@@ -73,7 +73,7 @@ def test_aes_socket_empty_message(setup_server):
     with pytest.raises(Exception, match="Le message est vide"):
         aes_socket.send("")
 
-    client_socket.close()
+    aes_socket.close()
 
 def test_aes_socket_invalid_data_type(setup_server):
     client_socket = connect_to_server()
@@ -83,7 +83,7 @@ def test_aes_socket_invalid_data_type(setup_server):
     with pytest.raises(TypeError, match="Le message doit être une chaîne de caractères"):
         aes_socket.send(1234)
 
-    client_socket.close()
+    aes_socket.close()
 
 def test_aes_socket_invalid_decryption_data(setup_server):
     client_socket = connect_to_server()
@@ -94,7 +94,7 @@ def test_aes_socket_invalid_decryption_data(setup_server):
     with pytest.raises(ValueError):
         aes_socket.aes.decrypt(invalid_data)
 
-    client_socket.close()
+    aes_socket.close()
 
 def test_aes_socket_connection_error():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -113,4 +113,4 @@ def test_aes_socket_invalid_decryption_with_incorrect_padding(setup_server):
     with pytest.raises(ValueError):
         aes_socket.aes.decrypt(incorrect_data)
 
-    client_socket.close()
+    aes_socket.close()
