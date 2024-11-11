@@ -165,8 +165,8 @@ class fenetre(QMainWindow):
         self.client_socket.connect((self.HOST, self.PORT))
         self.client_socket = AESsocket(self.client_socket, is_server=False)
         time.sleep(0.5)
-        self.client_socket.send(self.utilisateur)
-        self.client_socket.send(self.password)
+        self.client_socket.send(f"{pseudonyme_utilisateur}:{motdepasse_utilisateur}")
+        #self.client_socket.send(self.password)
 
 
         self.creerActions()
