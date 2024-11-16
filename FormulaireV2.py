@@ -27,11 +27,6 @@ class FormulaireTache(QWidget):
         self.setWindowTitle("Formulaire de Tâche")
         self.setGeometry(100, 100, 400, 600)
 
-
-        if self.connexion is None:
-            QMessageBox.critical(self, "Erreur", "Impossible de se connecter à la base de données.")
-            return
-
         layout = QVBoxLayout()
 
         # Configuration du formulaire
@@ -59,16 +54,16 @@ class FormulaireTache(QWidget):
         self.champ_statut.addItems(["à faire", "en cours", "terminé"])
         layout.addWidget(self.champ_statut)
 
-        self.label = QLabel("Sélectionnez une Liste :")
-        layout.addWidget(self.label)
+        # Sélection de la liste
+        self.label_liste = QLabel("Liste :")
+        self.combo_box_listes = QComboBox()
+        layout.addWidget(self.label_liste)
+        layout.addWidget(self.combo_box_listes)
 
-
-        NomListe = self.ObtenirNomListe
-
-        # ComboBox pour afficher les noms
-        self.combo_box = QComboBox()
-        self.combo_box.addItems(NomListe)
-        layout.addWidget(self.combo_box)
+        self.label_utilisateur = QLabel("Assigné à :")
+        self.combo_box_utilisateurs = QComboBox()
+        layout.addWidget(self.label_utilisateur)
+        layout.addWidget(self.combo_box_utilisateurs)
 
         # Date d'échéance
         self.label_date_rappel = QLabel("Date de rappel :")
@@ -85,6 +80,10 @@ class FormulaireTache(QWidget):
 
         self.setLayout(layout)
 
+        # Charger les utilisateurs et les listes
+        self.ChargeUtilisateurs()
+        self.ChargerListes()
+
     def conection(self):
         # Connexion au serveur
         ClientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -98,10 +97,29 @@ class FormulaireTache(QWidget):
         ClientSockets = self.conection()
         ClientSockets.close()
 
-    def ObtenirNomListe(self):
+    def ChargerListes(self):
+        """Charge les listes depuis le serveur et les ajoute au QComboBox."""
+        requete_sql = "SELECT nom_liste FROM listes"
+        resultats = self.envoyer_requete(requete_sql)
 
-        MIdListe = f"SELECT taches_id_liste FROM listes"
+        if resultats:
+            noms_listes = [liste['nom_liste'] for liste in resultats]
+            self.combo_box_listes.addItems(noms_listes)
+        else:
+            QMessageBox.warning(self, "Aucune liste",
+                                "Aucune liste trouvée ou erreur dans la récupération des données.")
 
+    def ChargeUtilisateurs(self):
+        """Charge les utilisateurs depuis le serveur et les ajoute au QComboBox."""
+        requete_sql = "SELECT pseudo FROM utilisateurs"
+        resultats = self.envoyer_requete(requete_sql)
+
+        if resultats:
+            noms_utilisateurs = [utilisateur['pseudo'] for utilisateur in resultats]
+            self.combo_box_utilisateurs.addItems(noms_utilisateurs)
+        else:
+            QMessageBox.warning(self, "Aucun utilisateur",
+                                "Aucun utilisateur trouvé ou erreur dans la récupération des données.")
 
     def Envoie(self):
 
@@ -109,25 +127,34 @@ class FormulaireTache(QWidget):
         Description = self.champ_description.toPlainText().strip()
         DateEcheance = self.champ_date.date().toString("yyyy-MM-dd")
         Statut = self.champ_statut.currentText().lower()
-        UtilisateurConnecte = utilistateur
         DateRappel = self.champ_date_rappel.date().toString("yyyy-MM-dd")
-
-
+        UtilisateurChoisi = self.combo_box_utilisateurs.currentText()
+        ListeChoisie = self.combo_box_listes.currentText()
 
 
         ClientSocket = self.conection()
         AesSocket = AESsocket(ClientSocket, is_server=False)
 
-        MIdUtilisateur = f"SELECT taches_id_utilisateur FROM utilisateurs WHERE pseudo = {UtilisateurConnecte}"
-
+        MIdUtilisateur = f"SELECT id_utilisateur FROM utilisateurs WHERE pseudo = '{UtilisateurChoisi}'"
         AesSocket.send(MIdUtilisateur)
 
         RIdUtilisateur = self.AesSocket.recv(1024)
 
+        IdUtilisateur = RIdUtilisateur[0]['id_utilisateur']
 
 
+        # Récupérer l'ID de la liste sélectionnée
 
-        Message = f"INSERT INTO taches (id_tache, taches_id_groupe, taches_id_utilisateur, taches_id_liste, titre_tache, description_tache, datecreation_tache, datefin_tache, recurrence_tache, statut_tache, daterappel_tache, datesuppression_tache) VALUES (NULL,'NULL',{RIdUtilisateur},'1' , {TitreTache}, {Description}, CURRENT_TIMESTAMP, {DateEcheance}, '', {Statut} ,{DateRappel}, NULL);"
+        RequeteIdListe = f"SELECT id_liste FROM listes WHERE nom_liste = '{ListeChoisie}'"
+        RequeteIdListe = self.envoyer_requete(RequeteIdListe)
+
+        if not RequeteIdListe or len(RequeteIdListe) == 0:
+            QMessageBox.critical(self, "Erreur", "Impossible de récupérer l'ID de la liste sélectionnée.")
+            return
+
+        IdListe = RequeteIdListe[0]['id_liste']
+
+        Message = f"INSERT INTO taches (id_tache, taches_id_groupe, taches_id_utilisateur, taches_id_liste, titre_tache, description_tache, datecreation_tache, datefin_tache, recurrence_tache, statut_tache, daterappel_tache, datesuppression_tache) VALUES (NULL,'NULL',{IdUtilisateur},'{IdListe}' , {TitreTache}, {Description}, CURRENT_TIMESTAMP, {DateEcheance}, '', {Statut} ,{DateRappel}, NULL);"
 
         AesSocket.send(Message)
 
