@@ -1,6 +1,6 @@
 import sys
 import pymysql.cursors
-import pymysql  # Pour la gestion de la base de données MySQL avec PyMySQL
+import pymysql
 from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QTextEdit, QComboBox, QDateEdit, QVBoxLayout, QPushButton, QMessageBox)
 from PyQt5.QtCore import QDate
 from datetime import datetime
