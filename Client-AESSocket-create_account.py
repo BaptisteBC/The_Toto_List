@@ -52,10 +52,13 @@ class AuthWindow(QDialog):
 
         self.btnLogin = QPushButton('Se connecter', self)
         self.btnLogin.clicked.connect(self.authentificationUtilisateur)
+        self.btnLogin.setDefault(True)
 
-        self.btnSwitch = QPushButton('Créer un compte', self)
-        self.btnSwitch.clicked.connect(self.affichageFormulaireInscription)
-
+        try:
+            self.btnSwitch = QPushButton('Créer un compte', self)
+            self.btnSwitch.clicked.connect(self.affichageFormulaireInscription)
+        except Exception as e:
+            QMessageBox.critical("Erreur",f'Erreur lors du chargement du formulaire d\'inscription {e}')
         # Ajouter les widgets au layout
         self.layout.addWidget(self.lblUtilisateur)
         self.layout.addWidget(self.tbxUtilisateur)
@@ -87,6 +90,7 @@ class AuthWindow(QDialog):
 
             self.btnInscription = QPushButton('Créer un compte', self)
             self.btnInscription.clicked.connect(self.inscriptionUtilisateur)
+            self.btnInscription.setDefault(True)
 
             self.btnSwitch = QPushButton('Retour à la connexion', self)
             self.btnSwitch.clicked.connect(self.affichageFormulaireAuthentification)
@@ -109,6 +113,10 @@ class AuthWindow(QDialog):
 
 
     def authentificationUtilisateur(self):
+        """
+        Fonction qui traite le formulaire de connexion et qui envoie les champs au serveur
+        :return:
+        """
         self.utilisateur = self.tbxUtilisateur.text()
         self.motDePasse = self.tbxmotDePasse.text()
 
@@ -240,6 +248,10 @@ class ChangemotDePasseWindow(QDialog):
         self.setLayout(layout)
 
     def change_motDePasse(self):
+        """
+        NON FONCTIONNEL
+        :return:
+        """
         new_motDePasse = self.tbxNouvMDP.text()
         confirm_motDePasse = self.tbxConfirm.text()
 
