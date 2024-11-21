@@ -150,8 +150,8 @@ class Server:
                     print(f"Erreur lors de la création de compte : {e}")
                     client_socket.send("CREATE_ACCOUNT_ERROR".encode())
 
-                else:
-                    print("quygdqz")
+            else:
+                print("quygdqz")
 
 
         except Exception as e:

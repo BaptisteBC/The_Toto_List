@@ -29,7 +29,7 @@ class AuthWindow(QDialog):
         self.layout = QVBoxLayout()
 
         # Appel à la méthode pour afficher le formulaire de connexion
-        self.formulaireAuthentification()
+        self.affichageFormulaireAuthentification()
 
         self.setLayout(self.layout)
 
@@ -40,7 +40,7 @@ class AuthWindow(QDialog):
             if child.widget():
                 child.widget().deleteLater()
 
-    def formulaireAuthentification(self):
+    def affichageFormulaireAuthentification(self):
         self.effacerWidgets()
 
         # Widgets pour le formulaire de connexion
@@ -51,10 +51,10 @@ class AuthWindow(QDialog):
         self.tbxmotDePasse.setEchoMode(QLineEdit.Password)
 
         self.btnLogin = QPushButton('Se connecter', self)
-        self.btnLogin.clicked.connect(self.authenticate_user)
+        self.btnLogin.clicked.connect(self.authentificationUtilisateur)
 
         self.btnSwitch = QPushButton('Créer un compte', self)
-        self.btnSwitch.clicked.connect(self.show_register_form)
+        self.btnSwitch.clicked.connect(self.affichageFormulaireInscription)
 
         # Ajouter les widgets au layout
         self.layout.addWidget(self.lblUtilisateur)
@@ -64,7 +64,7 @@ class AuthWindow(QDialog):
         self.layout.addWidget(self.btnLogin)
         self.layout.addWidget(self.btnSwitch)
 
-    def show_register_form(self):
+    def affichageFormulaireInscription(self):
         try :
             self.effacerWidgets()
 
@@ -85,11 +85,11 @@ class AuthWindow(QDialog):
             self.tbxmotDePasse = QLineEdit(self)
             self.tbxmotDePasse.setEchoMode(QLineEdit.Password)
 
-            self.btnRegister = QPushButton('Créer un compte', self)
-            self.btnRegister.clicked.connect(self.register_user)
+            self.btnInscription = QPushButton('Créer un compte', self)
+            self.btnInscription.clicked.connect(self.inscriptionUtilisateur)
 
             self.btnSwitch = QPushButton('Retour à la connexion', self)
-            self.btnSwitch.clicked.connect(self.formulaireAuthentification)
+            self.btnSwitch.clicked.connect(self.affichageFormulaireAuthentification)
 
             # Ajouter les widgets au layout
             self.layout.addWidget(self.lblEmail)
@@ -102,13 +102,13 @@ class AuthWindow(QDialog):
             self.layout.addWidget(self.tbxPseudo)
             self.layout.addWidget(self.lblmotDePasse)
             self.layout.addWidget(self.tbxmotDePasse)
-            self.layout.addWidget(self.btnRegister)
+            self.layout.addWidget(self.btnInscription)
             self.layout.addWidget(self.btnSwitch)
         except Exception as e:
             QMessageBox.critical(self, 'Erreur', f"Erreur lors du chargement du formulaire : {e}")
 
 
-    def authenticate_user(self):
+    def authentificationUtilisateur(self):
         self.utilisateur = self.tbxUtilisateur.text()
         self.motDePasse = self.tbxmotDePasse.text()
 
@@ -117,7 +117,7 @@ class AuthWindow(QDialog):
             client_socket.connect((self.HOST, self.PORT))
             client_socket = AESsocket(client_socket, is_server=False)
 
-            credentials = f"AUTH:{self.utilisateur}:{self.motDePasse}"
+            credentials = f"AUTH:{self.utilisateur}:{self.motDePasse}" #AUTH -> signale au serveur une demande d'authentification
 
             print(credentials)
             client_socket.send(credentials)
@@ -131,7 +131,7 @@ class AuthWindow(QDialog):
         except Exception as e:
             QMessageBox.critical(self, 'Erreur', f"Erreur lors de l'authentification: {e}")
 
-    def register_user(self):
+    def inscriptionUtilisateur(self):
         """
         fonction qui affiche et traite la requete de creation de compte
         :return: void
@@ -161,13 +161,13 @@ class AuthWindow(QDialog):
                 client_socket.connect((self.HOST, self.PORT))
                 client_socket = AESsocket(client_socket, is_server=False)
 
-                message = f"CREATE_ACCOUNT:{email}:{nom}:{prenom}:{pseudo}:{motDePasse}"
+                message = f"CREATE_ACCOUNT:{email}:{nom}:{prenom}:{pseudo}:{motDePasse}" #CREATE_ACCOUNT -> signale au serveur une demande de création de comptes
                 client_socket.send(message)
                 response = client_socket.recv(1024)
 
                 if response.startswith("ACCOUNT_CREATED"):
                     QMessageBox.information(self, 'Succès', 'Compte créé avec succès !')
-                    self.formulaireAuthentification()
+                    self.affichageFormulaireAuthentification()
                 elif response.startswith("EMAIL_TAKEN"):
                     QMessageBox.information(self, 'Erreur', 'L\'addresse mail est déja utilisé.')
 
@@ -203,7 +203,7 @@ class AuthWindow(QDialog):
         """
         email_regex = r'^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$'
         return re.match(email_regex, email) is not None
-    def get_credentials(self):
+    def getIdentifiants(self):
         return self.utilisateur, self.motDePasse
 
 
@@ -274,7 +274,7 @@ class fenetre(QMainWindow):
         self.utilisateur = pseudonyme_utilisateur
         self.motDePasse = motdepasse_utilisateur
         self.initUI()
-        print(pseudonyme_utilisateur, motdepasse_utilisateur)
+        #print(pseudonyme_utilisateur, motdepasse_utilisateur)
 
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.connect((self.HOST, self.PORT))
@@ -288,12 +288,20 @@ class fenetre(QMainWindow):
         self.creerMenu()
 
     def creerMenu(self):
+        """
+        permet de faire un menu d'actions
+        :return:
+        """
         menuBar = self.menuBar()
         file = menuBar.addMenu("Option")
         file.addAction(self.actChangemotDePasse)
         file.addAction(self.actExit)
 
     def creerActions(self):
+        """
+        permet de définir les raccourci clavier afin de faire des actions
+        :return:
+        """
         self.actChangemotDePasse = QAction("Changer de mot de passe", self)
         self.actChangemotDePasse.setShortcut(QKeySequence("Ctrl+P"))
         self.actChangemotDePasse.triggered.connect(self.fenetreChangementMDP)
@@ -310,9 +318,13 @@ class fenetre(QMainWindow):
         sys.exit(0)
 
     def fenetreChangementMDP(self):
-        change_motDePasse_window = ChangemotDePasseWindow(self.utilisateur, self.client_socket)
-        if change_motDePasse_window.exec() == QDialog.Accepted:
-            print("Mot de passe changé avec succès!")
+        try:
+            change_motDePasse_window = ChangemotDePasseWindow(self.utilisateur, self.client_socket)
+            if change_motDePasse_window.exec() == QDialog.Accepted:
+                QMessageBox.information("Mot de passe changé avec succès!")
+                #print("Mot de passe changé avec succès!")
+        except Exception as e:
+            QMessageBox.critical("Erreur",f'Erreur lors du changement de mot de passe {e}')
 
     def initUI(self):
         pass
@@ -322,8 +334,8 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     auth_window = AuthWindow()
     if auth_window.exec() == QDialog.Accepted:
-        pseudonyme_utilisateur, motdepasse_utilisateur = auth_window.get_credentials()
-        print(f"username :{pseudonyme_utilisateur} | motDePasse :{motdepasse_utilisateur}")
+        pseudonyme_utilisateur, motdepasse_utilisateur = auth_window.getIdentifiants()
+        #print(f"username :{pseudonyme_utilisateur} | motDePasse :{motdepasse_utilisateur}")
         client_window = fenetre(pseudonyme_utilisateur, motdepasse_utilisateur)
         client_window.show()
         sys.exit(app.exec_())
