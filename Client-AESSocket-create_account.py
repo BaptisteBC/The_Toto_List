@@ -2,16 +2,12 @@ import sys
 import time
 import re
 from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QTextEdit, QLineEdit, QPushButton, QLabel, \
-    QDialog, QMessageBox, QComboBox, QMenu, QAction
+    QDialog, QMessageBox, QComboBox, QMenu, QAction, QProgressBar
 from PyQt5.QtGui import QKeySequence
 import socket
 from lib.custom import AEScipher, AESsocket
 import threading
 import hashlib
-
-from conda.instructions import PRINT
-from sqlalchemy import Executable
-
 
 class AuthWindow(QDialog):
     def __init__(self):
@@ -81,14 +77,13 @@ class AuthWindow(QDialog):
 
     def affichageFormulaireInscription(self):
         """
-        cette methode va afficher le formulaire d'inscription pour les nouveaux utilisateurs
-        :return: void
-        """
-        try :
+    Cette méthode affiche le formulaire d'inscription pour les nouveaux utilisateurs.
+    """
+        try:
             self.effacerWidgets()
             self.setWindowTitle('Inscription')
 
-            # Widgets pour le formulaire de création de compte
+            # Champs d'inscription
             self.lblEmail = QLabel('Email:', self)
             self.tbxEmail = QLineEdit(self)
 
@@ -105,12 +100,34 @@ class AuthWindow(QDialog):
             self.tbxmotDePasse = QLineEdit(self)
             self.tbxmotDePasse.setEchoMode(QLineEdit.Password)
 
+            self.lblmotDePasseConfirm = QLabel('Confirmer le mot de passe:', self)
+            self.tbxmotDePasseConfirm = QLineEdit(self)
+            self.tbxmotDePasseConfirm.setEchoMode(QLineEdit.Password)
+
+            # Barre de progression et label pour la complexité
+            self.password_strength_bar = QProgressBar(self)
+            self.password_strength_bar.setRange(0, 100)
+            self.password_strength_bar.setTextVisible(False)
+
+            self.password_strength_label = QLabel("Complexité : Très faible", self)
+
+            # Connecter les événements pour la validation en temps réel
+            self.tbxmotDePasse.textChanged.connect(self.MAJComplexiteMotDePasse)
+
+            # Boutons
             self.btnInscription = QPushButton('Créer un compte', self)
             self.btnInscription.clicked.connect(self.inscriptionUtilisateur)
             self.btnInscription.setDefault(True)
 
             self.btnSwitch = QPushButton('Retour à la connexion', self)
             self.btnSwitch.clicked.connect(self.affichageFormulaireAuthentification)
+
+            # Gestion de la touche "Entrée"
+            self.tbxEmail.returnPressed.connect(self.btnInscription.click)
+            self.tbxNom.returnPressed.connect(self.btnInscription.click)
+            self.tbxPrenom.returnPressed.connect(self.btnInscription.click)
+            self.tbxPseudo.returnPressed.connect(self.btnInscription.click)
+            self.tbxmotDePasseConfirm.returnPressed.connect(self.btnInscription.click)
 
             # Ajouter les widgets au layout
             self.layout.addWidget(self.lblEmail)
@@ -123,6 +140,10 @@ class AuthWindow(QDialog):
             self.layout.addWidget(self.tbxPseudo)
             self.layout.addWidget(self.lblmotDePasse)
             self.layout.addWidget(self.tbxmotDePasse)
+            self.layout.addWidget(self.lblmotDePasseConfirm)
+            self.layout.addWidget(self.tbxmotDePasseConfirm)
+            self.layout.addWidget(self.password_strength_bar)
+            self.layout.addWidget(self.password_strength_label)
             self.layout.addWidget(self.btnInscription)
             self.layout.addWidget(self.btnSwitch)
         except Exception as e:
@@ -158,59 +179,122 @@ class AuthWindow(QDialog):
 
     def inscriptionUtilisateur(self):
         """
-        fonction qui affiche et traite la requete de creation de compte
-        :return: void
+        Fonction qui traite la création de compte.
         """
         email = self.tbxEmail.text()
         nom = self.tbxNom.text()
         prenom = self.tbxPrenom.text()
         pseudo = self.tbxPseudo.text()
         motDePasse = self.tbxmotDePasse.text()
-
-
+        motDePasseConfirm = self.tbxmotDePasseConfirm.text()
 
         # Vérifier les champs non vides
-        if not (email and nom and prenom and pseudo and motDePasse):
+        if not (email and nom and prenom and pseudo and motDePasse and motDePasseConfirm):
             QMessageBox.critical(self, 'Erreur', 'Tous les champs sont obligatoires.')
             return
-            # Vérification du format de l'email
+        # Vérification des mots de passe
+        if motDePasse != motDePasseConfirm:
+            QMessageBox.critical(self, 'Erreur', 'Les mots de passe ne correspondent pas.')
+            return
+
+        # Vérification de l'email
         if not self.validationDesEmail(email):
             QMessageBox.critical(self, 'Erreur', 'Adresse email invalide.')
             return
-        try :
-            if not all(self.validationDesEntrées(field) for field in [nom, prenom, pseudo, motDePasse]):
-                QMessageBox.critical(self, 'Erreur', 'Les champs ne doivent pas contenir les caractères interdits ')
-                # creation du compte
-            try:
-                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                client_socket.connect((self.HOST, self.PORT))
-                client_socket = AESsocket(client_socket, is_server=False)
 
-                message = f"CREATE_ACCOUNT:{email}:{nom}:{prenom}:{pseudo}:{motDePasse}" #CREATE_ACCOUNT -> signale au serveur une demande de création de comptes
-                client_socket.send(message)
-                response = client_socket.recv(1024)
 
-                if response.startswith("ACCOUNT_CREATED"):
-                    QMessageBox.information(self, 'Succès', 'Compte créé avec succès !')
-                    self.affichageFormulaireAuthentification()
-                elif response.startswith("EMAIL_TAKEN"):
-                    QMessageBox.information(self, 'Erreur', 'L\'addresse mail est déja utilisé.')
-
-                elif response.startswith("PSEUDO_TAKEN"):
-                    QMessageBox.information(self, 'Erreur', 'Le pseudo est déja utilisé.')
-                client_socket.close()
-
-            except Exception as e:
-                QMessageBox.critical(self, 'Erreur', f"Erreur : {e}")
+        # Vérification des caractères interdits
+        if not all(self.validationDesEntrees(field) for field in [nom, prenom, pseudo, motDePasse]):
+            QMessageBox.critical(self, 'Erreur', 'Les champs contiennent des caractères interdits.')
             return
 
+        # Envoi des données au serveur
+        try:
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect((self.HOST, self.PORT))
+            client_socket = AESsocket(client_socket, is_server=False)
 
+            message = f"CREATE_ACCOUNT:{email}:{nom}:{prenom}:{pseudo}:{motDePasse}"
+            client_socket.send(message)
+            response = client_socket.recv(1024)
+
+            if response.startswith("ACCOUNT_CREATED"):
+                QMessageBox.information(self, 'Succès', 'Compte créé avec succès !')
+                self.affichageFormulaireAuthentification()
+            elif response.startswith("EMAIL_TAKEN"):
+                QMessageBox.critical(self, 'Erreur', 'Adresse email déjà utilisée.')
+            elif response.startswith("PSEUDO_TAKEN"):
+                QMessageBox.critical(self, 'Erreur', 'Le pseudo est déjà utilisé.')
+            client_socket.close()
         except Exception as e:
-            QMessageBox.critical(self, 'Erreur', f'Erreur lors de la vérification des champs {e}')
+            QMessageBox.critical(self, 'Erreur', f"Erreur lors de la création du compte : {e}")
 
+    def MAJComplexiteMotDePasse(self):
+        """
+        Évalue la complexité du mot de passe et met à jour la barre et le label.
+        """
+        try :
+            motDePasse = self.tbxmotDePasse.text()
+            print(motDePasse)
+            complexite = self.evaluerMotDePasse(motDePasse)
 
+            niveaux = {
+                "Très faible": (0, "red"),
+                "Faible": (25, "orange"),
+                "Moyennement sécurisé": (50, "yellow"),
+                "Sécurisé": (75, "lightgreen"),
+                "Très sécurisé": (100, "green")
+            }
+        except Exception as e:
+            print(f'echec lors du test de complexité: {e}')
 
-    def validationDesEntrées(self, input_text):
+        niveau, couleur = niveaux[complexite]
+        self.password_strength_bar.setValue(niveau)
+        self.password_strength_bar.setStyleSheet(f"QProgressBar::chunk {{ background-color: {couleur}; }}")
+        self.password_strength_label.setText(f"Complexité : {complexite}")
+
+    def evaluerMotDePasse(self, MDP):
+        """
+        cette methode evalue la complexité du mot de passe et renvoie une chaine de caractere a la methode MAJComplexiteMotDePasse qui affichera le progrès sous forme de barre de progres
+        :param MDP: string - mot de passe entré
+        :return: srting - compléxité actuelle
+        """
+        try:
+            # Initialiser les critères
+            if len(MDP) >= 8 and len(MDP) <14 :
+                longueurMotDePasse = 1
+            elif len(MDP)>=14 and len(MDP) <20:
+                longueurMotDePasse=2
+            elif len(MDP)>=20:
+                longueurMotDePasse=3
+            else:
+                longueurMotDePasse = -1
+            critereMinuscule = bool(re.search(r'[a-z]', MDP))
+            critereMajuscule = bool(re.search(r'[A-Z]', MDP))
+            critereChiffre = bool(re.search(r'\d', MDP))
+            critereCaractereSpecial = bool(re.search(r'[!@#$%^&*(),.?":{}|<>]', MDP))
+
+            # Compter combien de critères sont respectés
+            complexite = sum(
+                [longueurMotDePasse, critereMinuscule, critereMajuscule, critereChiffre, critereCaractereSpecial]
+            )
+            print(complexite)
+            # Déterminer le niveau de complexité
+            if complexite >= 5:
+                return "Très sécurisé"
+            elif complexite == 4:
+                return "Sécurisé"
+            elif complexite == 3:
+                return "Moyennement sécurisé"
+            elif complexite == 2:
+                return "Faible"
+            else:
+                return "Très faible"
+        except Exception as e:
+            print(f'Erreur lors de l\'évaluation de complexité : {e}')
+            return "Très faible"
+
+    def validationDesEntrees(self, input_text):
         """
         Vérifie selon un regex la présence de certains caracteres dans les champs d'identifications
         :param input_text: les diférents champs utilisés dans le formulaire

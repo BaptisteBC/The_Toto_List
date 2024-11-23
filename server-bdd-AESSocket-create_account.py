@@ -8,7 +8,6 @@ import cryptocode
 import datetime
 import hashlib
 import re
-from twisted.conch.insults.window import cursor
 
 
 class Server:
