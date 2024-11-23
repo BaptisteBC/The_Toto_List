@@ -7,7 +7,7 @@ import sys,os
 import cryptocode
 import datetime
 import hashlib
-
+import re
 from twisted.conch.insults.window import cursor
 
 
@@ -70,7 +70,7 @@ class Server:
         et ecriture du message dans la base de donnée dans la table correspondante au canal
 
         :param client_socket: objet de type socket ayant tout les parametres du socket du client tel que son addresse, son port,...
-        :param client_address: liste contenant l'adresse ip et le port utilisé pour la communication
+        :param client_address: liste contenant l'adresse ip et le port utilisé pour la communication (non utilisé pour le moment)
         :return: void
         '''
 
@@ -79,6 +79,7 @@ class Server:
             # Réception du nom d'utilisateur et du mot de passe du client
             informations = client_socket.recv(1024)
             print(informations)
+            #Si le message débute avec "AUTH", cela signifie que le client essaye de se connecter. Le serveur  va donc procéder a l'authentification
             if informations.startswith("AUTH"):
                 typeRequete, utilisateur, MDP = informations.split(":")
                 print(utilisateur)
@@ -100,7 +101,7 @@ class Server:
 
 
 
-
+                # si cela ne correspond pas, le serveur renvoie un message d'echec et va alors fermer le socket
                 else:
                     # Envoi d'une autorisation refusée au client
                     time.sleep(5) # pour eviter le bruteforce
@@ -113,42 +114,58 @@ class Server:
                     except Exception as e:
                         print(f"Erreur lors de la fermeture du socket : {e}")
 
+            #Si le message débute avec "CREATE_ACCOUNT", cela signifie que le client essaye de créer un compte. Le serveur  va donc procéder a sa création
             elif informations.startswith("CREATE_ACCOUNT"):
                 try:
                     typeRequete, email, nom, prenom, pseudo, motDePasse = informations.split(":")
                     cursor = self.db_connection.cursor()
 
-                    # Vérifier si l'email ou le pseudo existe déjà
-                    cursor.execute(
-                        "SELECT * FROM utilisateurs WHERE email_utilisateur = %s OR pseudonyme_utilisateur = %s",
-                        (email, pseudo))
-                    existing_user = cursor.fetchone()
+                    # On va alors restester les champs (comme dans le programme du client) afin de s'assurer que les champs sont bien formatés
+                    # Vérifier les champs non vides
+                    if not (email and nom and prenom and pseudo and motDePasse):
+                        client_socket.send("CREATE_ACCOUNT_ERROR")
+                        return
+                        # Vérification du format de l'email
+                    if not self.validationDesEmail(email):
+                        client_socket.send("CREATE_ACCOUNT_ERROR")
+                        print(f'le champ email n\'est pas valide : {email}')
+                        return
+                    try:
 
-                    if existing_user:
-                        try:
-                            # Si l'email ou le pseudo existe déjà
-                            if existing_user[4] == email:  # Index 4 correspond à `email_utilisateur` dans la table
-                                client_socket.send("EMAIL_TAKEN")
-                                print("EMAIL_TAKEN")
-                            elif existing_user[6] == pseudo:  # Index 6 correspond à `pseudonyme_utilisateur`
-                                client_socket.send("PSEUDO_TAKEN")
-                                print("PSEUDO_TAKEN")
-                        except Exception as e:
-                            print(f'erreur lors du test des informations du compte {e}')
-                    else:
-                        # Insérer le nouvel utilisateur
-                        cursor.execute("""
-                               INSERT INTO utilisateurs (id_utilisateur, id_groupe, nom_utilisateur, prenom_utilisateur, email_utilisateur, motdepasse_utilisateur, pseudonyme_utilisateur, totp_utilisateur)
-                               VALUES (NULL, NULL, %s, %s, %s, %s, %s, '0')
-                           """, (nom, prenom, email, motDePasse, pseudo))
-                        self.db_connection.commit()
-                        client_socket.send("ACCOUNT_CREATED")
-                        print("ACCOUNT_CREATED")
 
-                    cursor.close()
+                        # Vérifier si l'email ou le pseudo existe déjà
+                        cursor.execute(
+                            "SELECT * FROM utilisateurs WHERE email_utilisateur = %s OR pseudonyme_utilisateur = %s",
+                            (email, pseudo))
+                        existing_user = cursor.fetchone()
+
+                        if existing_user:
+                            try:
+                                # Si l'email ou le pseudo existe déjà
+                                if existing_user[4] == email:  # Index 4 correspond à `email_utilisateur` dans la table
+                                    client_socket.send("EMAIL_TAKEN")
+                                    print("EMAIL_TAKEN")
+                                elif existing_user[6] == pseudo:  # Index 6 correspond à `pseudonyme_utilisateur`
+                                    client_socket.send("PSEUDO_TAKEN")
+                                    print("PSEUDO_TAKEN")
+                            except Exception as e:
+                                print(f'erreur lors du test des informations du compte {e}')
+                        else:
+                            # Insérer le nouvel utilisateur
+                            cursor.execute("""
+                                   INSERT INTO utilisateurs (id_utilisateur, id_groupe, nom_utilisateur, prenom_utilisateur, email_utilisateur, motdepasse_utilisateur, pseudonyme_utilisateur, totp_utilisateur)
+                                   VALUES (NULL, NULL, %s, %s, %s, %s, %s, '0')
+                               """, (nom, prenom, email, motDePasse, pseudo))
+                            self.db_connection.commit()
+                            client_socket.send("ACCOUNT_CREATED")
+                            print("ACCOUNT_CREATED")
+
+                        cursor.close()
+                    except Exception as e:
+                        print(f'')
                 except Exception as e:
                     print(f"Erreur lors de la création de compte : {e}")
-                    client_socket.send("CREATE_ACCOUNT_ERROR".encode())
+                    client_socket.send("CREATE_ACCOUNT_ERROR")
 
             else:
                 print("quygdqz")
@@ -163,7 +180,24 @@ class Server:
                 print(f"Erreur lors de la fermeture du socket : {e}")
 
 
+    def validationDesEntrées(self, input_text):
+        """
+        Vérifie selon un regex la présence de certains caracteres dans les champs d'identifications
+        :param input_text: les diférents champs recu par le serveur
+        :return: bool
+        """
+        # définission des caracteres interdits
+        forbidden_pattern = r"[:;,']"
+        return not re.search(forbidden_pattern, input_text)
 
+    def validationDesEmail(self, email):
+        """
+        Vérifie si une adresse email a un format valide.
+        :param email: str
+        :return: bool
+        """
+        email_regex = r'^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$'
+        return re.match(email_regex, email) is not None
 
     def broadcast(self, message, sender_address):
         '''
@@ -207,6 +241,7 @@ class Server:
         while 1==1:
             #print('.\n')
             time.sleep(5)
+            # non utilisé pour le moment
 
 if __name__ == '__main__':
 

@@ -23,6 +23,10 @@ class AuthWindow(QDialog):
         self.utilisateur= None
 
     def initUI(self):
+        """
+        initialisation de la fenetre
+        :return:
+        """
         self.setGeometry(300, 300, 300, 300)
         self.setWindowTitle('Authentification')
 
@@ -34,6 +38,10 @@ class AuthWindow(QDialog):
         self.setLayout(self.layout)
 
     def effacerWidgets(self):
+        """
+        cette methode efface tout les widgets du formulaire lors du switch entre "connexion" et "Inscription" de l'utilisateur lors de l'appui sur le bouton
+        :return:
+        """
         # Supprime tous les widgets existants du layout
         while self.layout.count():
             child = self.layout.takeAt(0)
@@ -41,6 +49,10 @@ class AuthWindow(QDialog):
                 child.widget().deleteLater()
 
     def affichageFormulaireAuthentification(self):
+        """
+        cette methode permet l'affichage du formulaire d'authentification lors du lancement de l'applicatif
+        :return: void
+        """
         self.effacerWidgets()
 
         # Widgets pour le formulaire de connexion
@@ -68,8 +80,13 @@ class AuthWindow(QDialog):
         self.layout.addWidget(self.btnSwitch)
 
     def affichageFormulaireInscription(self):
+        """
+        cette methode va afficher le formulaire d'inscription pour les nouveaux utilisateurs
+        :return: void
+        """
         try :
             self.effacerWidgets()
+            self.setWindowTitle('Inscription')
 
             # Widgets pour le formulaire de création de compte
             self.lblEmail = QLabel('Email:', self)
@@ -217,6 +234,9 @@ class AuthWindow(QDialog):
 
 
 class ChangemotDePasseWindow(QDialog):
+    '''
+    cette classe va ouvrir une fenetre afin que l'utilisateur puisse changer son mot de passe
+    '''
     def __init__(self, utilisateur, client_socket):
         super().__init__()
         self.initUI()
@@ -224,6 +244,10 @@ class ChangemotDePasseWindow(QDialog):
         self.client_socket = client_socket
 
     def initUI(self):
+        """
+        initialisation et affichage du formulaire de changement de mot de Passe
+        :return: void
+        """
         self.setGeometry(300, 300, 300, 200)
         self.setWindowTitle('Changer le mot de passe')
 
@@ -330,6 +354,10 @@ class fenetre(QMainWindow):
         sys.exit(0)
 
     def fenetreChangementMDP(self):
+        """
+        va appeler la classe qui permettera de modifier le mot de passe
+        :return: void
+        """
         try:
             change_motDePasse_window = ChangemotDePasseWindow(self.utilisateur, self.client_socket)
             if change_motDePasse_window.exec() == QDialog.Accepted:
