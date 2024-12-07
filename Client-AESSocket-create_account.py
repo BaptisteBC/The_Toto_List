@@ -8,6 +8,10 @@ import socket
 from lib.custom import AEScipher, AESsocket
 import threading
 import hashlib
+import bcrypt
+
+from bcrypt import gensalt
+
 
 class AuthWindow(QDialog):
     def __init__(self):
@@ -177,6 +181,10 @@ class AuthWindow(QDialog):
         except Exception as e:
             QMessageBox.critical(self, 'Erreur', f"Erreur lors de l'authentification: {e}")
 
+
+
+
+
     def inscriptionUtilisateur(self):
         """
         Fonction qui traite la création de compte.
@@ -214,7 +222,14 @@ class AuthWindow(QDialog):
             client_socket.connect((self.HOST, self.PORT))
             client_socket = AESsocket(client_socket, is_server=False)
 
-            message = f"CREATE_ACCOUNT:{email}:{nom}:{prenom}:{pseudo}:{motDePasse}"
+            #generarion du sel et hashage du mot de passe
+            salt=bcrypt.gensalt()
+            motDePasse=motDePasse.encode('utf-8')
+            motDePasseHache = bcrypt.hashpw(motDePasse, salt)
+            motDePasseHacheDecode=motDePasseHache.decode('utf-8')
+
+
+            message = f"CREATE_ACCOUNT:{email}:{nom}:{prenom}:{pseudo}:{motDePasseHacheDecode}"
             client_socket.send(message)
             response = client_socket.recv(1024)
 

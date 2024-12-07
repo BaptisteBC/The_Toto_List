@@ -8,7 +8,7 @@ import cryptocode
 import datetime
 import hashlib
 import re
-
+import bcrypt
 
 class Server:
     def __init__(self):
@@ -80,13 +80,13 @@ class Server:
             print(informations)
             #Si le message débute avec "AUTH", cela signifie que le client essaye de se connecter. Le serveur  va donc procéder a l'authentification
             if informations.startswith("AUTH"):
-                typeRequete, utilisateur, MDP = informations.split(":")
+                typeRequete, utilisateur, MDPclair = informations.split(":")
                 print(utilisateur)
-                print(MDP)
+                print(MDPclair)
 
                 #test de passage des identifiants
                 cursor = self.db_connection.cursor()
-                cursor.execute("SELECT pseudonyme_utilisateur,motdepasse_utilisateur FROM utilisateurs WHERE pseudonyme_utilisateur = %s AND motdepasse_utilisateur = %s", (utilisateur, MDP))
+                cursor.execute("SELECT pseudonyme_utilisateur,motdepasse_utilisateur FROM utilisateurs WHERE pseudonyme_utilisateur = %s ", (utilisateur))
                 user = cursor.fetchone()
                 cursor.close()
 
@@ -94,12 +94,25 @@ class Server:
                     nom_utilisateur,MDP = user
                     # Envoyer l'autorisation au client avec le numéro d'utilisateur et les droits d'accès
                     #print(f"AUTHORIZED,{userid},{username},{access_rights}")
-                    print(f"AUTHORIZED,{utilisateur},{MDP}\n")
-                    client_socket.send(f"AUTHORIZED,zerertghyrila*mle=1é&")
-                    time.sleep(0.5)
-
-
-
+                    print(MDP)
+                    MDPclair=MDPclair.encode('utf-8')
+                    MDP=MDP.encode('utf-8')
+                    if bcrypt.checkpw(MDPclair, MDP):
+                        print(f"AUTHORIZED,{utilisateur},{MDP}\n")
+                        client_socket.send(f"AUTHORIZED,zerertghyrila*mle=1é&")
+                        time.sleep(0.5)
+                    else :
+                        # Envoi d'une autorisation refusée au client
+                        time.sleep(5)  # pour eviter le bruteforce
+                        client_socket.send("UNAUTHORIZED")
+                        print("UNAUTHORIZED")
+                        # Fermer la connexion du client
+                        try:
+                            # client_socket.close()
+                            AESsocket.close(client_socket)
+                        except Exception as e:
+                            print(f"Erreur lors de la fermeture du socket : {e}")
+                    #client_socket.send(f"AUTHORIZED,zerertghyrila*mle=1é&")
                 # si cela ne correspond pas, le serveur renvoie un message d'echec et va alors fermer le socket
                 else:
                     # Envoi d'une autorisation refusée au client
