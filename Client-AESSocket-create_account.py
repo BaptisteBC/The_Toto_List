@@ -11,6 +11,7 @@ import hashlib
 import bcrypt
 
 from bcrypt import gensalt
+from statsmodels.distributions import ECDFDiscrete
 
 
 class AuthWindow(QDialog):
@@ -340,35 +341,47 @@ class ChangemotDePasseWindow(QDialog):
         super().__init__()
         self.initUI()
         self.utilisateur = utilisateur
-        self.client_socket = client_socket
+        try :
+            self.HOST = '127.0.0.1'
+            self.PORT = 55555
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client_socket.connect((self.HOST, self.PORT))
+            self.client_socket = AESsocket(self.client_socket, is_server=False)
+        except Exception as e:
+            QMessageBox.critical(self, 'Erreur',
+                                 f'Erreur lors du chargement du formulaire de changement de mot de passse: {e}')
 
+        self.motDePasse=None
     def initUI(self):
         """
         initialisation et affichage du formulaire de changement de mot de Passe
         :return: void
         """
-        self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Changer le mot de passe')
+        try :
+            self.setGeometry(300, 300, 300, 200)
+            self.setWindowTitle('Changer le mot de passe')
 
-        self.lblNouvMDP = QLabel('Nouveau mot de passe:', self)
-        self.tbxNouvMDP = QLineEdit(self)
-        self.tbxNouvMDP.setEchoMode(QLineEdit.motDePasse)
+            self.lblNouvMDP = QLabel('Nouveau mot de passe:', self)
+            self.tbxNouvMDP = QLineEdit(self)
+            self.tbxNouvMDP.setEchoMode(QLineEdit.Password)
 
-        self.lblConfirm = QLabel('Confirmer le mot de passe:', self)
-        self.tbxConfirm = QLineEdit(self)
-        self.tbxConfirm.setEchoMode(QLineEdit.motDePasse)
+            self.lblConfirm = QLabel('Confirmer le mot de passe:', self)
+            self.tbxConfirm = QLineEdit(self)
+            self.tbxConfirm.setEchoMode(QLineEdit.Password)
 
-        self.btnChangerMDP = QPushButton('Changer le mot de passe', self)
-        self.btnChangerMDP.clicked.connect(self.change_motDePasse)
+            self.btnChangerMDP = QPushButton('Changer le mot de passe', self)
+            self.btnChangerMDP.clicked.connect(self.change_motDePasse)
 
-        layout = QVBoxLayout()
-        layout.addWidget(self.lblNouvMDP)
-        layout.addWidget(self.tbxNouvMDP)
-        layout.addWidget(self.lblConfirm)
-        layout.addWidget(self.tbxConfirm)
-        layout.addWidget(self.btnChangerMDP)
+            layout = QVBoxLayout()
+            layout.addWidget(self.lblNouvMDP)
+            layout.addWidget(self.tbxNouvMDP)
+            layout.addWidget(self.lblConfirm)
+            layout.addWidget(self.tbxConfirm)
+            layout.addWidget(self.btnChangerMDP)
 
-        self.setLayout(layout)
+            self.setLayout(layout)
+        except Exception as e :
+            QMessageBox.critical(self, 'Erreur', f'Erreur lors du chargement du formulaire de changement de mot de passse: {e}')
 
     def change_motDePasse(self):
         """
@@ -380,15 +393,24 @@ class ChangemotDePasseWindow(QDialog):
 
         # Vérifiez que les mots de passe correspondent
         if new_motDePasse == confirm_motDePasse:
+            print(new_motDePasse)
             try:
-                new_motDePasse = hashlib.sha256(new_motDePasse.encode("utf-8")).hexdigest()
-                message = f"/ChangemotDePasse {self.utilisateur} {new_motDePasse}"
-                self.client_socket.send(message.encode())
+                # generarion du sel et hashage du mot de passe
+                salt = bcrypt.gensalt()
+                motDePasse = new_motDePasse.encode('utf-8')
+                motDePasseHache = bcrypt.hashpw(motDePasse, salt)
+                motDePasseHacheDecode = motDePasseHache.decode('utf-8')
+                print(motDePasseHacheDecode)
 
-                response = self.client_socket.recv(1024).decode()
-                if response.startswith("/motDePasseChanged"):
+
+                message = f"CHANGE_PASSWORD:{self.utilisateur}:{motDePasseHacheDecode}"
+                print(message)
+                self.client_socket.send(message)
+
+                response = self.client_socket.recv(1024)
+                if response=="PASSWORD_CHANGED":
                     QMessageBox.information(self, 'Changement de mot de passe', 'Mot de passe changé avec succès!')
-                    self.accept()
+                    self.close()
                 else:
                     QMessageBox.critical(self, 'Erreur', 'Échec du changement de mot de passe.')
             except Exception as e:
@@ -403,24 +425,27 @@ class fenetre(QMainWindow):
     classe ou l'interface Utilisateur avec toutes les taches affichés va s'executer
     """
     def __init__(self, pseudonyme_utilisateur, motdepasse_utilisateur):
-        super().__init__()
-        self.HOST = '127.0.0.1'
-        self.PORT = 55555
-        self.utilisateur = pseudonyme_utilisateur
-        self.motDePasse = motdepasse_utilisateur
-        self.initUI()
-        #print(pseudonyme_utilisateur, motdepasse_utilisateur)
+        try :
+            super().__init__()
+            self.HOST = '127.0.0.1'
+            self.PORT = 55555
+            self.utilisateur = pseudonyme_utilisateur
+            self.motDePasse = motdepasse_utilisateur
+            self.initUI()
+            #print(pseudonyme_utilisateur, motdepasse_utilisateur)
 
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client_socket.connect((self.HOST, self.PORT))
-        self.client_socket = AESsocket(self.client_socket, is_server=False)
-        time.sleep(0.5)
-        self.client_socket.send(f"AUTH:{pseudonyme_utilisateur}:{motdepasse_utilisateur}")
-        #self.client_socket.send(self.motDePasse)
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client_socket.connect((self.HOST, self.PORT))
+            self.client_socket = AESsocket(self.client_socket, is_server=False)
+            time.sleep(0.5)
+            self.client_socket.send(f"AUTH:{pseudonyme_utilisateur}:{motdepasse_utilisateur}")
+            #self.client_socket.send(self.motDePasse)
 
 
-        self.creerActions()
-        self.creerMenu()
+            self.creerActions()
+            self.creerMenu()
+        except Exception as e:
+            QMessageBox.critical(self, 'Erreur', f'Erreur lors du chargement de la fenetre {e}')
 
     def creerMenu(self):
         """

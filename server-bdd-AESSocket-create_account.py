@@ -179,6 +179,21 @@ class Server:
                     print(f"Erreur lors de la création de compte : {e}")
                     client_socket.send("CREATE_ACCOUNT_ERROR")
 
+            elif informations.startswith("CHANGE_PASSWORD"):
+                print("changement de mot de passe:")
+                try :
+                    typeRequete, pseudo, motDePasse = informations.split(":")
+                    print(informations)
+                    cursor = self.db_connection.cursor()
+                    cursor.execute(
+                        "UPDATE `utilisateurs` SET `motdepasse_utilisateur` = %s WHERE `utilisateurs`.`pseudonyme_utilisateur` = %s; ",
+                        (motDePasse,pseudo))
+                    self.db_connection.commit()
+                    print("PASSWORD_CHANGED")
+                    client_socket.send("PASSWORD_CHANGED")
+                except Exception as e:
+                    print(f'Erreur lors du changment de mot de passe {e}')
+                    client_socket.send("PASSWORD_CHANGED_ERROR")
             else:
                 print("quygdqz")
 
@@ -198,7 +213,7 @@ class Server:
         :param input_text: les diférents champs recu par le serveur
         :return: bool
         """
-        # définission des caracteres interdits
+        # définition des caracteres interdits
         forbidden_pattern = r"[:;,']"
         return not re.search(forbidden_pattern, input_text)
 
