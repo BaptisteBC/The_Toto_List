@@ -1,6 +1,4 @@
 import sys
-import pymysql.cursors  # Module pour gérer les connexions MySQL avec curseurs.
-import pymysql  # Module pour interagir avec une base de données MySQL.
 import socket  # Pour gérer les connexions réseau via des sockets.
 from lib.custom import AEScipher, AESsocket  # Classes personnalisées pour gérer le chiffrement AES et les connexions sécurisées.
 from PyQt5.QtWidgets import (
@@ -119,21 +117,36 @@ class FormulaireTache(QWidget):
         Charge les listes disponibles depuis le serveur et les ajoute au menu déroulant.
         """
         try:
-            requete_sql = "NOM_LISTE"  # Requête pour récupérer les noms des listes.
-            resultats = self.envoyer_requete(requete_sql)  # Envoie la requête et récupère les résultats.
+            # Connexion au serveur
+            aes_socket = self.conection()
+            if not aes_socket:
+                return  # Arrête si la connexion a échoué
 
-            if resultats:
-                noms_listes = [liste['nom_liste'] for liste in resultats]
+            # Préparation et envoi du message pour demander les listes
+            message_listes = "GET_LISTES"
+            aes_socket.send(message_listes.encode('utf-8'))
+
+            # Réception des données du serveur
+            reponse_listes = aes_socket.recv(4096).decode('utf-8')
+
+            # Fermeture de la connexion
+            aes_socket.close()
+
+            # Traitement des résultats
+            resultats_listes = eval(reponse_listes)  # Convertit la réponse en structure Python (ou json.loads si JSON)
+            if resultats_listes:
+                # Ajoute les noms des listes au menu déroulant
+                noms_listes = [liste['nom_liste'] for liste in resultats_listes]
+                self.combo_box_listes.clear()  # Efface les anciennes options
                 self.combo_box_listes.addItems(noms_listes)
             else:
                 QMessageBox.warning(self, "Aucune liste", "Aucune liste trouvée.")
+
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des listes : {e}")
-
+    """
     def ChargeUtilisateurs(self):
-        """
-        Charge les utilisateurs disponibles depuis le serveur et les ajoute au menu déroulant.
-        """
+ 
         try:
             requete_sql = "PSUDO_UTILISATEUR"  # Requête pour récupérer les pseudos des utilisateurs.
             resultats = self.envoyer_requete(requete_sql)
@@ -145,7 +158,7 @@ class FormulaireTache(QWidget):
                 QMessageBox.warning(self, "Aucun utilisateur", "Aucun utilisateur trouvé.")
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des utilisateurs : {e}")
-
+    """
     def Envoie(self):
         """
         Récupère les données du formulaire et les envoie au serveur pour créer une nouvelle tâche.

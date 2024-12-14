@@ -94,12 +94,38 @@ class TaskServer:
                 details = command.split(":")[1:]
                 return self.createTask(*details)
 
+            elif command == "GET_LISTES":
+                return self.getAllLists()
+
             else:
                 return "Commande inconnue."
 
         except Exception as e:
             print(f"Erreur dans l'interprétation de la commande: {e}")
             return "Erreur serveur."
+
+    def getAllLists(self):
+        """
+        Récupère toutes les listes disponibles dans la base de données.
+
+        Returns:
+            str: Une liste des noms de listes en format JSON, ou un message d'erreur.
+        """
+        try:
+            with self.dbConnection.cursor() as cursor:
+                cursor.execute("SELECT nom_liste FROM listes")
+                results = cursor.fetchall()
+
+                if results:
+                    # Crée une liste des noms des listes et la convertit en chaîne JSON
+                    listNames = [result['nom_liste'] for result in results]
+                    return str(listNames)
+                else:
+                    return "Aucune liste disponible."
+
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return "Erreur MySQL."
 
     def getUserId(self, pseudo):
         """
@@ -180,6 +206,7 @@ class TaskServer:
         except Exception as e:
             print(f"Erreur MySQL: {e}")
             return "Erreur lors de la création de la tâche."
+
 
 if __name__ == "__main__":
     # Point d'entrée du script : lancement du serveur
