@@ -3,7 +3,7 @@ import sys
 import pymysql
 from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication, QLabel, QPushButton, \
-    QListWidget
+    QListWidget, QLayout, QHBoxLayout, QListWidgetItem
 
 
 def tache_cliquee():
@@ -23,7 +23,7 @@ class Principal(QWidget):
 
         grid = QGridLayout()
         self.setLayout(grid)
-        self.resize(300, 150)
+        self.resize(500, 550)
 
         self.titre = QLabel("Mes tâches")
         #self.taches = QTextBrowser()
@@ -41,14 +41,14 @@ class Principal(QWidget):
 
         self.bouton_quitter.clicked.connect(quitter)
         self.bouton_actualiser.clicked.connect(self.actualiser)
-        self.taches.itemClicked.connect(tache_cliquee)
+        #self.taches.itemClicked.connect(tache_cliquee)
 
         self.host = host
         self.user = user
         self.password = password
         self.database = database
 
-
+        self.actualiser()
 
 
 
@@ -72,18 +72,39 @@ class Principal(QWidget):
 
         self.taches.clear()
 
-        for i in range(0, len(resultache)):
-            tache = resultache[i][1]
+        for id_tache, titre_tache in resultache:
+        #for i in range(0, len(resultache)):
+            #tache = resultache[i][1]
 
             #self.taches.append(tache)
-            self.taches.addItem(tache)
+            #self.taches.addItem(tache)
 
-            for j in range(0, len(sousresultache)):
+            self.afficherTache(id_tache, titre_tache)
+
+            """for j in range(0, len(sousresultache)):
                 if sousresultache[j][0] == resultache[i][0] :
-                    self.taches.addItem(f'|=> {sousresultache[j][1]}')
+                    self.taches.addItem(f'|=> {sousresultache[j][1]}')"""
         curseur.close()
         self.cnx.close()
 
+    def afficherTache(self, id_tache, titre_tache):
+        tache = QListWidgetItem(titre_tache)
+        bouton = QPushButton(titre_tache)
+        #layout = QHBoxLayout(tache)
+        #label = QLabel(titre_tache)
+        #layout.addWidget(label)
+
+        bouton.clicked.connect(lambda : self.detail(id_tache))
+
+        #elementListe = QListWidgetItem()
+        #elementListe.setSizeHint(tache.sizeHint())
+        self.taches.addItem(tache)
+        self.taches.setItemWidget(tache, bouton)
+
+
+
+    def detail(self, id_tache):
+        print(id_tache)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
