@@ -6,7 +6,6 @@ from PyQt5.QtCore import Qt, QDate
 from PyQt5.QtGui import QPalette, QColor, QIcon
 import sys
 
-
 class FormulaireTache(QWidget):
     def __init__(self, parent=None):
         super().__init__()
