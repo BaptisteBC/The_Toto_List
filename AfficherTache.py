@@ -1,9 +1,10 @@
 import sys
 
 import pymysql
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, Qt, QDate
 from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication, QLabel, QPushButton, \
-    QListWidget, QLayout, QHBoxLayout, QListWidgetItem
+    QListWidget, QLayout, QHBoxLayout, QListWidgetItem, QDialog, QFormLayout, QLineEdit, QDateTimeEdit, QCheckBox, \
+    QComboBox, QDialogButtonBox, QDateEdit
 
 
 def tache_cliquee():
@@ -88,17 +89,25 @@ class Principal(QWidget):
 
 
     def afficherTache(self, id_tache, titre_tache, soustache_id_tache=None):
-        tache = QListWidgetItem()
+        item = QListWidgetItem()
+        tache = QWidget()
+        layout = QHBoxLayout(tache)
+
         bouton = QPushButton(titre_tache)
-        #layout = QHBoxLayout(tache)
-        #label = QLabel(titre_tache)
-        #layout.addWidget(label)
+        #bouton.setFixedWidth(70)
+        layout.addWidget(bouton)
         bouton.clicked.connect(lambda : self.detail(id_tache, soustache_id_tache))
 
-        #elementListe = QListWidgetItem()
-        #elementListe.setSizeHint(tache.sizeHint())
-        self.taches.addItem(tache)
-        self.taches.setItemWidget(tache, bouton)
+        suppr = QPushButton('X')
+        suppr.setFixedWidth(30)
+        layout.addWidget(suppr)
+        suppr.clicked.connect(lambda : self.supprimer(id_tache, soustache_id_tache))
+
+        layout.addStretch()
+        item.setSizeHint(tache.sizeHint())
+
+        self.taches.addItem(item)
+        self.taches.setItemWidget(item, tache)
 
 
 
@@ -111,6 +120,10 @@ class Principal(QWidget):
             curseur.execute("SELECT titre_tache, description_tache, datecreation_tache, datefin_tache,  "
                             "recurrence_tache, statut_tache, daterappel_tache, datesuppression_tache FROM taches;")
         curseur.close()
+
+    def supprimer(self, id_tache, soustache_id_tache):
+        print(f'Supprimer {id_tache}')
+
 
     def quitter(self):
         self.cnx.close()
