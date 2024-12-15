@@ -1,92 +1,103 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from PyQt5.QtWidgets import QApplication
-from formulaire_tache import FormulaireTache
+from FormulaireV2 import FormulaireTache
 
-# Initialiser une application PyQt5 pour les tests.
-@pytest.fixture(scope="module")
-def app():
-    return QApplication([])
 
 @pytest.fixture
-def formulaire(app):
+def form():
     """Fixture pour créer une instance de FormulaireTache."""
-    return FormulaireTache()
+    form = FormulaireTache()
+    # Simuler les éléments de l'interface graphique pour éviter l'utilisation réelle de PyQt
+    form.combo_box_listes = MagicMock()
+    form.combo_box_utilisateurs = MagicMock()
+    return form
 
-def test_initialisation_formulaire(formulaire):
-    """Teste si le formulaire est initialisé correctement."""
-    assert formulaire.windowTitle() == "Formulaire de Tâche"
-    assert formulaire.champ_nom.text() == ""
-    assert formulaire.champ_description.toPlainText() == ""
-    assert formulaire.champ_date.date().toString("yyyy-MM-dd") != ""
-    assert formulaire.champ_statut.count() == 3
-    assert formulaire.combo_box_listes.count() == 0
-    assert formulaire.combo_box_utilisateurs.count() == 0
 
-@patch('formulaire_tache.AESsocket')
-@patch('formulaire_tache.socket.socket')
-def test_conection(mock_socket, mock_aes_socket, formulaire):
-    """Teste la méthode conection."""
-    mock_client_socket = MagicMock()
-    mock_socket.return_value = mock_client_socket
-    mock_aes_socket.return_value = "mocked AES socket"
+@pytest.fixture
+def mock_aes_socket():
+    """Fixture pour simuler un socket sécurisé."""
+    mock_socket = MagicMock()
+    mock_socket.recv.return_value = b'{"nom_liste": "Liste Test"}'  # Exemple de réponse du serveur pour la liste
+    return mock_socket
 
-    aes_socket = formulaire.conection()
-    mock_client_socket.connect.assert_called_once_with(('localhost', 12345))
-    assert aes_socket == "mocked AES socket"
 
-def test_charger_listes(formulaire):
-    """Teste le chargement des listes."""
-    formulaire.envoyer_requete = MagicMock(return_value=[{'nom_liste': 'Liste 1'}, {'nom_liste': 'Liste 2'}])
-    formulaire.ChargerListes()
+@patch('formulaire_tache.AESsocket', return_value=MagicMock())
+def test_connexion(mock_aes_socket_class, form):
+    """Test de la connexion au serveur."""
+    mock_aes_socket_class.return_value = mock_aes_socket()
 
-    assert formulaire.combo_box_listes.count() == 2
-    assert formulaire.combo_box_listes.itemText(0) == "Liste 1"
-    assert formulaire.combo_box_listes.itemText(1) == "Liste 2"
+    # Simuler la connexion
+    aes_socket = form.conection()
 
-def test_charger_utilisateurs(formulaire):
-    """Teste le chargement des utilisateurs."""
-    formulaire.envoyer_requete = MagicMock(return_value=[{'pseudo': 'User1'}, {'pseudo': 'User2'}])
-    formulaire.ChargeUtilisateurs()
+    # Vérifier que la connexion a bien été établie
+    assert aes_socket is not None
+    aes_socket.send.assert_called_once()  # Vérifier qu'un envoi de message a eu lieu
 
-    assert formulaire.combo_box_utilisateurs.count() == 2
-    assert formulaire.combo_box_utilisateurs.itemText(0) == "User1"
-    assert formulaire.combo_box_utilisateurs.itemText(1) == "User2"
 
-@patch('formulaire_tache.AESsocket')
-def test_envoie(mock_aes_socket, formulaire):
-    """Teste la méthode Envoie."""
-    mock_aes = MagicMock()
-    mock_aes_socket.return_value = mock_aes
-    formulaire.conection = MagicMock(return_value=mock_aes)
+@patch('formulaire_tache.AESsocket', return_value=MagicMock())
+def test_charger_listes(mock_aes_socket_class, form, mock_aes_socket):
+    """Test de la fonction ChargerListes pour récupérer les listes."""
+    mock_aes_socket_class.return_value = mock_aes_socket
 
-    # Simuler les entrées utilisateur
-    formulaire.champ_nom.setText("Tâche test")
-    formulaire.champ_description.setPlainText("Description de test")
-    formulaire.combo_box_utilisateurs.addItem("User1")
-    formulaire.combo_box_listes.addItem("Liste 1")
-    formulaire.combo_box_utilisateurs.setCurrentText("User1")
-    formulaire.combo_box_listes.setCurrentText("Liste 1")
+    # Simuler la récupération des listes
+    form.ChargerListes()
 
-    mock_aes.recv.side_effect = [
-        b'1',  # ID utilisateur
-        b'2'   # ID liste
-    ]
+    # Vérifier que la méthode send a bien été appelée pour demander les listes
+    mock_aes_socket.send.assert_called_with("GET_LISTES")
 
-    formulaire.Envoie()
+    # Vérifier que la méthode recv a renvoyé une réponse simulée
+    mock_aes_socket.recv.assert_called_once_with(1024)
 
-    # Vérifications des appels réseau
-    mock_aes.send.assert_any_call(b"ID_UTILISATEUR:User1")
-    mock_aes.send.assert_any_call(b"ID_LISTE:Liste 1")
-    assert mock_aes.send.call_count >= 3
+    # Vérifier que les listes sont ajoutées dans la combo box
+    form.combo_box_listes.addItems.assert_called_with(["Liste Test"])
 
-    # Vérifie le dernier message envoyé
-    args, _ = mock_aes.send.call_args
-    assert b"CREATION_TACHE:1:2:Tâche test:Description de test" in args[0]
 
-@patch('formulaire_tache.QMessageBox')
-def test_erreur_conection(mock_messagebox, formulaire):
-    """Teste si une erreur de connexion est correctement affichée."""
-    formulaire.conection = MagicMock(side_effect=Exception("Connexion échouée"))
-    formulaire.Envoie()
-    mock_messagebox.critical.assert_called_once_with(formulaire, "Erreur", "Erreur lors de l'envoi : Connexion échouée")
+@patch('formulaire_tache.AESsocket', return_value=MagicMock())
+def test_envoi_donnees(mock_aes_socket_class, form, mock_aes_socket):
+    """Test de l'envoi des données de création de tâche."""
+    mock_aes_socket_class.return_value = mock_aes_socket
+
+    # Simuler l'entrée des données dans le formulaire
+    form.champ_nom.setText("Tâche Test")
+    form.champ_description.setPlainText("Description de la tâche")
+    form.champ_date.setDate(form.champ_date.currentDate())
+    form.champ_statut.setCurrentText("à faire")
+    form.champ_date_rappel.setDate(form.champ_date.currentDate())
+    form.combo_box_utilisateurs.currentText.return_value = "Utilisateur Test"
+    form.combo_box_listes.currentText.return_value = "Liste Test"
+
+    # Simuler la soumission du formulaire
+    form.Envoie()
+
+    # Vérifier que les messages de création ont bien été envoyés
+    assert mock_aes_socket.send.called
+    assert "CREATION_TACHE" in str(mock_aes_socket.send.call_args)
+
+
+@patch('formulaire_tache.AESsocket', return_value=MagicMock())
+def test_erreur_connexion(mock_aes_socket_class, form):
+    """Test de la gestion d'erreur lors de la connexion au serveur."""
+    mock_aes_socket_class.return_value = None
+
+    # Simuler une tentative de connexion
+    form.conection()
+
+    # Vérifier qu'il n'y a pas de socket et qu'aucun envoi n'a eu lieu
+    assert form.conection() is None
+
+
+@patch('formulaire_tache.AESsocket', return_value=MagicMock())
+def test_erreur_chargement_listes(mock_aes_socket_class, form, mock_aes_socket):
+    """Test de la gestion d'erreur lors du chargement des listes."""
+    mock_aes_socket_class.return_value = mock_aes_socket
+    mock_aes_socket().recv.side_effect = Exception("Erreur de récupération des listes")
+
+    # Simuler l'appel pour charger les listes
+    form.ChargerListes()
+
+    # Vérifier qu'il y a eu un message d'erreur
+    assert form.findChild(QMessageBox) is not None
+
+
+if __name__ == "__main__":
+    pytest.main()

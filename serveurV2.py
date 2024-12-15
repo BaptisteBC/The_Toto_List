@@ -25,10 +25,11 @@ class TaskServer:
 
         # Configuration de la connexion à la base de données MySQL
         self.dbConnection = pymysql.connect(
-            host='localhost',
-            user='root',  # Remplacez par votre utilisateur MySQL
-            password='password',  # Remplacez par votre mot de passe MySQL
-            database='taskManagement',  # Nom de votre base de données
+            host='85.10.235.60' , # Remplace par l'adresse IP publique ou le nom d'hôte de la base de données distante
+            user = 'totodb-admin',  # Le nom d'utilisateur de la base de données
+            password = '&TotoDB$IUT!2024%Ad',  # Le mot de passe associé à l'utilisateur
+            database = 'TheTotoDB',  # Le nom de la base de données
+            port = 50000 , # Le port spécifique sur lequel le serveur MySQL écoute
             cursorclass=pymysql.cursors.DictCursor
         )
 
@@ -49,18 +50,18 @@ class TaskServer:
             print(f"Connexion établie avec {clientAddress}")
 
             # Passage du socket à un socket sécurisé AES
-            aesSocket = AESsocket(clientSocket, isServer=True)
+            aesSocket = AESsocket(clientSocket, is_server=True)
 
             try:
                 while True:
                     # Réception d'une commande depuis le client
-                    command = aesSocket.recv(1024).decode('utf-8')
+                    command = aesSocket.recv(1024)
                     if not command:  # Si aucune commande reçue, fermer la connexion
                         break
 
                     print(f"Commande reçue: {command}")
                     response = self.interpretCommand(command)  # Traite la commande
-                    aesSocket.send(response.encode('utf-8'))  # Envoie la réponse au client
+                    aesSocket.send(response)  # Envoie la réponse au client
 
             except Exception as e:
                 print(f"Erreur: {e}")
@@ -115,10 +116,12 @@ class TaskServer:
             with self.dbConnection.cursor() as cursor:
                 cursor.execute("SELECT nom_liste FROM listes")
                 results = cursor.fetchall()
+                print(results)
 
                 if results:
                     # Crée une liste des noms des listes et la convertit en chaîne JSON
                     listNames = [result['nom_liste'] for result in results]
+                    print(listNames)
                     return str(listNames)
                 else:
                     return "Aucune liste disponible."

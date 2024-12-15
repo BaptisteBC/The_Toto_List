@@ -7,6 +7,8 @@ from PyQt5.QtWidgets import (
 )  # Modules de PyQt5 pour créer l'interface graphique.
 from PyQt5.QtCore import QDate  # Utilisé pour gérer les dates dans PyQt5.
 from datetime import datetime  # Utilisé pour les opérations sur les dates/heures.
+import json
+
 
 """
 Application PyQt5 pour interagir avec un serveur via un formulaire de création de tâches.
@@ -87,7 +89,7 @@ class FormulaireTache(QWidget):
         self.setLayout(layout)  # Définit le layout pour la fenêtre.
 
         # Charger les utilisateurs et les listes disponibles
-        self.ChargeUtilisateurs()
+        #self.ChargeUtilisateurs()
         self.ChargerListes()
 
     def conection(self):
@@ -124,16 +126,14 @@ class FormulaireTache(QWidget):
 
             # Préparation et envoi du message pour demander les listes
             message_listes = "GET_LISTES"
-            aes_socket.send(message_listes.encode('utf-8'))
+            aes_socket.send(message_listes)
 
             # Réception des données du serveur
-            reponse_listes = aes_socket.recv(4096).decode('utf-8')
-
-            # Fermeture de la connexion
-            aes_socket.close()
+            reponse_listes = aes_socket.recv(1024)
 
             # Traitement des résultats
-            resultats_listes = eval(reponse_listes)  # Convertit la réponse en structure Python (ou json.loads si JSON)
+            #resultats_listes = eval(reponse_listes)  # Convertit la réponse en structure Python (ou json.loads si JSON)
+            resultats_listes = json.loads(reponse_listes)
             if resultats_listes:
                 # Ajoute les noms des listes au menu déroulant
                 noms_listes = [liste['nom_liste'] for liste in resultats_listes]
@@ -180,17 +180,17 @@ class FormulaireTache(QWidget):
 
             # Récupération de l'ID utilisateur.
             message_utilisateur = f"ID_UTILISATEUR:{utilisateur_choisi}"
-            aes_socket.send(message_utilisateur.encode('utf-8'))
-            id_utilisateur = aes_socket.recv(1024).decode('utf-8')
+            aes_socket.send(message_utilisateur)
+            id_utilisateur = aes_socket.recv(1024)
 
             # Récupération de l'ID liste.
             message_liste = f"ID_LISTE:{liste_choisie}"
-            aes_socket.send(message_liste.encode('utf-8'))
-            id_liste = aes_socket.recv(1024).decode('utf-8')
+            aes_socket.send(message_liste)
+            id_liste = aes_socket.recv(1024)
 
             # Préparation et envoi du message pour créer la tâche.
             message = f"CREATION_TACHE:{id_utilisateur}:{id_liste}:{titre_tache}:{description}:{date_echeance}:{statut}:{date_rappel}"
-            aes_socket.send(message.encode('utf-8'))
+            aes_socket.send(message)
             QMessageBox.information(self, "Succès", "Tâche créée avec succès.")
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors de l'envoi : {e}")
