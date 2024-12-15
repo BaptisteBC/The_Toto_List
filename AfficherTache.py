@@ -9,8 +9,7 @@ from PyQt5.QtWidgets import QWidget, QGridLayout, QApplication, QLabel, QPushBut
 def tache_cliquee():
     print("ça fonctionne !")
 
-def quitter():
-    QCoreApplication.exit(0)
+
 
 class Principal(QWidget):
     """Fenêtre principale d'affichage des tâches.
@@ -39,7 +38,7 @@ class Principal(QWidget):
         grid.addWidget(self.bouton_quitter)
 
 
-        self.bouton_quitter.clicked.connect(quitter)
+        self.bouton_quitter.clicked.connect(self.quitter)
         self.bouton_actualiser.clicked.connect(self.actualiser)
         #self.taches.itemClicked.connect(tache_cliquee)
 
@@ -61,12 +60,12 @@ class Principal(QWidget):
         curseur = self.cnx.cursor()
 
         # Extraction de tous les titres des taches principales
-        curseur.execute("SELECT id_tache,titre_tache FROM taches;")
+        curseur.execute("SELECT id_tache, titre_tache FROM taches;")
         resultache = curseur.fetchall()
         print(resultache)
 
         # Extraction de tous les titres des sous taches
-        curseur.execute("SELECT soustache_id_tache,titre_soustache FROM soustaches;")
+        curseur.execute("SELECT id_soustache, titre_soustache, soustache_id_tache FROM soustaches;")
         sousresultache = curseur.fetchall()
         print(sousresultache)
 
@@ -81,20 +80,20 @@ class Principal(QWidget):
 
             self.afficherTache(id_tache, titre_tache)
 
-            """for j in range(0, len(sousresultache)):
-                if sousresultache[j][0] == resultache[i][0] :
-                    self.taches.addItem(f'|=> {sousresultache[j][1]}')"""
+            for id_soustache, titre_soustache, soustache_id_tache in sousresultache:
+                if soustache_id_tache == id_tache :
+                    #self.taches.addItem(f'|=> {sousresultache[j][1]}')
+                    self.afficherTache(id_soustache, f'|=>{titre_soustache}', soustache_id_tache)
         curseur.close()
-        self.cnx.close()
 
-    def afficherTache(self, id_tache, titre_tache):
-        tache = QListWidgetItem(titre_tache)
+
+    def afficherTache(self, id_tache, titre_tache, soustache_id_tache=None):
+        tache = QListWidgetItem()
         bouton = QPushButton(titre_tache)
         #layout = QHBoxLayout(tache)
         #label = QLabel(titre_tache)
         #layout.addWidget(label)
-
-        bouton.clicked.connect(lambda : self.detail(id_tache))
+        bouton.clicked.connect(lambda : self.detail(id_tache, soustache_id_tache))
 
         #elementListe = QListWidgetItem()
         #elementListe.setSizeHint(tache.sizeHint())
@@ -103,8 +102,20 @@ class Principal(QWidget):
 
 
 
-    def detail(self, id_tache):
-        print(id_tache)
+    def detail(self, id_tache, soustache_id_tache):
+        curseur = self.cnx.cursor()
+        if soustache_id_tache:
+            curseur.execute("SELECT titre_soustache, description_soustache, datecreation_soustache, "
+                            "datefin_soustache, statut_soustache, daterappel_soustache FROM soustaches;")
+        else:
+            curseur.execute("SELECT titre_tache, description_tache, datecreation_tache, datefin_tache,  "
+                            "recurrence_tache, statut_tache, daterappel_tache, datesuppression_tache FROM taches;")
+        curseur.close()
+
+    def quitter(self):
+        self.cnx.close()
+        QCoreApplication.exit(0)
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
