@@ -28,18 +28,21 @@ class Principal(QWidget):
 
         self.titre = QLabel("Mes tâches")
         self.bouton_actualiser = QPushButton("Actualiser")
+        self.bouton_restaurer_corb = QPushButton("Restaurer la corbeille")
         self.taches = QListWidget()
         self.bouton_vider_corb = QPushButton("Vider la corbeille")
         self.bouton_quitter = QPushButton("Quitter")
 
         grid.addWidget(self.titre)
         grid.addWidget(self.bouton_actualiser)
+        grid.addWidget(self.bouton_restaurer_corb)
         grid.addWidget(self.taches)
         grid.addWidget(self.bouton_vider_corb)
         grid.addWidget(self.bouton_quitter)
 
 
         self.bouton_actualiser.clicked.connect(self.actualiser)
+        self.bouton_restaurer_corb.clicked.connect(self.restaurer)
         self.bouton_vider_corb.clicked.connect(self.vider)
         self.bouton_quitter.clicked.connect(self.quitter)
 
@@ -112,6 +115,10 @@ class Principal(QWidget):
                             "recurrence_tache, statut_tache, daterappel_tache, datesuppression_tache FROM taches;")
 
         curseur.close()
+
+    def restaurer(self):
+        Restaurer(self.cnx).exec()
+        self.actualiser()
 
     def supprimer(self, id_tache, soustache_id_tache):
         if not soustache_id_tache: #Tache
@@ -213,6 +220,47 @@ class Vider_corbeille(QDialog):
         msg = QMessageBox()
         msg.setWindowTitle("Confirmation")
         msg.setText("La corbeille a été vidée")
+        msg.exec()
+
+        self.close()
+
+    def stop(self):
+       self.close()
+
+class Restaurer(QDialog):
+    def __init__(self, cnx):
+        super().__init__()
+
+        self.cnx = cnx
+
+        self.setWindowTitle("Restaurer la corbeille")
+
+        grid = QGridLayout()
+        self.setLayout(grid)
+        self.resize(300, 150)
+
+        self.titre = QLabel("Restaurer la corbeille ?")
+        self.confirmer = QPushButton("Confirmer")
+        self.annuler = QPushButton("Annuler")
+
+        grid.addWidget(self.titre)
+        grid.addWidget(self.confirmer)
+        grid.addWidget(self.annuler)
+
+        self.confirmer.clicked.connect(self.conf)
+        self.annuler.clicked.connect(self.stop)
+
+    def conf(self):
+        curseur = self.cnx.cursor()
+        curseur.execute('UPDATE taches SET datesuppression_tache = NULL WHERE datesuppression_tache IS NOT NULL;')
+        curseur.execute('UPDATE soustaches SET datesuppression_soustache = NULL WHERE datesuppression_soustache '
+                        'IS NOT NULL;')
+        self.cnx.commit()
+        curseur.close()
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Confirmation")
+        msg.setText("La corbeille a été restaurée !")
         msg.exec()
 
         self.close()
