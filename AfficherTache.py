@@ -29,15 +29,20 @@ class Principal(QWidget):
         self.titre = QLabel("Mes tâches")
         self.bouton_actualiser = QPushButton("Actualiser")
         self.taches = QListWidget()
+        self.bouton_vider_corb = QPushButton("Vider la corbeille")
         self.bouton_quitter = QPushButton("Quitter")
 
         grid.addWidget(self.titre)
         grid.addWidget(self.bouton_actualiser)
         grid.addWidget(self.taches)
+        grid.addWidget(self.bouton_vider_corb)
         grid.addWidget(self.bouton_quitter)
 
+
         self.bouton_actualiser.clicked.connect(self.actualiser)
+        self.bouton_vider_corb.clicked.connect(self.vider)
         self.bouton_quitter.clicked.connect(self.quitter)
+
 
         self.cnx = pymysql.connect(host=host, user=user, password=password, database=database)
 
@@ -117,6 +122,9 @@ class Principal(QWidget):
             Supprimer(id_tache, soustache_id_tache, self.cnx).exec()
             self.actualiser()
 
+    def vider(self):
+        Vider_corbeille(self.cnx).exec()
+
     def quitter(self):
         self.cnx.close()
         QCoreApplication.exit(0)
@@ -167,6 +175,47 @@ class Supprimer(QDialog):
             self.close()
         except Exception as E:
             print(E)
+
+    def stop(self):
+       self.close()
+
+class Vider_corbeille(QDialog):
+    def __init__(self, cnx):
+        super().__init__()
+
+        self.cnx = cnx
+
+        self.setWindowTitle("Vider la corbeille")
+
+        grid = QGridLayout()
+        self.setLayout(grid)
+        self.resize(300, 150)
+
+        self.titre = QLabel("!!! Attention : Vider la corbeille !!!")
+        self.confirmer = QPushButton("Confirmer")
+        self.annuler = QPushButton("Annuler")
+
+        grid.addWidget(self.titre)
+        grid.addWidget(self.confirmer)
+        grid.addWidget(self.annuler)
+
+        self.confirmer.clicked.connect(self.conf)
+        self.annuler.clicked.connect(self.stop)
+
+    def conf(self):
+        curseur = self.cnx.cursor()
+        curseur.execute(f'DELETE FROM soustaches WHERE datesuppression_soustache is not NULL;')
+        curseur.execute(f'DELETE FROM taches WHERE datesuppression_tache is not NULL;')
+
+        self.cnx.commit()
+        curseur.close()
+
+        msg = QMessageBox()
+        msg.setWindowTitle("Confirmation")
+        msg.setText("La corbeille a été vidée")
+        msg.exec()
+
+        self.close()
 
     def stop(self):
        self.close()
