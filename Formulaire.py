@@ -1,278 +1,189 @@
+# Importation des modules nécessaires pour l'interface graphique, la gestion de la connexion réseau,
+# et le chiffrement des données.
 import sys
-import pymysql.cursors
-import pymysql
-from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, QTextEdit, QComboBox, QDateEdit, QVBoxLayout, QPushButton, QMessageBox)
+from PyQt5.QtWidgets import (QWidget, QLabel, QLineEdit, QTextEdit, QDateEdit, QVBoxLayout, QComboBox,
+                             QPushButton, QApplication, QMessageBox)
 from PyQt5.QtCore import QDate
-from datetime import datetime
+import socket
+import json
+from lib.custom import AESsocket  # Importation d'un socket personnalisé qui gère le chiffrement AES
 
-# Fonction pour créer une connexion avec la base de données MySQL
-def creer_connexion_mysql(hote, utilisateur, mot_de_passe, nom_bd, port=3306):
-    """Crée et retourne une connexion à la base de données MySQL.
 
-    Parameters:
-        hote (str): L'adresse de l'hôte de la base de données MySQL.
-        utilisateur (str): Le nom d'utilisateur pour la connexion MySQL.
-        mot_de_passe (str): Le mot de passe pour la connexion MySQL.
-        nom_bd (str): Le nom de la base de données cible.
-        port (int): Le port de la base de données (par défaut: 3306).
-
-    Returns:
-        connexion (pymysql.Connection): L'objet de connexion à la base de données MySQL.
-    """
-    try:
-        # Création de la connexion à la base de données
-        connexion = pymysql.connect(
-            host=hote,
-            user=utilisateur,
-            password=mot_de_passe,
-            database=nom_bd,
-            port=port
-        )
-        print("Connexion à la base de données réussie")
-        return connexion
-    except pymysql.MySQLError as e:
-        print(f"Erreur lors de la connexion à MySQL : {e}")
-        return None
-
-# Fonction pour insérer une tâche dans la base de données
-def inserer_tache(connexion, titre, description, date_creation, date_echeance, type_recurrence, statut, id_groupe,
-                  id_utilisateur, id_liste, id_tag, date_rappel=None):
-    """Insère une nouvelle tâche dans la base de données, selon le format requis."""
-
-    try:
-        with connexion.cursor() as curseur:
-            # Nouvelle requête d'insertion avec les noms de colonnes mis à jour
-            requete_insertion = f"""
-            INSERT INTO taches (id_tache, taches_id_groupe, taches_id_utilisateur, taches_id_liste, 
-                titre_tache, description_tache, datecreation_tache, datefin_tache, recurrence_tache, 
-                statut_tache, daterappel_tache, datesuppression_tache) 
-            VALUES (NULL, NULL, {id_utilisateur}, '{id_liste}', '{titre}', '{description}', 
-                CURRENT_TIMESTAMP, '{date_echeance}', '', '{statut}', {date_rappel if date_rappel else 'NULL'}, NULL);
-            """
-            curseur.execute(requete_insertion)  # Exécution de la requête
-            connexion.commit()  # Validation de l'insertion
-            print(f"Tâche '{titre}' ajoutée avec succès.")
-    except pymysql.MySQLError as e:
-        print(f"Erreur lors de l'insertion de la tâche : {e}")
-
-# Fonction pour valider si une date est au format 'AAAA-MM-JJ'
-def valider_date(date_str):
-    """Valide que la date est au format AAAA-MM-JJ.
-
-    Parameters:
-        date_str (str): La date sous forme de chaîne.
-
-    Returns:
-        bool: True si la date est valide, sinon False.
-    """
-    try:
-        datetime.strptime(date_str, "%Y-%m-%d")  # Tentative de conversion de la chaîne en datetime
-        return True
-    except ValueError:
-        return False
-
-# Fonction pour obtenir les utilisateurs à partir de la base de données
-def obtenir_utilisateurs(connexion):
-    """Récupère les utilisateurs depuis la base de données.
-
-    Parameters:
-        connexion (pymysql.Connection): L'objet de connexion à la base de données.
-
-    Returns:
-        list of tuple: Liste de tuples contenant l'ID et le nom des utilisateurs.
-    """
-    try:
-        with connexion.cursor() as curseur:
-            curseur.execute("SELECT idUtilisateur, pseudonyme FROM utilisateurs;")  # Requête pour obtenir les utilisateurs
-            return curseur.fetchall()  # Retourne tous les résultats
-    except pymysql.MySQLError as e:
-        print(f"Erreur lors de la récupération des utilisateurs : {e}")
-        return []
-
-# Fonction pour obtenir les groupes à partir de la base de données
-def obtenir_groupes(connexion):
-    """Récupère les groupes depuis la base de données.
-
-    Parameters:
-        connexion (pymysql.Connection): L'objet de connexion à la base de données.
-
-    Returns:
-        list of tuple: Liste de tuples contenant l'ID et le nom des groupes.
-    """
-    try:
-        with connexion.cursor() as curseur:
-            curseur.execute("SELECT idGroupeAffecte, nom FROM groupes;")  # Requête pour obtenir les groupes
-            return curseur.fetchall()  # Retourne tous les résultats
-    except pymysql.MySQLError as e:
-        print(f"Erreur lors de la récupération des groupes : {e}")
-        return []
-
-# Fonction pour obtenir les listes à partir de la base de données
-def obtenir_listes(connexion):
-    """Récupère les listes depuis la base de données.
-
-    Parameters:
-        connexion (pymysql.Connection): L'objet de connexion à la base de données.
-
-    Returns:
-        list of tuple: Liste de tuples contenant l'ID et le nom des listes.
-    """
-    try:
-        with connexion.cursor() as curseur:
-            curseur.execute("SELECT idListe, nom FROM listes;")  # Requête pour obtenir les listes
-            return curseur.fetchall()  # Retourne tous les résultats
-    except pymysql.MySQLError as e:
-        print(f"Erreur lors de la récupération des listes : {e}")
-        return []
-
-# Fonction pour obtenir les tags à partir de la base de données
-def obtenir_tags(connexion):
-    """Récupère les tags depuis la base de données.
-
-    Parameters:
-        connexion (pymysql.Connection): L'objet de connexion à la base de données.
-
-    Returns:
-        list of tuple: Liste de tuples contenant l'ID et le nom des tags.
-    """
-    try:
-        with connexion.cursor() as curseur:
-            curseur.execute("SELECT idTag, nomTag FROM tag;")  # Requête pour obtenir les tags
-            return curseur.fetchall()  # Retourne tous les résultats
-    except pymysql.MySQLError as e:
-        print(f"Erreur lors de la récupération des tags : {e}")
-        return []
-
-# Classe représentant le formulaire de création de tâche dans l'interface graphique
 class FormulaireTache(QWidget):
-    """Interface graphique pour le formulaire de création de tâche.
+    """
+    Classe représentant l'interface graphique pour créer une tâche.
 
     Attributes:
-        connexion (pymysql.Connection): Connexion à la base de données MySQL.
-        groupes (list): Liste des groupes.
-        listes (list): Liste des listes.
-        utilisateurs (list): Liste des utilisateurs.
-        tags (list): Liste des tags.
+        listes (dict): Liste des listes disponibles pour organiser les tâches.
+        utilisateurs (dict): Liste des utilisateurs assignables à une tâche.
     """
 
     def __init__(self):
-        """Initialise le formulaire, la connexion MySQL et charge les données requises."""
+        """Initialise le formulaire, configure l'interface graphique et charge les données nécessaires."""
         super().__init__()
+
+        # Configuration de la fenêtre principale : titre et dimensions de la fenêtre
         self.setWindowTitle("Formulaire de Tâche")
         self.setGeometry(100, 100, 400, 600)
 
-        # Connexion à la base de données pour récupérer groupes, listes, utilisateurs, et tags
-        self.connexion = creer_connexion_mysql("192.168.1.18", "toto", "toto", "thetotodb")
-
-        if self.connexion is None:
-            QMessageBox.critical(self, "Erreur", "Impossible de se connecter à la base de données.")
-            return
-
-        # Charger les groupes, listes, utilisateurs, et tags dans les combobox
-        self.groupes = obtenir_groupes(self.connexion)
-        self.listes = obtenir_listes(self.connexion)
-        self.utilisateurs = obtenir_utilisateurs(self.connexion)
-        self.tags = obtenir_tags(self.connexion)
-
-        # Layout principal pour organiser les widgets
+        # Layout principal : Utilisation d'un QVBoxLayout pour organiser les widgets verticalement
         layout = QVBoxLayout()
 
-        # Ajout des champs de saisie pour la tâche
-        self.label_nom = QLabel("Nom de la tâche :")
-        self.champ_nom = QLineEdit()
+        # Champ pour le nom de la tâche
+        self.label_nom = QLabel("Nom de la tâche :")  # Etiquette pour le champ du nom
+        self.champ_nom = QLineEdit()  # Champ de saisie du nom
         layout.addWidget(self.label_nom)
         layout.addWidget(self.champ_nom)
 
-        # Champ pour la description
-        self.label_description = QLabel("Description :")
-        self.champ_description = QTextEdit()
+        # Champ pour la description de la tâche
+        self.label_description = QLabel("Description :")  # Etiquette pour la description
+        self.champ_description = QTextEdit()  # Champ de texte pour la description
         layout.addWidget(self.label_description)
         layout.addWidget(self.champ_description)
 
-        # Champ pour la date d'échéance
-        self.label_date = QLabel("Date d'échéance :")
-        self.champ_date = QDateEdit()
-        self.champ_date.setDate(QDate.currentDate())  # La date par défaut est la date actuelle
+        # Sélecteur pour la date d'échéance
+        self.label_date = QLabel("Date d'échéance :")  # Etiquette pour la date d'échéance
+        self.champ_date = QDateEdit()  # Sélecteur de date
+        self.champ_date.setDate(QDate.currentDate())  # Date initiale : date actuelle
+        self.champ_date.setCalendarPopup(True)  # Affichage d'un calendrier au clic
         layout.addWidget(self.label_date)
         layout.addWidget(self.champ_date)
 
-        # Choix du statut de la tâche
-        self.label_statut = QLabel("Statut de la tâche :")
-        self.champ_statut = QComboBox()
-        self.champ_statut.addItems(["à faire", "en cours", "terminé"])  # Statuts disponibles
-        layout.addWidget(self.label_statut)
-        layout.addWidget(self.champ_statut)
-
-        # Sélection du groupe affecté
-        self.label_groupe_affecte = QLabel("Groupe Affecté :")
-        self.champ_groupe_affecte = QComboBox()
-        for groupe in self.groupes:
-            self.champ_groupe_affecte.addItem(groupe[1], groupe[0])  # Ajouter le groupe au combobox
-        layout.addWidget(self.label_groupe_affecte)
-        layout.addWidget(self.champ_groupe_affecte)
-
-        # Sélection de l'utilisateur affecté
-        self.label_utilisateur_affecte = QLabel("Utilisateur Affecté :")
-        self.champ_utilisateur_affecte = QComboBox()
-        for utilisateur in self.utilisateurs:
-            self.champ_utilisateur_affecte.addItem(utilisateur[1], utilisateur[0])  # Ajouter l'utilisateur
-        layout.addWidget(self.label_utilisateur_affecte)
-        layout.addWidget(self.champ_utilisateur_affecte)
-
-        # Sélection de la liste
-        self.label_liste = QLabel("Liste :")
-        self.champ_liste = QComboBox()
-        for liste in self.listes:
-            self.champ_liste.addItem(liste[1], liste[0])  # Ajouter la liste
+        # Menu déroulant pour sélectionner la liste
+        self.label_liste = QLabel("Liste :")  # Etiquette pour le menu déroulant de liste
+        self.combo_box_listes = QComboBox()  # Menu déroulant pour les listes
         layout.addWidget(self.label_liste)
-        layout.addWidget(self.champ_liste)
+        layout.addWidget(self.combo_box_listes)
 
-        # Sélection des tags
-        self.label_tag = QLabel("Tag :")
-        self.champ_tag = QComboBox()
-        for tag in self.tags:
-            self.champ_tag.addItem(tag[1], tag[0])  # Ajouter le tag
-        layout.addWidget(self.label_tag)
-        layout.addWidget(self.champ_tag)
+        # Menu déroulant pour sélectionner l'utilisateur assigné
+        self.label_utilisateur = QLabel("Assigné à :")  # Etiquette pour le menu déroulant des utilisateurs
+        self.combo_box_utilisateurs = QComboBox()  # Menu déroulant pour les utilisateurs
+        layout.addWidget(self.label_utilisateur)
+        layout.addWidget(self.combo_box_utilisateurs)
 
-        # Bouton de soumission
-        self.bouton_submit = QPushButton("Soumettre")
-        self.bouton_submit.clicked.connect(self.on_submit)  # Connexion de l'action du bouton à la fonction on_submit
-        layout.addWidget(self.bouton_submit)
+        # Sélecteur pour la date de rappel
+        self.label_date_rappel = QLabel("Date de rappel :")  # Etiquette pour la date de rappel
+        self.champ_date_rappel = QDateEdit()  # Sélecteur de date pour le rappel
+        self.champ_date_rappel.setDate(QDate.currentDate())  # Date initiale : date actuelle
+        self.champ_date_rappel.setCalendarPopup(True)  # Affichage d'un calendrier au clic
+        layout.addWidget(self.label_date_rappel)
+        layout.addWidget(self.champ_date_rappel)
 
-        # Définir le layout du formulaire
-        self.setLayout(layout)
+        # Bouton pour soumettre le formulaire
+        self.bouton_soumettre = QPushButton("Soumettre")  # Bouton pour soumettre le formulaire
+        self.bouton_soumettre.clicked.connect(self.Envoie)  # Connexion de l'action du bouton à la méthode Envoie
+        layout.addWidget(self.bouton_soumettre)
 
-    def on_submit(self):
-        """Valide et soumet les données du formulaire pour insertion dans la base de données."""
-        titre = self.champ_nom.text()
-        description = self.champ_description.toPlainText()
-        date_echeance = self.champ_date.date().toString("yyyy-MM-dd")
-        statut = self.champ_statut.currentText()
-        id_groupe = self.champ_groupe_affecte.currentData()
-        id_utilisateur = self.champ_utilisateur_affecte.currentData()
-        id_liste = self.champ_liste.currentData()
-        id_tag = self.champ_tag.currentData()
-        date_rappel = None  # Pour cet exemple, la date de rappel est laissée vide (à gérer par l'utilisateur si besoin)
+        self.setLayout(layout)  # Applique le layout à la fenêtre
 
-        # Vérification de la validité des données
-        if not titre or not description:
-            QMessageBox.warning(self, "Erreur", "Tous les champs obligatoires doivent être remplis.")
-            return
+        # Variables pour stocker les données récupérées des utilisateurs et des listes
+        self.listes = {}
+        self.utilisateurs = {}
 
-        if not valider_date(date_echeance):
-            QMessageBox.warning(self, "Erreur", "La date d'échéance est invalide.")
-            return
+        # Charger les utilisateurs et les listes disponibles depuis le serveur
+        self.ChargerUtilisateurs()
+        self.ChargerListes()
 
-        # Insérer la tâche dans la base de données
-        inserer_tache(self.connexion, titre, description, datetime.now(), date_echeance, "", statut, id_groupe,
-                      id_utilisateur, id_liste, id_tag, date_rappel)
+    def conection(self):
+        """
+        Établit une connexion sécurisée avec le serveur via un socket.
 
-        QMessageBox.information(self, "Succès", "Tâche ajoutée avec succès!")
+        Returns:
+            AESsocket: Socket sécurisé pour échanger des données chiffrées.
+        """
+        try:
+            # Création du socket pour la connexion avec le serveur (adresse locale et port 12345)
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect(('localhost', 12345))  # Connexion au serveur local
+            return AESsocket(client_socket, is_server=False)  # Retourne un socket sécurisé
+        except Exception as e:
+            # Affichage d'un message d'erreur si la connexion échoue
+            QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
+            return None
 
-# Point d'entrée de l'application
+    def ChargerListes(self):
+        """Charge les listes disponibles depuis le serveur et les ajoute au menu déroulant."""
+        try:
+            aes_socket = self.conection()  # Tentative de connexion
+            if not aes_socket:
+                return  # Si la connexion échoue, on retourne sans charger les listes
+
+            aes_socket.send("GET_LISTES")  # Envoi de la requête pour obtenir les listes
+            reponse_listes = aes_socket.recv(1024)  # Réception de la réponse du serveur
+            resultats_listes = json.loads(reponse_listes)  # Décodage des données JSON reçues
+
+            if "error" in resultats_listes:  # Si une erreur est retournée, on l'affiche
+                QMessageBox.warning(self, "Erreur", resultats_listes["error"])
+            else:
+                # Remplir le dictionnaire des listes et ajouter les options au menu déroulant
+                self.listes = {liste['nom_liste']: liste['id'] for liste in resultats_listes}
+                self.combo_box_listes.addItems(self.listes.keys())  # Ajout des noms des listes au combo box
+        except Exception as e:
+            # Affichage d'un message d'erreur en cas de problème lors du chargement des listes
+            QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des listes : {e}")
+
+    def ChargerUtilisateurs(self):
+        """Charge les utilisateurs assignables à une tâche depuis le serveur et les ajoute au menu déroulant."""
+        try:
+            aes_socket = self.conection()  # Tentative de connexion
+            if not aes_socket:
+                return  # Si la connexion échoue, on retourne sans charger les utilisateurs
+
+            aes_socket.send("GET_UTILISATEURS")  # Envoi de la requête pour obtenir les utilisateurs
+            reponse_utilisateurs = aes_socket.recv(1024)  # Réception de la réponse du serveur
+            resultats_utilisateurs = json.loads(reponse_utilisateurs)  # Décodage des données JSON reçues
+
+            if resultats_utilisateurs:
+                # Remplir le dictionnaire des utilisateurs et ajouter les options au menu déroulant
+                self.utilisateurs = {utilisateur['pseudo']: utilisateur['id'] for utilisateur in resultats_utilisateurs}
+                self.combo_box_utilisateurs.addItems(self.utilisateurs.keys())  # Ajout des pseudos des utilisateurs
+            else:
+                # Affichage d'un message si aucun utilisateur n'est trouvé
+                QMessageBox.information(self, "Information", "Aucun utilisateur trouvé.")
+        except Exception as e:
+            # Affichage d'un message d'erreur en cas de problème lors du chargement des utilisateurs
+            QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des utilisateurs : {e}")
+
+    def Envoie(self):
+        """Récupère les données du formulaire et les envoie au serveur pour créer une nouvelle tâche."""
+        try:
+            # Récupération des informations du formulaire
+            titre_tache = self.champ_nom.text().strip()
+            description = self.champ_description.toPlainText().strip()
+            date_echeance = self.champ_date.date().toString("yyyy-MM-dd")  # Format de la date
+            date_rappel = self.champ_date_rappel.date().toString("yyyy-MM-dd")
+
+            pseudo_choisi = self.combo_box_utilisateurs.currentText()
+            nom_liste_choisie = self.combo_box_listes.currentText()
+
+            # Récupération des ID associés à l'utilisateur et à la liste choisis
+            id_utilisateur = self.utilisateurs.get(pseudo_choisi, None)
+            id_liste = self.listes.get(nom_liste_choisie, None)
+
+            # Vérification si l'utilisateur ou la liste n'a pas été sélectionné
+            if not id_utilisateur or not id_liste:
+                QMessageBox.warning(self, "Erreur", "Utilisateur ou liste non sélectionné.")
+                return
+
+            # Envoi des informations au serveur pour créer la tâche
+            aes_socket = self.conection()
+            if not aes_socket:
+                return  # Si la connexion échoue, on retourne sans envoyer les données
+
+            message = f"CREATION_TACHE:{id_utilisateur}:{id_liste}:{titre_tache}:{description}:{date_echeance}:0:{date_rappel}"
+            aes_socket.send(message)  # Envoi des données de création de la tâche au serveur
+
+            # Affichage d'un message de succès
+            QMessageBox.information(self, "Succès", "Tâche créée avec succès.")
+        except Exception as e:
+            # Affichage d'un message d'erreur si un problème survient lors de l'envoi
+            QMessageBox.critical(self, "Erreur", f"Erreur lors de l'envoi : {e}")
+
+
+# Point d'entrée de l'application.
 if __name__ == "__main__":
+    # Création de l'application PyQt et lancement de l'interface graphique
     app = QApplication(sys.argv)
-    form = FormulaireTache()  # Crée l'instance du formulaire
-    form.show()  # Affiche le formulaire
-    sys.exit(app.exec_())  # Démarre l'application
+    formulaire = FormulaireTache()  # Création de la fenêtre du formulaire
+    formulaire.show()  # Affichage de la fenêtre
+    sys.exit(app.exec_())  # Exécution de l'application

@@ -188,6 +188,7 @@ class TaskServer:
 
 
 if __name__ == "__main__":
+
     # Point d'entrée du script : lancement du serveur
     taskServer = TaskServer()
     taskServer.start()
