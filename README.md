@@ -1,70 +1,76 @@
-# The_Toto_List
-# Résumé
-Ce script Python implémente une application graphique pour créer et gérer des tâches. L'application utilise PyQt5 pour l'interface utilisateur et interagit avec une base de données MySQL via une connexion sécurisée avec chiffrement AES. Elle permet de saisir des informations sur une tâche, telles que son nom, sa description, la date d'échéance, le statut, l'utilisateur assigné, et la liste associée.
+# Serveur.py
 
-# Structure du script
-## Importation des modules
-Le script importe plusieurs bibliothèques :
+**Serveur.py** est un serveur de gestion des tâches qui permet aux clients de gérer des utilisateurs, des listes et des tâches via des commandes. Il utilise des sockets sécurisés avec un chiffrement AES pour la communication. Les données des utilisateurs et des tâches sont stockées dans une base de données MySQL.
 
-- sys : pour interagir avec le système, notamment pour l'exécution de l'application.
-- pymysql.cursors, pymysql : pour la connexion à la base de données MySQL.
-- socket : pour la communication réseau.
-- lib.custom : pour des outils personnalisés comme AEScipher et AESsocket, qui gèrent le chiffrement.
-- PyQt5 : pour la création de l'interface utilisateur.
-## Classe FormulaireTache
-Cette classe hérite de QWidget et représente l'interface graphique du formulaire de création de tâche.
+## Fonctionnalités principales
+- Récupérer la liste des utilisateurs (`GET_UTILISATEURS`).
+- Récupérer les listes de tâches disponibles (`GET_LISTES`).
+- Créer une nouvelle tâche (`CREATION_TACHE`).
+- Obtenir les détails d'une liste de tâches spécifique (`ID_LISTE`).
 
-### Attributs
-1. connexion : Connexion à la base de données MySQL.
-2. groupes, listes, utilisateurs, tags : Listes contenant les groupes, listes, utilisateurs et tags respectifs.
-### Constructeur (__init__)
-Initialise les composants graphiques de l'application et charge les données nécessaires depuis le serveur.
+## Prérequis
 
-### Éléments graphiques principaux
-1. Nom de la tâche : Champ texte pour saisir le nom.
-2. Description : Zone de texte pour détailler la tâche.
-3. Date d'échéance : Sélecteur de date (QDateEdit) initialisé à la date actuelle.
-4. Statut : Menu déroulant (QComboBox) pour choisir entre "à faire", "en cours", ou "terminé".
-5. Liste : Menu déroulant pour sélectionner la liste associée à la tâche.
-6. Utilisateur : Menu déroulant pour sélectionner l'utilisateur assigné.
-7. Date de rappel : Sélecteur de date pour définir un rappel.
-8. Bouton "Soumettre" : Déclenche l'envoi des données.
-## Méthodes
+Avant de pouvoir utiliser le serveur, assurez-vous que les éléments suivants sont installés :
 
-1. conection
-   
-Établit une connexion réseau sécurisée avec le serveur via un socket standard, amélioré avec AES et Diffie-Hellman pour le chiffrement.
+- **Python 3.x** : Assurez-vous que Python 3 est installé sur votre machine.
+- **MySQL** : Un serveur MySQL fonctionnel, avec une base de données contenant les tables appropriées (`utilisateurs`, `listes`, `taches`).
+- **Librairies Python** :
+  - `pymysql`
+  - `socket`
+  - `json`
 
-3. Deconnection
-   
-Ferme la connexion réseau.
+Vous pouvez installer les dépendances Python en exécutant la commande suivante :
+`pip install pymysql`
 
-4. ChargerListes
-   
-Charge les listes disponibles depuis le serveur et les affiche dans le QComboBox.
+## Variables de connexion à la base de données
+Le serveur utilise les informations de connexion à MySQL définies dans le code :
+```
+host : 127.0.0.1 (ou l'adresse IP de votre serveur MySQL)
+user : root (nom d'utilisateur MySQL)
+password : toto (mot de passe MySQL)
+database : TheTotoDB
+port : 3306 (port MySQL)
+```
 
-- Envoie une requête SQL : SELECT nom_liste FROM listes.
-- Affiche un message d'erreur si aucun résultat n'est trouvé.
-  
-4. ChargeUtilisateurs
-  
-Charge les utilisateurs disponibles depuis le serveur et les affiche dans le QComboBox.
 
-- Envoie une requête SQL : SELECT pseudo FROM utilisateurs.
-- Affiche un message d'erreur si aucun résultat n'est trouvé.
-5. Envoie
-  
-Récupère les données du formulaire, effectue les vérifications, puis les envoie au serveur.
+### Structure du code
+## TaskServer
+La classe principale qui implémente le serveur. Elle est responsable de :
 
-  i. Récupération des données utilisateur et liste :
-     
-  - Identifie l'utilisateur assigné et la liste sélectionnée via des requêtes SQL.
-  
-  ii. Construction de la requête SQL :
+- Écouter les connexions entrantes via un socket sécurisé avec AES.
+- Interpréter les commandes reçues des clients.
+- Interagir avec la base de données MySQL pour récupérer des informations ou insérer de nouvelles données.
 
-  - Génère une requête d'insertion dans la table taches.
-  
-  iii. Transmission au serveur :
+## Méthodes principales :
+- start() : Démarre le serveur et attend les connexions des clients.
+- interpretCommand(command) : Interprète la commande reçue du client et appelle la méthode appropriée pour y répondre.
+- getUserId() : Récupère les utilisateurs enregistrés dans la base de données.
+- getListId() : Récupère les listes disponibles.
+- createTask(userId, listId, taskTitle, taskDescription, dueDate, status, reminderDate) : Crée une nouvelle tâche dans la base de données.
 
-  - Utilise AESsocket pour envoyer les données de manière sécurisée.
+## Exemple de commandes
+Voici quelques exemples de commandes que le client peut envoyer au serveur :
 
+### Obtenir la liste des utilisateurs :
+
+`GET_UTILISATEURS `
+Cette commande renvoie une liste JSON contenant les ID et pseudonymes des utilisateurs.
+
+### Obtenir les listes de tâches :
+
+`GET_LISTES`
+Cette commande renvoie une liste JSON contenant les ID et noms des listes de tâches disponibles.
+
+### Créer une nouvelle tâche :
+
+`CREATION_TACHE:1:1:Tâche test:Une description de la tâche:2024-12-31:à faire:2024-12-25`
+Cette commande crée une nouvelle tâche pour l'utilisateur avec l'ID 1 dans la liste avec l'ID 1.
+
+### Obtenir les tâches d'une liste spécifique :
+
+`ID_LISTE:1`
+Cette commande renvoie les tâches associées à la liste avec l'ID 1.
+
+## Gestion des erreurs
+Si une commande est mal formulée ou non reconnue, le serveur renverra un message indiquant "Commande inconnue".
+En cas d'erreur de connexion à la base de données ou d'échec d'exécution d'une requête, le serveur renverra un message d'erreur spécifique.
