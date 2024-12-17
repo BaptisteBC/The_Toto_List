@@ -1,28 +1,19 @@
 import sys
-import socket  # Pour gérer les connexions réseau via des sockets.
-from lib.custom import AEScipher, AESsocket  # Classes personnalisées pour gérer le chiffrement AES et les connexions sécurisées.
-from PyQt5.QtWidgets import (
-    QApplication, QWidget, QLabel, QLineEdit, QTextEdit, QComboBox,
-    QDateEdit, QVBoxLayout, QPushButton, QMessageBox
-)  # Modules de PyQt5 pour créer l'interface graphique.
-from PyQt5.QtCore import QDate  # Utilisé pour gérer les dates dans PyQt5.
-from datetime import datetime  # Utilisé pour les opérations sur les dates/heures.
+from PyQt5.QtWidgets import (QWidget, QLabel, QLineEdit, QTextEdit, QDateEdit, QVBoxLayout, QComboBox,
+                             QPushButton, QApplication, QMessageBox)
+from PyQt5.QtCore import QDate
+import socket
 import json
+from lib.custom import AESsocket
 
-
-"""
-Application PyQt5 pour interagir avec un serveur via un formulaire de création de tâches.
-"""
 
 class FormulaireTache(QWidget):
     """
     Classe représentant l'interface graphique pour créer une tâche.
 
     Attributes:
-        groupes (list): Liste des groupes (optionnel pour extension future).
-        listes (list): Liste des listes disponibles pour organiser les tâches.
-        utilisateurs (list): Liste des utilisateurs assignables à une tâche.
-        tags (list): Liste des tags disponibles pour catégoriser une tâche (future extension).
+        listes (dict): Liste des listes disponibles pour organiser les tâches.
+        utilisateurs (dict): Liste des utilisateurs assignables à une tâche.
     """
 
     def __init__(self):
@@ -31,7 +22,7 @@ class FormulaireTache(QWidget):
 
         # Configuration de la fenêtre principale
         self.setWindowTitle("Formulaire de Tâche")
-        self.setGeometry(100, 100, 400, 600)  # Définit la taille et la position de la fenêtre.
+        self.setGeometry(100, 100, 400, 600)
 
         # Layout principal
         layout = QVBoxLayout()
@@ -51,16 +42,10 @@ class FormulaireTache(QWidget):
         # Sélecteur pour la date d'échéance
         self.label_date = QLabel("Date d'échéance :")
         self.champ_date = QDateEdit()
-        self.champ_date.setDate(QDate.currentDate())  # Initialise avec la date actuelle.
+        self.champ_date.setDate(QDate.currentDate())
+        self.champ_date.setCalendarPopup(True)
         layout.addWidget(self.label_date)
         layout.addWidget(self.champ_date)
-
-        # Sélecteur pour le statut de la tâche
-        self.label_statut = QLabel("Statut de la tâche :")
-        self.champ_statut = QComboBox()
-        self.champ_statut.addItems(["à faire", "en cours", "terminé"])  # Options possibles.
-        layout.addWidget(self.label_statut)
-        layout.addWidget(self.champ_statut)
 
         # Menu déroulant pour sélectionner la liste
         self.label_liste = QLabel("Liste :")
@@ -77,7 +62,8 @@ class FormulaireTache(QWidget):
         # Sélecteur pour la date de rappel
         self.label_date_rappel = QLabel("Date de rappel :")
         self.champ_date_rappel = QDateEdit()
-        self.champ_date_rappel.setDate(QDate.currentDate())  # Initialise avec la date actuelle.
+        self.champ_date_rappel.setDate(QDate.currentDate())
+        self.champ_date_rappel.setCalendarPopup(True)
         layout.addWidget(self.label_date_rappel)
         layout.addWidget(self.champ_date_rappel)
 
@@ -86,10 +72,14 @@ class FormulaireTache(QWidget):
         self.bouton_soumettre.clicked.connect(self.Envoie)
         layout.addWidget(self.bouton_soumettre)
 
-        self.setLayout(layout)  # Définit le layout pour la fenêtre.
+        self.setLayout(layout)
+
+        # Variables pour stocker les données récupérées
+        self.listes = {}
+        self.utilisateurs = {}
 
         # Charger les utilisateurs et les listes disponibles
-        #self.ChargeUtilisateurs()
+        self.ChargerUtilisateurs()
         self.ChargerListes()
 
     def conection(self):
@@ -101,97 +91,78 @@ class FormulaireTache(QWidget):
         """
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect(('localhost', 12345))  # Connexion au serveur local.
-            return AESsocket(client_socket, is_server=False)  # Passe au socket sécurisé AES.
+            client_socket.connect(('localhost', 12345))
+            return AESsocket(client_socket, is_server=False)
         except Exception as e:
-            QMessageBox.critical(self, "Erreur", f"Erreur de connexion au serveur : {e}")
-
-    def Deconnection(self):
-        """
-        Ferme la connexion avec le serveur.
-        """
-        client_socket = self.conection()
-        if client_socket:
-            client_socket.close()
+            QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
+            return None
 
     def ChargerListes(self):
-        """
-        Charge les listes disponibles depuis le serveur et les ajoute au menu déroulant.
-        """
+        """Charge les listes disponibles depuis le serveur et les ajoute au menu déroulant."""
         try:
-            # Connexion au serveur
-            aes_socket = self.conection()
-            if not aes_socket:
-                return  # Arrête si la connexion a échoué
-
-            # Préparation et envoi du message pour demander les listes
-            message_listes = "GET_LISTES"
-            aes_socket.send(message_listes)
-
-            # Réception des données du serveur
-            reponse_listes = aes_socket.recv(1024)
-
-            # Traitement des résultats
-            #resultats_listes = eval(reponse_listes)  # Convertit la réponse en structure Python (ou json.loads si JSON)
-            resultats_listes = json.loads(reponse_listes)
-            if resultats_listes:
-                # Ajoute les noms des listes au menu déroulant
-                noms_listes = [liste['nom_liste'] for liste in resultats_listes]
-                self.combo_box_listes.clear()  # Efface les anciennes options
-                self.combo_box_listes.addItems(noms_listes)
-            else:
-                QMessageBox.warning(self, "Aucune liste", "Aucune liste trouvée.")
-
-        except Exception as e:
-            QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des listes : {e}")
-    """
-    def ChargeUtilisateurs(self):
- 
-        try:
-            requete_sql = "PSUDO_UTILISATEUR"  # Requête pour récupérer les pseudos des utilisateurs.
-            resultats = self.envoyer_requete(requete_sql)
-
-            if resultats:
-                noms_utilisateurs = [utilisateur['pseudo'] for utilisateur in resultats]
-                self.combo_box_utilisateurs.addItems(noms_utilisateurs)
-            else:
-                QMessageBox.warning(self, "Aucun utilisateur", "Aucun utilisateur trouvé.")
-        except Exception as e:
-            QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des utilisateurs : {e}")
-    """
-    def Envoie(self):
-        """
-        Récupère les données du formulaire et les envoie au serveur pour créer une nouvelle tâche.
-        """
-        try:
-            # Récupération des données du formulaire.
-            titre_tache = self.champ_nom.text().strip()
-            description = self.champ_description.toPlainText().strip()
-            date_echeance = self.champ_date.date().toString("yyyy-MM-dd")
-            statut = self.champ_statut.currentText().lower()
-            date_rappel = self.champ_date_rappel.date().toString("yyyy-MM-dd")
-            utilisateur_choisi = self.combo_box_utilisateurs.currentText()
-            liste_choisie = self.combo_box_listes.currentText()
-
-            # Connexion au serveur.
             aes_socket = self.conection()
             if not aes_socket:
                 return
 
-            # Récupération de l'ID utilisateur.
-            message_utilisateur = f"ID_UTILISATEUR:{utilisateur_choisi}"
-            aes_socket.send(message_utilisateur)
-            id_utilisateur = aes_socket.recv(1024)
+            aes_socket.send("GET_LISTES")
+            reponse_listes = aes_socket.recv(1024)
+            resultats_listes = json.loads(reponse_listes)
 
-            # Récupération de l'ID liste.
-            message_liste = f"ID_LISTE:{liste_choisie}"
-            aes_socket.send(message_liste)
-            id_liste = aes_socket.recv(1024)
+            if "error" in resultats_listes:
+                QMessageBox.warning(self, "Erreur", resultats_listes["error"])
+            else:
+                self.listes = {liste['nom_liste']: liste['id'] for liste in resultats_listes}
+                self.combo_box_listes.addItems(self.listes.keys())
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des listes : {e}")
 
-            # Préparation et envoi du message pour créer la tâche.
-            message = f"CREATION_TACHE:{id_utilisateur}:{id_liste}:{titre_tache}:{description}:{date_echeance}:{statut}:{date_rappel}"
+    def ChargerUtilisateurs(self):
+        """Charge les utilisateurs assignables à une tâche depuis le serveur et les ajoute au menu déroulant."""
+        try:
+            aes_socket = self.conection()
+            if not aes_socket:
+                return
+
+            aes_socket.send("GET_UTILISATEURS")
+            reponse_utilisateurs = aes_socket.recv(1024)
+            resultats_utilisateurs = json.loads(reponse_utilisateurs)
+
+            if resultats_utilisateurs:
+                self.utilisateurs = {utilisateur['pseudo']: utilisateur['id'] for utilisateur in resultats_utilisateurs}
+                self.combo_box_utilisateurs.addItems(self.utilisateurs.keys())
+            else:
+                QMessageBox.information(self, "Information", "Aucun utilisateur trouvé.")
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des utilisateurs : {e}")
+
+    def Envoie(self):
+        """Récupère les données du formulaire et les envoie au serveur pour créer une nouvelle tâche."""
+        try:
+            # Récupération des informations
+            titre_tache = self.champ_nom.text().strip()
+            description = self.champ_description.toPlainText().strip()
+            date_echeance = self.champ_date.date().toString("yyyy-MM-dd")
+            date_rappel = self.champ_date_rappel.date().toString("yyyy-MM-dd")
+
+            pseudo_choisi = self.combo_box_utilisateurs.currentText()
+            nom_liste_choisie = self.combo_box_listes.currentText()
+
+            id_utilisateur = self.utilisateurs.get(pseudo_choisi, None)
+            id_liste = self.listes.get(nom_liste_choisie, None)
+
+            if not id_utilisateur or not id_liste:
+                QMessageBox.warning(self, "Erreur", "Utilisateur ou liste non sélectionné.")
+                return
+
+            aes_socket = self.conection()
+            if not aes_socket:
+                return
+
+            message = f"CREATION_TACHE:{id_utilisateur}:{id_liste}:{titre_tache}:{description}:{date_echeance}:0:{date_rappel}"
             aes_socket.send(message)
+
             QMessageBox.information(self, "Succès", "Tâche créée avec succès.")
+
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors de l'envoi : {e}")
 
@@ -201,4 +172,4 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)
     formulaire = FormulaireTache()
     formulaire.show()
-    sys.exit(app.exec())
+    sys.exit(app.exec_())

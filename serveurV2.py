@@ -1,6 +1,8 @@
 import socket
 import pymysql.cursors
 from lib.custom import AESsocket  # Importation de la classe personnalisée pour le chiffrement AES
+import json
+
 
 class TaskServer:
     """
@@ -25,11 +27,11 @@ class TaskServer:
 
         # Configuration de la connexion à la base de données MySQL
         self.dbConnection = pymysql.connect(
-            host='85.10.235.60' , # Remplace par l'adresse IP publique ou le nom d'hôte de la base de données distante
-            user = 'totodb-admin',  # Le nom d'utilisateur de la base de données
-            password = '&TotoDB$IUT!2024%Ad',  # Le mot de passe associé à l'utilisateur
+            host='127.0.0.1' , # Remplace par l'adresse IP publique ou le nom d'hôte de la base de données distante
+            user = 'root',  # Le nom d'utilisateur de la base de données
+            password = 'toto',  # Le mot de passe associé à l'utilisateur
             database = 'TheTotoDB',  # Le nom de la base de données
-            port = 50000 , # Le port spécifique sur lequel le serveur MySQL écoute
+            port = 3306 , # Le port spécifique sur lequel le serveur MySQL écoute
             cursorclass=pymysql.cursors.DictCursor
         )
 
@@ -61,6 +63,7 @@ class TaskServer:
 
                     print(f"Commande reçue: {command}")
                     response = self.interpretCommand(command)  # Traite la commande
+                    print(response)
                     aesSocket.send(response)  # Envoie la réponse au client
 
             except Exception as e:
@@ -83,20 +86,19 @@ class TaskServer:
         """
         try:
             # Gestion des différentes commandes possibles
-            if command.startswith("ID_UTILISATEUR:"):
-                pseudo = command.split(":")[1]
-                return self.getUserId(pseudo)
+            if command.startswith("GET_UTILISATEURS"):
+                return self.getUserId()
 
-            elif command.startswith("ID_LISTE:"):
+            elif command.startswith("ID_LISTE"):
                 listName = command.split(":")[1]
                 return self.getListId(listName)
 
-            elif command.startswith("CREATION_TACHE:"):
+            elif command.startswith("CREATION_TACHE"):
                 details = command.split(":")[1:]
                 return self.createTask(*details)
 
             elif command == "GET_LISTES":
-                return self.getAllLists()
+                return self.getListId()
 
             else:
                 return "Commande inconnue."
@@ -105,78 +107,52 @@ class TaskServer:
             print(f"Erreur dans l'interprétation de la commande: {e}")
             return "Erreur serveur."
 
-    def getAllLists(self):
-        """
-        Récupère toutes les listes disponibles dans la base de données.
 
-        Returns:
-            str: Une liste des noms de listes en format JSON, ou un message d'erreur.
+    def getUserId(self):
         """
+           Récupère les ID et pseudonymes des utilisateurs.
+
+           Returns:
+               str: Liste d'objets JSON contenant les ID et pseudonymes des utilisateurs.
+           """
         try:
             with self.dbConnection.cursor() as cursor:
-                cursor.execute("SELECT nom_liste FROM listes")
+                cursor.execute("SELECT id_utilisateur, pseudonyme_utilisateur FROM utilisateurs")
                 results = cursor.fetchall()
-                print(results)
 
                 if results:
-                    # Crée une liste des noms des listes et la convertit en chaîne JSON
-                    listNames = [result['nom_liste'] for result in results]
-                    print(listNames)
-                    return str(listNames)
+                    # Transforme les résultats en liste d'objets
+                    users = [{"id": row["id_utilisateur"], "pseudo": row["pseudonyme_utilisateur"]} for row in results]
+                    return json.dumps(users)  # Convertit en chaîne JSON
                 else:
-                    return "Aucune liste disponible."
+                    return "Aucun utilisateur trouvé."
 
         except Exception as e:
             print(f"Erreur MySQL: {e}")
             return "Erreur MySQL."
 
-    def getUserId(self, pseudo):
+    def getListId(self):
         """
-        Récupère l'ID d'un utilisateur à partir de son pseudo.
+           Récupère les IDs et noms de toutes les listes disponibles.
 
-        Args:
-            pseudo (str): Pseudo de l'utilisateur.
-
-        Returns:
-            str: ID de l'utilisateur ou un message d'erreur si l'utilisateur est introuvable.
-        """
+           Returns:
+               str: JSON contenant les IDs et noms des listes, ou un message d'erreur.
+           """
         try:
             with self.dbConnection.cursor() as cursor:
-                cursor.execute("SELECT id_utilisateur FROM utilisateurs WHERE pseudo = %s", (pseudo,))
-                result = cursor.fetchone()
+                cursor.execute("SELECT id_liste, nom_liste FROM listes")
+                results = cursor.fetchall()
 
-                if result:
-                    return str(result['id_utilisateur'])
+                if results:
+                    # Transforme les résultats en liste d'objets
+                    lists = [{"id": row["id_liste"], "nom_liste": row["nom_liste"]} for row in results]
+                    return json.dumps(lists)  # Convertit en chaîne JSON
                 else:
-                    return "Utilisateur introuvable."
+                    return json.dumps({"message": "Aucune liste disponible."})
 
         except Exception as e:
             print(f"Erreur MySQL: {e}")
-            return "Erreur MySQL."
-
-    def getListId(self, listName):
-        """
-        Récupère l'ID d'une liste à partir de son nom.
-
-        Args:
-            listName (str): Nom de la liste.
-
-        Returns:
-            str: ID de la liste ou un message d'erreur si la liste est introuvable.
-        """
-        try:
-            with self.dbConnection.cursor() as cursor:
-                cursor.execute("SELECT id_liste FROM listes WHERE nom_liste = %s", (listName,))
-                result = cursor.fetchone()
-
-                if result:
-                    return str(result['id_liste'])
-                else:
-                    return "Liste introuvable."
-
-        except Exception as e:
-            print(f"Erreur MySQL: {e}")
-            return "Erreur MySQL."
+            return json.dumps({"error": "Erreur MySQL."})
 
     def createTask(self, userId, listId, taskTitle, taskDescription, dueDate, status, reminderDate):
         """
