@@ -17,6 +17,7 @@ def obfuscation(requete):
         password='root',
         db='test'
     )
+    
 
     cursor = conn.cursor()
 
