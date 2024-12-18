@@ -205,9 +205,12 @@ class Server:
                     print(f'Erreur lors du changment de mot de passe {e}')
                     client_socket.send("PASSWORD_CHANGED_ERROR")
 
-            # Gestion des différentes commandes possibles
             elif informations.startswith("GET_UTILISATEURS"):
-                return self.getUserId()
+                utilisateurs = self.getUserId()
+                try:
+                    client_socket.send(utilisateurs)  # Pas de encode() ni decode(), car AESsocket le fait
+                except Exception as e:
+                    print(f"Erreur lors de l'envoi des utilisateurs : {e}")
 
             elif informations.startswith("ID_LISTE"):
                 listName = informations.split(":")[1]
@@ -217,8 +220,12 @@ class Server:
                 details = informations.split(":")[1:]
                 return self.createTask(*details)
 
-            elif informations == "GET_LISTES":
-                return self.getListId()
+            elif informations.startswith("GET_LISTES"):
+                listes = self.getListId()
+                try:
+                    client_socket.send(listes)  # Pas de encode() ni decode(), car AESsocket le fait
+                except Exception as e:
+                    print(f"Erreur lors de l'envoi des utilisateurs : {e}")
 
             else:
                 return "Commande inconnue."
