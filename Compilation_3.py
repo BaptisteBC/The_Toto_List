@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QTreeWidgetItem, QTreeWidget, QDateEdit, QTextEdit, QComboBox, QMessageBox, QLineEdit, QDialog, QDialogButtonBox
 )
 from PyQt5.QtCore import Qt, QDate, QSize, QCoreApplication, pyqtSignal
-from PyQt5.QtGui import QPalette, QColor, QIcon, QKeySequence
+from PyQt5.QtGui import QPalette, QColor, QIcon, QKeySequence, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QTextEdit, QComboBox,
     QDateEdit, QVBoxLayout, QPushButton, QMessageBox, QGridLayout, QListWidget, QListWidgetItem, QProgressBar, QAction
@@ -21,6 +21,7 @@ import time
 from bcrypt import gensalt
 from statsmodels.distributions import ECDFDiscrete
 import re
+import requests
 
 #Création de la tâche (Yann)
 class FormulaireTache(QWidget):
@@ -342,9 +343,11 @@ class TodoListApp(QMainWindow):
         nav_layout = QHBoxLayout()
         # Utilisation d'une icône pour le bouton d'affichage de la colonne
         self.toggle_sidebar_button = QPushButton()
-        self.toggle_sidebar_button.setIcon(QIcon("sidebar-2.png"))  # Utilise une icône par défaut
+        icon_url = "https://icons.veryicon.com/png/o/miscellaneous/we/sidebar-2.png"  # Remplacez par l'URL réelle
+        self.set_icon_from_url(self.toggle_sidebar_button, icon_url)
         self.toggle_sidebar_button.setFixedSize(30, 30)  # Taille de l'icône
         self.toggle_sidebar_button.clicked.connect(self.toggle_sidebar)
+
 
         # Ajout du bouton icône en haut à gauche
         nav_layout.addWidget(self.toggle_sidebar_button)
@@ -359,7 +362,9 @@ class TodoListApp(QMainWindow):
 
         # Bouton mode sombre déplacé vers la droite
         self.theme_button = QPushButton()
-        self.theme_button.setIcon(QIcon("sun.png"))  # Icône par défaut (Soleil pour le mode clair)
+        icon_url = "https://png.pngtree.com/png-clipart/20220812/ourmid/pngtree-shine-sun-light-effect-free-png-and-psd-png-image_6106445.png"  # Remplacez par l'URL réelle
+        self.set_icon_from_url(self.theme_button, icon_url)
+        #self.theme_button.setIcon(QIcon("sun.png"))  # Icône par défaut (Soleil pour le mode clair)
         self.theme_button.setIconSize(QSize(20, 20))  # Réduire la taille de l'icône à 20x20
         self.theme_button.setFixedSize(30, 30)  # Réduire la taille du bouton à 30x30
         self.theme_button.clicked.connect(self.toggle_theme)
@@ -379,6 +384,22 @@ class TodoListApp(QMainWindow):
         self.setCentralWidget(central_widget)
 
         self.is_dark_mode = False
+
+    def set_icon_from_url(self, button, url):
+        try:
+            headers = {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            }
+            response = requests.get(url, headers=headers, stream=True)
+            response.raise_for_status()  # Vérifie les erreurs HTTP
+            pixmap = QPixmap()
+            if not pixmap.loadFromData(response.content):
+                raise ValueError("Impossible de charger l'image à partir des données.")
+            icon = QIcon(pixmap)
+            button.setIcon(icon)
+        except Exception as e:
+            print(f"Erreur lors du chargement de l'image : {e}")
+            QMessageBox.warning(self, "Erreur d'image", f"Impossible de charger l'image depuis {url} : {e}")
 
     def creerMenu(self):
         """
@@ -441,10 +462,12 @@ class TodoListApp(QMainWindow):
     def toggle_theme(self):
         if not self.is_dark_mode:
             self.set_dark_mode()
-            self.theme_button.setIcon(QIcon("moon.png"))  # Icône Lune pour le mode sombre
+            icon_url = "https://icones.pro/wp-content/uploads/2021/02/icone-de-la-lune-grise.png"  # Remplacez par l'URL réelle
+            self.set_icon_from_url(self.theme_button, icon_url)  # Icône Lune pour le mode sombre
         else:
             self.set_light_mode()
-            self.theme_button.setIcon(QIcon("sun.png"))  # Icône Soleil pour le mode clair
+            icon_url = "https://png.pngtree.com/png-clipart/20220812/ourmid/pngtree-shine-sun-light-effect-free-png-and-psd-png-image_6106445.png"  # Remplacez par l'URL réelle
+            self.set_icon_from_url(self.theme_button, icon_url)  # Icône Soleil pour le mode clair
         self.is_dark_mode = not self.is_dark_mode
 
     def set_dark_mode(self):
