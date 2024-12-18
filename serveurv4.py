@@ -154,7 +154,6 @@ class Server:
                         return
                     try:
 
-
                         # Vérifier si l'email ou le pseudo existe déjà
                         cursor.execute(
                             "SELECT * FROM utilisateurs WHERE email_utilisateur = %s OR pseudonyme_utilisateur = %s",
@@ -164,10 +163,10 @@ class Server:
                         if existing_user:
                             try:
                                 # Si l'email ou le pseudo existe déjà
-                                if existing_user[4] == email:  # Index 4 correspond à `email_utilisateur` dans la table
+                                if existing_user[3] == email:  # Index 4 correspond à `email_utilisateur` dans la table
                                     client_socket.send("EMAIL_TAKEN")
                                     print("EMAIL_TAKEN")
-                                elif existing_user[6] == pseudo:  # Index 6 correspond à `pseudonyme_utilisateur`
+                                elif existing_user[5] == pseudo:  # Index 6 correspond à `pseudonyme_utilisateur`
                                     client_socket.send("PSEUDO_TAKEN")
                                     print("PSEUDO_TAKEN")
                             except Exception as e:

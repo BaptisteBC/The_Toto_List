@@ -22,6 +22,7 @@ from bcrypt import gensalt
 from statsmodels.distributions import ECDFDiscrete
 import re
 import requests
+from typing import Tuple
 
 #Création de la tâche (Yann)
 class FormulaireTache(QWidget):
@@ -540,6 +541,7 @@ class TodoListApp(QMainWindow):
     def open_credits(self):
         QMessageBox.information(self, "Crédits", "Ouvrir les crédits")
 
+#Fenêtre d'authentification
 class AuthWindow(QDialog):
     def __init__(self):
         super().__init__()
@@ -709,9 +711,6 @@ class AuthWindow(QDialog):
             QMessageBox.critical(self, 'Erreur', f"Erreur lors de l'authentification: {e}")
 
 
-
-
-
     def inscriptionUtilisateur(self):
         """
         Fonction qui traite la création de compte.
@@ -755,7 +754,6 @@ class AuthWindow(QDialog):
             motDePasseHache = bcrypt.hashpw(motDePasse, salt)
             motDePasseHacheDecode=motDePasseHache.decode('utf-8')
 
-
             message = f"CREATE_ACCOUNT:{email}:{nom}:{prenom}:{pseudo}:{motDePasseHacheDecode}"
             client_socket.send(message)
             response = client_socket.recv(1024)
@@ -788,7 +786,7 @@ class AuthWindow(QDialog):
                 "Très sécurisé": (100, "green")
             }
         except Exception as e:
-            print(f'echec lors du test de complexité: {e}')
+            print(f'Echec lors du test de complexité: {e}')
 
         niveau, couleur = niveaux[complexite]
         self.password_strength_bar.setValue(niveau)
@@ -857,6 +855,7 @@ class AuthWindow(QDialog):
     def getIdentifiants(self):
         return self.utilisateur, self.motDePasse
 
+#Fenêtre changement de mot de passe
 class ChangemotDePasseWindow(QDialog):
     '''
     cette classe va ouvrir une fenetre afin que l'utilisateur puisse changer son mot de passe
@@ -942,79 +941,6 @@ class ChangemotDePasseWindow(QDialog):
                 QMessageBox.critical(self, 'Erreur', f'{e}\n')
         else:
             QMessageBox.critical(self, 'Erreur', f'Les mots de passe ne correspondent pas.\n')
-
-class fenetre(QMainWindow):
-    """
-    classe ou l'interface Utilisateur avec toutes les taches affichés va s'executer
-    """
-    def __init__(self, pseudonyme_utilisateur, motdepasse_utilisateur):
-        try :
-            super().__init__()
-            self.HOST = '127.0.0.1'
-            self.PORT = 55555
-            self.utilisateur = pseudonyme_utilisateur
-            self.motDePasse = motdepasse_utilisateur
-            self.initUI()
-            #print(pseudonyme_utilisateur, motdepasse_utilisateur)
-
-            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.client_socket.connect((self.HOST, self.PORT))
-            self.client_socket = AESsocket(self.client_socket, is_server=False)
-            time.sleep(0.5)
-            self.client_socket.send(f"AUTH:{pseudonyme_utilisateur}:{motdepasse_utilisateur}")
-            #self.client_socket.send(self.motDePasse)
-
-
-            self.creerActions()
-            self.creerMenu()
-        except Exception as e:
-            QMessageBox.critical(self, 'Erreur', f'Erreur lors du chargement de la fenetre {e}')
-
-    def creerMenu(self):
-        """
-        permet de faire un menu d'actions
-        :return:
-        """
-        menuBar = self.menuBar()
-        file = menuBar.addMenu("Option")
-        file.addAction(self.actChangemotDePasse)
-        file.addAction(self.actExit)
-
-    def creerActions(self):
-        """
-        permet de définir les raccourci clavier afin de faire des actions
-        :return:
-        """
-        self.actChangemotDePasse = QAction("Changer de mot de passe", self)
-        self.actChangemotDePasse.setShortcut(QKeySequence("Ctrl+P"))
-        self.actChangemotDePasse.triggered.connect(self.fenetreChangementMDP)
-
-        self.actExit = QAction("Exit", self)
-        self.actExit.setShortcut(QKeySequence("Alt+F4"))
-        self.actExit.setStatusTip("Exit")
-        self.actExit.triggered.connect(self.fermeture)
-
-    def fermeture(self):
-        self.client_socket.close()
-        self.close()
-        app.exit(0)
-        sys.exit(0)
-
-    def fenetreChangementMDP(self):
-        """
-        va appeler la classe qui permettera de modifier le mot de passe
-        :return: void
-        """
-        try:
-            change_motDePasse_window = ChangemotDePasseWindow(self.utilisateur, self.client_socket)
-            if change_motDePasse_window.exec() == QDialog.Accepted:
-                QMessageBox.information("Mot de passe changé avec succès!")
-                #print("Mot de passe changé avec succès!")
-        except Exception as e:
-            QMessageBox.critical("Erreur",f'Erreur lors du changement de mot de passe {e}')
-
-    def initUI(self):
-        pass
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
