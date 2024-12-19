@@ -4,8 +4,13 @@ import pymysql
 
 # Dictionnaire de mappage des tables
 mtables = {
-    "user": "xner1etn",
-    "password":"frfrce",
+    "utilisateur": "xner1etn",
+    "groupes_utilisateurs":"frfrce",
+    "etiquettes_elements":"dvei4agt",
+    "groupes":"zhuf9gee",
+    "taches":"dpam6ddv",
+    "journalisation":"qhds3lem",
+    "istes":"naod2mef",
 }
 
 
