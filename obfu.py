@@ -1,18 +1,16 @@
 import pymysql
-
-#from testobfu import requetes
+import socket
 
 # Dictionnaire de mappage des tables
 mtables = {
     "utilisateur": "xner1etn",
-    "groupes_utilisateurs":"frfrce",
-    "etiquettes_elements":"dvei4agt",
-    "groupes":"zhuf9gee",
-    "taches":"dpam6ddv",
-    "journalisation":"qhds3lem",
-    "istes":"naod2mef",
+    "groupes_utilisateurs": "frfrce",
+    "etiquettes_elements": "dvei4agt",
+    "groupes": "zhuf9gee",
+    "taches": "dpam6ddv",
+    "journalisation": "qhds3lem",
+    "istes": "naod2mef",
 }
-
 
 def obfuscation(requete):
     # Connexion à la base de données MariaDB
@@ -22,7 +20,6 @@ def obfuscation(requete):
         password='root',
         db='test'
     )
-    
 
     cursor = conn.cursor()
 
@@ -31,8 +28,9 @@ def obfuscation(requete):
             # Obtenir le nom de la table obfusquée
             table_obfusquee = mtables[table_orig]
             # Construire la nouvelle requête
-            requete = requete.replace(table_orig, table_obfusquee)  # Ici, on remplace seulement la table
+            requete = requete.replace(table_orig, table_obfusquee)
             break  # Sortir de la boucle après le premier remplacement
+
     # Exécution de la requête obfusquée sur la base de données
     cursor.execute(requete)
     resultats = cursor.fetchall()
@@ -40,4 +38,43 @@ def obfuscation(requete):
     # Fermer la connexion
     conn.close()
 
-    return resultats  # Retourner les résultats
+    return resultats
+
+def start_server():
+    host = '0.0.0.0'  # Écouter sur toutes les interfaces réseau
+    port = 40000
+
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind((host, port))
+    server_socket.listen(5)
+
+    print("ok")
+
+    while True:
+        client_socket, client_address = server_socket.accept()
+        print(f"Connexion établie avec {client_address}")
+
+        try:
+            data = client_socket.recv(1024).decode('utf-8')
+            if not data:
+                break
+
+            print(f"Requête reçue : {data}")
+
+            # Appeler la fonction d'obfuscation
+            try:
+                resultats = obfuscation(data)
+                response = "\n".join([str(row) for row in resultats])
+            except Exception as e:
+                response = f"Erreur lors de l'exécution de la requête : {str(e)}"
+
+            # Envoyer la réponse au client
+            client_socket.sendall(response.encode('utf-8'))
+
+        except Exception as e:
+            print(f"Erreur : {str(e)}")
+        finally:
+            client_socket.close()
+
+if __name__ == "__main__":
+    start_server()
