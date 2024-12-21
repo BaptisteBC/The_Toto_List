@@ -94,6 +94,14 @@ class TaskServer:
                 idTache = command.split(":")[1]
                 return self.getTache(idTache)
 
+            elif command.startswith("GET_sousTache"):
+                idSousTache = command.split(":")[1]
+                return self.getSousTache(idSousTache)
+
+            if command.startswith("modifSousTache"):
+                details = command.split("|")[1:]
+                return self.modifSousTache(*details)
+
             else:
                 return "Commande inconnue."
 
@@ -118,6 +126,7 @@ class TaskServer:
                     "SELECT titre_tache, description_tache, datefin_tache, recurrence_tache, daterappel_tache FROM taches WHERE id_tache = %s;",
                     (idTache,)
                 )
+
                 results = cursor.fetchall()  # Liste de tuples
 
                 if results:
@@ -132,6 +141,7 @@ class TaskServer:
 
     def modifTache(self, idTache, titre, description, dateFin, recurrence, dateRappel):
         try:
+
             with self.dbConnection.cursor() as cursor:
                 cursor.execute("""
                     UPDATE taches SET titre_tache = %s, description_tache = %s, datefin_tache = %s, recurrence_tache = %s, daterappel_tache = %s
@@ -143,7 +153,44 @@ class TaskServer:
             print(f"Erreur MySQL: {e}")
             return "Erreur MySQL."
 
+    def getSousTache(self, idSousTache):
+        """
+        Récupère les informations sur une sous tâche spécifique.
 
+        Args:
+            idSousTache (str): ID de la sousSELECT titre_soustache, description_soustache, datefin_soustache, daterappel_soustache FROM soustaches WHERE id_soustache = %s;", (idSousTache,) tâche à récupérer.
+
+        Returns:
+            str: JSON contenant les informations sur la tâche (avec datetime sérialisé).
+        """
+        try:
+            with self.dbConnection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT titre_soustache, description_soustache, datefin_soustache, daterappel_soustache FROM soustaches WHERE id_soustache = %s;", (idSousTache,)
+                )
+                results = cursor.fetchall()  # Liste de tuples
+                print(results)
+                if results:
+                    serialized_results = [[ value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row ] for row in results ]
+                    return json.dumps(serialized_results)
+                else:
+                    return json.dumps([])
+
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return json.dumps({"error": "Erreur MySQL."})
+    def modifSousTache(self, idSousTache, titre, description, dateFin, dateRappel):
+        try:
+            with self.dbConnection.cursor() as cursor:
+                cursor.execute("""
+                    UPDATE soustaches SET titre_soustache = %s, description_soustache = %s, datefin_soustache = %s, daterappel_soustache = %s
+                            WHERE id_soustache = %s;
+                """, (titre, description, dateFin,dateRappel if dateRappel != 'NULL' else None, idSousTache))
+                self.dbConnection.commit()
+                return "Sous tâche modifiée avec succès."
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return "Erreur MySQL."
 if __name__ == "__main__":
 
     # Point d'entrée du script : lancement du serveur

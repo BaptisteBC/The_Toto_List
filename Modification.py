@@ -211,9 +211,7 @@ class PagePrincipale(QWidget):
             if not aes_socket:
                 print("Erreur de connexion au serveur.")
             message = f"MODIF_TACHE|{idTache}|{titre}|{description}|{dateFin.toString('yyyy-MM-dd HH:mm:ss')}|{recurrence}|{dateRappel.toString('yyyy-MM-dd HH:mm:ss') if dateRappel else 'NULL'}"""
-            print(message)
             aes_socket.send(message)
-            print("message ennvoyer")
             dialog.accept()
             self.actualiser()
         except pymysql.MySQLError as e:
@@ -223,9 +221,22 @@ class PagePrincipale(QWidget):
 
     def modifierSousTache(self, idSousTache):
         try:
-            curseur = self.cnx.cursor()
-            curseur.execute("SELECT titre_soustache, description_soustache, datefin_soustache, daterappel_soustache FROM soustaches WHERE id_soustache = %s;", (idSousTache,))
-            sousTache = curseur.fetchone()
+            aes_socket = self.conection()
+            if not aes_socket:
+                print("Erreur de connexion au serveur.")
+                return
+            aes_socket.send(f"GET_sousTache:{idSousTache}")
+            tache_data = aes_socket.recv(1024)
+            aes_socket.close()
+            tache_j = json.loads(tache_data)
+            if isinstance(tache_j, list) and tache_j:
+                sousTache = tuple(
+                    datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if i in [2, 3] and value else value for i, value in
+                    enumerate(tache_j[0]))
+            else:
+                QMessageBox.information(self, "Info", "Aucune tâche trouvée.")
+                return
+
 
             if not sousTache:
                 QMessageBox.critical(self, "Erreur", "Aucune sous-tâche trouvée avec cet ID.")
@@ -262,24 +273,21 @@ class PagePrincipale(QWidget):
         except pymysql.MySQLError as e:
             QMessageBox.critical(self, "Erreur", f"Erreur MySQL : {e}")
         finally:
-            if 'curseur' in locals():
-                curseur.close()
+            aes_socket.close()
 
     def sauvegarderModificationSousTache(self, idSousTache, titre, description, dateFin, dateRappel, dialog):
         try:
-            curseur = self.cnx.cursor()
-            curseur.execute("""
-                UPDATE soustaches SET titre_soustache = %s, description_soustache = %s, datefin_soustache = %s, daterappel_soustache = %s
-                WHERE id_soustache = %s;
-            """, (titre, description, dateFin.toString("yyyy-MM-dd HH:mm:ss"), dateRappel.toString("yyyy-MM-dd HH:mm:ss") if dateRappel else None, idSousTache))
-            self.cnx.commit()
+            aes_socket = self.conection()
+            if not aes_socket:
+                print("Erreur de connexion au serveur.")
+            message = f"modifSousTache|{idSousTache}|{titre}|{description}|{dateFin.toString('yyyy-MM-dd HH:mm:ss')}|{dateRappel.toString('yyyy-MM-dd HH:mm:ss') if dateRappel else 'NULL'}"""
+            aes_socket.send(message)
             dialog.accept()
             self.actualiser()
         except pymysql.MySQLError as e:
             QMessageBox.critical(self, "Erreur", f"Erreur MySQL lors de la modification : {e}")
         finally:
-            if 'curseur' in locals():
-                curseur.close()
+            aes_socket.close()
 
     def ajouterSousTache(self, idTacheParent):
         dialog = QDialog(self)
