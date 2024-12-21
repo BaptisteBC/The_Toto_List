@@ -13,7 +13,6 @@ import pymysql.cursors
 from lib.custom import AESsocket  # Importation de la classe personnalisée pour le chiffrement AES
 import json
 
-
 # Fonction de journalisation
 def journalisation(utilisateurId: int, typeEvenement: str):
     """Enregistre un événement dans la table de journalisation.
