@@ -1,5 +1,9 @@
 import sys
+from datetime import datetime
 import pymysql
+import json
+import socket
+from lib.custom import AESsocket
 from PyQt5.QtCore import QCoreApplication, Qt, QDateTime
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QListWidget,
@@ -40,12 +44,31 @@ class PagePrincipale(QWidget):
     def quitter(self):
         QCoreApplication.exit(0)
 
+    def conection(self):
+        """
+        Établit une connexion sécurisée avec le serveur via un socket.
+
+        Returns:
+            AESsocket: Socket sécurisé pour échanger des données chiffrées.
+        """
+        try:
+            # Création du socket pour la connexion avec le serveur (adresse locale et port 12345)
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect(('localhost', 12345))  # Connexion au serveur local
+            return AESsocket(client_socket, is_server=False)  # Retourne un socket sécurisé
+        except Exception as e:
+            # Affichage d'un message d'erreur si la connexion échoue
+            QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
+            return None
+
     def actualiser(self):
         """ Actualise la liste des tâches et sous-tâches depuis la base de données. """
         try:
+
             curseur = self.cnx.cursor()
             curseur.execute("SELECT id_tache, titre_tache, statut_tache FROM taches;")
             taches = curseur.fetchall()
+
 
             curseur.execute("SELECT id_soustache, titre_soustache, soustache_id_tache FROM soustaches;")
             sousTaches = curseur.fetchall()
@@ -125,12 +148,18 @@ class PagePrincipale(QWidget):
 
     def modifierTache(self, idTache):
         try:
-            curseur = self.cnx.cursor()
-            curseur.execute("SELECT titre_tache, description_tache, datefin_tache, recurrence_tache, daterappel_tache FROM taches WHERE id_tache = %s;", (idTache,))
-            tache = curseur.fetchone()
-
-            if not tache:
-                QMessageBox.critical(self, "Erreur", "Aucune tâche trouvée avec cet ID.")
+            aes_socket = self.conection()  # Tentative de connexion
+            if not aes_socket:
+                print("Erreur de connexion au serveur.")
+                return
+            aes_socket.send(f"GET_tache:{idTache}")
+            tache_data = aes_socket.recv(1024)
+            aes_socket.close()
+            tache_j = json.loads(tache_data)
+            if isinstance(tache_j, list) and tache_j:
+                tache = tuple(datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if i in [2, 4] and value else value for i, value in enumerate(tache_j[0]))
+            else:
+                QMessageBox.information(self, "Info", "Aucune tâche trouvée.")
                 return
 
             dialog = QDialog(self)
@@ -141,12 +170,14 @@ class PagePrincipale(QWidget):
             descriptionEdit = QLineEdit(tache[1] or "")
             dateFinEdit = QDateTimeEdit(tache[2] or QDateTime.currentDateTime())
             dateFinEdit.setCalendarPopup(True)
+
             recurrenceEdit = QComboBox()
             recurrenceEdit.addItems(["Aucune", "Quotidienne", "Hebdomadaire", "Mensuelle"])
             recurrenceEdit.setCurrentText(tache[3] or "Aucune")
 
             dateRappelEdit = QDateTimeEdit(tache[4] or QDateTime.currentDateTime())
             dateRappelEdit.setCalendarPopup(True)
+
             rappelCheck = QCheckBox("Activer le rappel")
             rappelCheck.setChecked(tache[4] is not None)
 
@@ -160,32 +191,35 @@ class PagePrincipale(QWidget):
             form.addRow(rappelCheck, dateRappelEdit)
 
             boutons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
-            boutons.accepted.connect(lambda: self.sauvegarderModification(idTache, titreEdit.text(), descriptionEdit.text(), dateFinEdit.dateTime(), recurrenceEdit.currentText(), dateRappelEdit.dateTime() if rappelCheck.isChecked() else None, dialog))
+            boutons.accepted.connect(lambda: self.sauvegarderModification(idTache,titreEdit.text(),descriptionEdit.text(),dateFinEdit.dateTime(),recurrenceEdit.currentText(),dateRappelEdit.dateTime() if rappelCheck.isChecked() else None, dialog ))
             boutons.rejected.connect(dialog.reject)
             form.addWidget(boutons)
-
             dialog.exec_()
-        except pymysql.MySQLError as e:
-            QMessageBox.critical(self, "Erreur", f"Erreur MySQL : {e}")
+
+
+        except json.JSONDecodeError as e:
+            QMessageBox.critical(self, "Erreur", f"Erreur de décodage JSON : {e}")
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur", f"Erreur inattendue : {e}")
         finally:
-            if 'curseur' in locals():
-                curseur.close()
+            aes_socket.close()
 
     def sauvegarderModification(self, idTache, titre, description, dateFin, recurrence, dateRappel, dialog):
         try:
-            curseur = self.cnx.cursor()
-            curseur.execute("""
-                UPDATE taches SET titre_tache = %s, description_tache = %s, datefin_tache = %s, recurrence_tache = %s, daterappel_tache = %s
-                WHERE id_tache = %s;
-            """, (titre, description, dateFin.toString("yyyy-MM-dd HH:mm:ss"), recurrence, dateRappel.toString("yyyy-MM-dd HH:mm:ss") if dateRappel else None, idTache))
-            self.cnx.commit()
+
+            aes_socket = self.conection()
+            if not aes_socket:
+                print("Erreur de connexion au serveur.")
+            message = f"MODIF_TACHE|{idTache}|{titre}|{description}|{dateFin.toString('yyyy-MM-dd HH:mm:ss')}|{recurrence}|{dateRappel.toString('yyyy-MM-dd HH:mm:ss') if dateRappel else 'NULL'}"""
+            print(message)
+            aes_socket.send(message)
+            print("message ennvoyer")
             dialog.accept()
             self.actualiser()
         except pymysql.MySQLError as e:
             QMessageBox.critical(self, "Erreur", f"Erreur MySQL lors de la modification : {e}")
         finally:
-            if 'curseur' in locals():
-                curseur.close()
+            aes_socket.close()
 
     def modifierSousTache(self, idSousTache):
         try:
@@ -292,6 +326,8 @@ class PagePrincipale(QWidget):
         finally:
             if 'curseur' in locals():
                 curseur.close()
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
