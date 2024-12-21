@@ -195,9 +195,8 @@ class TodoListApp(QMainWindow):
             self.motDePasse = motdepasse_utilisateur
             self.initUI()
             self.formulaire = FormulaireTache()
-            self.setWindowTitle("The ToDo List")
-            self.setGeometry(100, 100, 1000, 400)
-            grid = QGridLayout()
+            self.setWindowTitle("The Toto List")
+            self.setGeometry(100, 100, 500, 700)
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.client_socket.connect((self.HOST, self.PORT))
             self.client_socket = AESsocket(self.client_socket, is_server=False)
@@ -211,54 +210,78 @@ class TodoListApp(QMainWindow):
 
         # Widget central pour le contenu principal
         central_widget = QWidget()
-        main_layout = QHBoxLayout(central_widget)
+        main_layout = QHBoxLayout(central_widget)  # Layout principal horizontal (sidebar + contenu principal)
 
-        # Création de la colonne latérale (sidebar)
+        # *** Sidebar ***
         self.sidebar = QWidget()
         sidebar_layout = QVBoxLayout(self.sidebar)
 
-        # Boutons déplacés vers la colonne latérale
+        # Boutons de la sidebar
         self.settings_button = QPushButton("Paramètres")
         self.help_button = QPushButton("Aide")
         self.credits_button = QPushButton("Crédits")
+        self.bouton_actualiser = QPushButton("Actualiser")
+        self.bouton_restaurer_corb = QPushButton("Restaurer la corbeille")
+        self.bouton_vider_corb = QPushButton("Vider la corbeille")
+        self.bouton_quitter = QPushButton("Quitter")
 
-        # Connexion des boutons de la colonne latérale
-        self.settings_button.clicked.connect(self.open_settings)
-        self.help_button.clicked.connect(self.open_help)
-        self.credits_button.clicked.connect(self.open_credits)
-
-        # Ajout des boutons à la colonne latérale
+        # Ajout des boutons dans la sidebar
         sidebar_layout.addWidget(self.settings_button)
         sidebar_layout.addWidget(self.help_button)
         sidebar_layout.addWidget(self.credits_button)
+        sidebar_layout.addWidget(self.bouton_actualiser)
+        sidebar_layout.addWidget(self.bouton_restaurer_corb)
+        sidebar_layout.addWidget(self.bouton_vider_corb)
+        sidebar_layout.addWidget(self.bouton_quitter)
 
-        main_layout.addWidget(self.sidebar)
-
-        # Zone principale de l'application
+        # *** Zone principale ***
         self.main_widget = QWidget()
-        self.main_layout = QVBoxLayout(self.main_widget)
+        main_layout_vertical = QVBoxLayout(self.main_widget)
 
-        # Barre de navigation avec le bouton pour afficher/cacher la colonne latérale
+        #Barre de navigation (haut)
         nav_layout = QHBoxLayout()
-        # Utilisation d'une icône pour le bouton d'affichage de la colonne
         self.toggle_sidebar_button = QPushButton()
         icon_url = "https://icons.veryicon.com/png/o/miscellaneous/we/sidebar-2.png"  # Remplacez par l'URL réelle
         self.set_icon_from_url(self.toggle_sidebar_button, icon_url)
         self.toggle_sidebar_button.setFixedSize(30, 30)  # Taille de l'icône
         self.toggle_sidebar_button.clicked.connect(self.toggle_sidebar)
 
-        self.bouton_actualiser = QPushButton("Actualiser")
-        self.bouton_restaurer_corb = QPushButton("Restaurer la corbeille")
+        self.form_button = QPushButton("Ouvrir Formulaire")
+        self.form_button.clicked.connect(self.open_formulaire)
+        self.form_button.setFixedSize(200, 30)
+
+        self.theme_button = QPushButton()
+        icon_url = "https://png.pngtree.com/png-clipart/20220812/ourmid/pngtree-shine-sun-light-effect-free-png-and-psd-png-image_6106445.png"  # Remplacez par l'URL réelle
+        self.set_icon_from_url(self.theme_button, icon_url)
+        self.theme_button.setIconSize(QSize(20, 20))  # Réduire la taille de l'icône à 20x20
+        self.theme_button.setFixedSize(30, 30)  # Réduire la taille du bouton à 30x30
+        self.theme_button.clicked.connect(self.toggle_theme)
+
+        # Ajout des boutons dans la barre de navigation
+        nav_layout.addWidget(self.toggle_sidebar_button)
+        nav_layout.addWidget(self.form_button)
+        nav_layout.addWidget(self.theme_button)
+        nav_layout.setContentsMargins(5, 0, 5, 0)
+        nav_layout.addStretch()
+
+        # Liste des tâches (en dessous de la barre de navigation)
         self.taches = QListWidget()
-        self.bouton_vider_corb = QPushButton("Vider la corbeille")
-        self.bouton_quitter = QPushButton("Quitter")
 
-        sidebar_layout.addWidget(self.bouton_actualiser)
-        sidebar_layout.addWidget(self.bouton_restaurer_corb)
-        sidebar_layout.addWidget(self.taches)
-        sidebar_layout.addWidget(self.bouton_vider_corb)
-        sidebar_layout.addWidget(self.bouton_quitter)
+        # Ajout des éléments dans le layout vertical principal
+        main_layout_vertical.addLayout(nav_layout)
+        main_layout_vertical.addWidget(self.taches)
 
+        # Ajout de la sidebar et de la zone principale dans le layout principal
+        main_layout.addWidget(self.sidebar)
+        main_layout.addWidget(self.main_widget)
+
+        # Définir le widget central
+        self.setCentralWidget(central_widget)
+
+        # Connexion des signaux pour les boutons
+        self.settings_button.clicked.connect(self.open_settings)
+        self.help_button.clicked.connect(self.open_help)
+        self.credits_button.clicked.connect(self.open_credits)
         self.bouton_actualiser.clicked.connect(self.actualiser)
         self.bouton_restaurer_corb.clicked.connect(self.restaurer)
         self.bouton_vider_corb.clicked.connect(self.vider)
@@ -267,38 +290,7 @@ class TodoListApp(QMainWindow):
         self.cnx = pymysql.connect(host="127.0.0.1", user="root", password="toto", database="TheTotoDB")
         self.actualiser()
 
-        # Ajout du bouton icône en haut à gauche
-        nav_layout.addWidget(self.toggle_sidebar_button)
-
-        # Bouton "Ouvrir Formulaire"
-        self.form_button = QPushButton("Ouvrir Formulaire")
-        self.form_button.clicked.connect(self.open_formulaire)
-
-        nav_layout.addWidget(self.form_button)
-
-        nav_layout.setContentsMargins(5, 0, 5, 0)
-
-        # Bouton mode sombre déplacé vers la droite
-        self.theme_button = QPushButton()
-        icon_url = "https://png.pngtree.com/png-clipart/20220812/ourmid/pngtree-shine-sun-light-effect-free-png-and-psd-png-image_6106445.png"  # Remplacez par l'URL réelle
-        self.set_icon_from_url(self.theme_button, icon_url)
-        self.theme_button.setIconSize(QSize(20, 20))  # Réduire la taille de l'icône à 20x20
-        self.theme_button.setFixedSize(30, 30)  # Réduire la taille du bouton à 30x30
-        self.theme_button.clicked.connect(self.toggle_theme)
-        nav_layout.addWidget(self.theme_button)
-        self.main_layout.addLayout(nav_layout)
-
-        #Arborescence des tâches
-        self.task_tree = QTreeWidget()
-        self.task_tree.setHeaderLabels(["Nom tâche", "Échéance", "Description", "Liste", "Statut", "Priorité"])
-        self.main_layout.addWidget(self.task_tree)
-
-        # Connecter l'événement de clic sur une tâche
-        self.main_layout.addWidget(self.task_tree)
         main_layout.addWidget(self.main_widget)
-
-        # Définir le widget central pour QMainWindow
-        self.setCentralWidget(central_widget)
 
         self.is_dark_mode = False
 
@@ -357,13 +349,29 @@ class TodoListApp(QMainWindow):
 
     def detail(self, id_tache, soustache_id_tache):
         curseur = self.cnx.cursor()
-
         if soustache_id_tache:
-            curseur.execute("SELECT titre_soustache, description_soustache, datecreation_soustache, "
-                            "datefin_soustache, statut_soustache, daterappel_soustache FROM soustaches;")
+            curseur.execute(f'SELECT titre_soustache, description_soustache, datecreation_soustache, '
+                            f'datefin_soustache, statut_soustache, daterappel_soustache FROM soustaches '
+                            f'WHERE id_soustache = {id_tache};')
+            soustache = curseur.fetchall()
+            curseur.execute(f'SELECT titre_tache FROM taches WHERE id_tache = {soustache_id_tache};')
+            tache_parent = curseur.fetchone()
+
+            for (titre_soustache, description_soustache, datecreation_soustache, datefin_soustache, statut_soustache,
+                 daterappel_soustache) in soustache:
+                Detail(titre_soustache, description_soustache, datecreation_soustache, datefin_soustache,
+                       statut_soustache, daterappel_soustache, soustache_id_tache, tache_parent[0]).exec()
+
         else:
-            curseur.execute("SELECT titre_tache, description_tache, datecreation_tache, datefin_tache,  "
-                            "recurrence_tache, statut_tache, daterappel_tache, datesuppression_tache FROM taches;")
+            curseur.execute(f'SELECT titre_tache, description_tache, datecreation_tache, '
+                            f'datefin_tache, statut_tache, daterappel_tache FROM taches '
+                            f'WHERE id_tache = {id_tache};')
+            tache = curseur.fetchall()
+
+            for (titre_tache, description_tache, datecreation_tache, datefin_tache, statut_tache,
+                 daterappel_tache) in tache:
+                Detail(titre_tache, description_tache, datecreation_tache, datefin_tache,
+                       statut_tache, daterappel_tache).exec()
 
         curseur.close()
 
@@ -670,6 +678,48 @@ class Restaurer(QDialog):
         msg.exec()
 
         self.close()
+
+    def stop(self):
+       self.close()
+
+class Detail(QDialog):
+    def __init__(self, titre, description, datecreation, datefin, statut, daterappel, soustache_id_tache=None,
+                 tache_parent=None):
+        super().__init__()
+
+        self.setWindowTitle("Détail")
+
+        grid = QGridLayout()
+        self.setLayout(grid)
+        self.resize(300, 250)
+
+        self.titre = QLabel(f'Titre : {titre}')
+        self.description = QLabel(f'Description : {description}')
+        self.datecreation = QLabel(f'Date de création : {datecreation}')
+        self.datefin = QLabel(f'Date de fin : {datefin}')
+
+        if statut == 1:
+            self.statut = QLabel("Statut : En cours")
+        else:
+            self.statut = QLabel("Statut : Terminée")
+
+        self.daterappel = QLabel(f'Date de rappel : {daterappel}')
+        self.confirmer = QPushButton("OK")
+
+
+        grid.addWidget(self.titre)
+        if soustache_id_tache:
+            self.tache_parent = QLabel(f'Tache parent : {tache_parent}')
+            grid.addWidget(self.tache_parent)
+        grid.addWidget(self.statut)
+        grid.addWidget(self.description)
+        grid.addWidget(self.datecreation)
+        grid.addWidget(self.datefin)
+
+        grid.addWidget(self.daterappel)
+        grid.addWidget(self.confirmer)
+
+        self.confirmer.clicked.connect(self.stop)
 
     def stop(self):
        self.close()
