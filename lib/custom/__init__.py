@@ -89,10 +89,13 @@ class AEScipher:
         - ValueError : Si une erreur survient lors du déchiffrement ou si les données sont invalides.
         """
         try:
-            raw = b64decode(data)
-            self.cipher = AES.new(self.key, AES.MODE_CBC, raw[:AES.block_size])
-            decrypted_data = unpad(self.cipher.decrypt(raw[AES.block_size:]), AES.block_size)
-            return decrypted_data.decode('utf-8')
+            if len(data) == 0: # correspond à la fermeture connexion
+                pass
+            else:
+                raw = b64decode(data)
+                self.cipher = AES.new(self.key, AES.MODE_CBC, raw[:AES.block_size])
+                decrypted_data = unpad(self.cipher.decrypt(raw[AES.block_size:]), AES.block_size)
+                return decrypted_data.decode('utf-8')
         except (ValueError, TypeError) as e:
             raise ValueError(f"Erreur lors du déchiffrement : {e}")
 
