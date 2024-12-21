@@ -5,7 +5,7 @@ import pymysql
 import time
 import sys,os
 import cryptocode
-import datetime
+from datetime import datetime
 import hashlib
 import re
 import bcrypt
