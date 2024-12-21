@@ -91,31 +91,41 @@ class Principal(QWidget):
         self.taches.setItemWidget(item, tache)
 
     def detail(self, id_tache, soustache_id_tache):
+        curseur = self.cnx.cursor()
         if soustache_id_tache:
-            curseur = self.cnx.cursor()
-
             curseur.execute(f'SELECT titre_soustache, description_soustache, datecreation_soustache, '
                             f'datefin_soustache, statut_soustache, daterappel_soustache FROM soustaches '
                             f'WHERE id_soustache = {id_tache};')
             soustache = curseur.fetchall()
-            try:
-                curseur.execute(f'SELECT titre_tache FROM taches WHERE id_tache = {soustache_id_tache};')
-                tache_parent = curseur.fetchone()
-            except Exception as E:
-                print(E)
-            curseur.close()
+            curseur.execute(f'SELECT titre_tache FROM taches WHERE id_tache = {soustache_id_tache};')
+            tache_parent = curseur.fetchone()
+
 
             for (titre_soustache, description_soustache, datecreation_soustache, datefin_soustache, statut_soustache,
                 daterappel_soustache) in soustache:
                 Detail(titre_soustache, description_soustache, datecreation_soustache, datefin_soustache,
                 statut_soustache, daterappel_soustache, soustache_id_tache, tache_parent[0]).exec()
 
+        else:
+            curseur.execute(f'SELECT titre_tache, description_tache, datecreation_tache, '
+                            f'datefin_tache, statut_tache, daterappel_tache FROM taches '
+                            f'WHERE id_tache = {id_tache};')
+            tache = curseur.fetchall()
+
+            for (titre_tache, description_tache, datecreation_tache, datefin_tache, statut_tache,
+                daterappel_tache) in tache:
+                Detail(titre_tache, description_tache, datecreation_tache, datefin_tache,
+                statut_tache, daterappel_tache).exec()
+
+        curseur.close()
+
     def quitter(self):
         self.cnx.close()
         QCoreApplication.exit()
 
 class Detail(QDialog):
-    def __init__(self, titre, description, datecreation, datefin, statut, daterappel, soustache_id_tache, tache_parent=None):
+    def __init__(self, titre, description, datecreation, datefin, statut, daterappel, soustache_id_tache=None,
+                 tache_parent=None):
         super().__init__()
 
         self.setWindowTitle("Détail")
