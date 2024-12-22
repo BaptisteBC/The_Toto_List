@@ -102,18 +102,37 @@ class PagePrincipale(QWidget):
 
         boutonPlus = QPushButton("...")
         boutonPlus.setFixedWidth(30)
+
         layout.addWidget(caseCoche)
         layout.addWidget(labelTache)
         layout.addWidget(boutonPlus)
         layout.addStretch()
 
-        caseCoche.stateChanged.connect(lambda state: self.mettreAJourValidation(idTache, state, labelTache))
+        caseCoche.stateChanged.connect(lambda: self.mettreAJourStyle(labelTache, idTache, caseCoche.isChecked()))
         boutonPlus.clicked.connect(lambda: self.afficherMenuTache(idTache, boutonPlus))
 
         elementListe = QListWidgetItem()
         elementListe.setSizeHint(widgetTache.sizeHint())
         self.listeTaches.addItem(elementListe)
         self.listeTaches.setItemWidget(elementListe, widgetTache)
+
+    def mettreAJourStyle(self, labelTache, idTache, coche):
+        """
+        Met à jour le style de la tâche et son statut de validation dans la base de données.
+
+        :param labelTache: Widget QLabel représentant le titre de la tâche
+        :type labelTache: QLabel
+        :param idTache: Identifiant unique de la tâche
+        :type idTache: int
+        :param coche: Statut de la case cochée (True si cochée, False sinon)
+        :type coche: bool
+        """
+        if coche:
+            labelTache.setStyleSheet("text-decoration: line-through; color: gray;")
+            self.mettreAJourValidation(idTache, 1)
+        else:
+            labelTache.setStyleSheet("")
+            self.mettreAJourValidation(idTache, 0)
 
     def ajouterSousTacheListe(self, titreSousTache, idSousTache):
         widgetSousTache = QWidget()
@@ -146,6 +165,26 @@ class PagePrincipale(QWidget):
         position = bouton.mapToGlobal(bouton.rect().bottomLeft())
         menu.exec_(position)
 
+    def mettreAJourValidation(self, idTache, statutValidation):
+        """
+        Met à jour le champ validation de la tâche dans la base de données.
+
+        :param idTache: Identifiant unique de la tâche
+        :type idTache: int
+        :param statutValidation: Nouveau statut de validation (0 ou 1)
+        :type statutValidation: int
+        :raises pymysql.MySQLError: En cas d'erreur lors de la mise à jour de la base de données
+        """
+        try:
+            aes_socket = self.conection()
+            if not aes_socket:
+                print("Erreur de connexion au serveur.")
+            message = f"validation:{idTache}:{statutValidation}"
+            aes_socket.send(message)
+        except pymysql.MySQLError as e:
+            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la mise à jour de la validation de la tâche {idTache} : {e}')
+        finally:
+            aes_socket.close()
     def modifierTache(self, idTache):
         try:
             aes_socket = self.conection()  # Tentative de connexion
@@ -321,19 +360,18 @@ class PagePrincipale(QWidget):
 
     def creerSousTache(self, idTacheParent, titre, description, dateFin, dateRappel, dialog):
         try:
-            curseur = self.cnx.cursor()
-            curseur.execute("""
-                INSERT INTO soustaches (soustache_id_tache, titre_soustache, description_soustache, datefin_soustache, daterappel_soustache, datecreation_soustache)
-                VALUES (%s, %s, %s, %s, %s, NOW());
-            """, (idTacheParent, titre, description, dateFin.toString("yyyy-MM-dd HH:mm:ss"), dateRappel.toString("yyyy-MM-dd HH:mm:ss") if dateRappel else None))
-            self.cnx.commit()
+            aes_socket = self.conection()
+            if not aes_socket:
+                print("Erreur de connexion au serveur.")
+            message = f"creationSousTache|{idTacheParent}|{titre}|{description}|{dateFin.toString('yyyy-MM-dd HH:mm:ss')}|{dateRappel.toString('yyyy-MM-dd HH:mm:ss') if dateRappel else 'NULL'}"""
+            aes_socket.send(message)
+            aes_socket.close()
             dialog.accept()
             self.actualiser()
         except pymysql.MySQLError as e:
             QMessageBox.critical(self, "Erreur", f"Erreur MySQL lors de la création de la sous-tâche : {e}")
         finally:
-            if 'curseur' in locals():
-                curseur.close()
+            aes_socket.close()
 
 
 

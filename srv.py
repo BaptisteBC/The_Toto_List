@@ -62,7 +62,6 @@ class TaskServer:
 
                     print(f"Commande reçue: {command}")
                     response = self.interpretCommand(command)  # Traite la commande
-                    print(response)
                     aesSocket.send(response)
 
 
@@ -98,9 +97,17 @@ class TaskServer:
                 idSousTache = command.split(":")[1]
                 return self.getSousTache(idSousTache)
 
-            if command.startswith("modifSousTache"):
+            elif command.startswith("modifSousTache"):
                 details = command.split("|")[1:]
                 return self.modifSousTache(*details)
+
+            elif command.startswith("validation"):
+                details = command.split(":")[1:]
+                return self.validation(*details)
+
+            if command.startswith("creationSousTache"):
+                details = command.split("|")[1:]
+                return self.creationSousTache(*details)
 
             else:
                 return "Commande inconnue."
@@ -168,8 +175,7 @@ class TaskServer:
                 cursor.execute(
                     "SELECT titre_soustache, description_soustache, datefin_soustache, daterappel_soustache FROM soustaches WHERE id_soustache = %s;", (idSousTache,)
                 )
-                results = cursor.fetchall()  # Liste de tuples
-                print(results)
+                results = cursor.fetchall()
                 if results:
                     serialized_results = [[ value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row ] for row in results ]
                     return json.dumps(serialized_results)
@@ -188,6 +194,30 @@ class TaskServer:
                 """, (titre, description, dateFin,dateRappel if dateRappel != 'NULL' else None, idSousTache))
                 self.dbConnection.commit()
                 return "Sous tâche modifiée avec succès."
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return "Erreur MySQL."
+
+    def creationSousTache(self, soustache_id_tache, titre_soustache, description_soustache, datefin_soustache, daterappel_soustache):
+        try:
+            with self.dbConnection.cursor() as cursor:
+                cursor.execute("""
+                    INSERT INTO soustaches (soustache_id_tache, titre_soustache, description_soustache, datefin_soustache, daterappel_soustache, datecreation_soustache)
+                            VALUES (%s, %s, %s, %s, %s, NOW());
+                        """, (soustache_id_tache, titre_soustache, description_soustache, datefin_soustache,
+                              daterappel_soustache if daterappel_soustache != 'NULL' else None))
+                self.dbConnection.commit()
+                return "Sous tâche crée avec succès."
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return "Erreur MySQL."
+
+    def validation(self, idTache, etatValidation):
+        try:
+            with self.dbConnection.cursor() as cursor:
+                cursor.execute("UPDATE taches SET statut_tache = %s WHERE id_tache = %s;", (etatValidation, idTache))
+                self.dbConnection.commit()
+                return "Validation modifier avec succes"
         except Exception as e:
             print(f"Erreur MySQL: {e}")
             return "Erreur MySQL."
