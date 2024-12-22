@@ -1,28 +1,19 @@
-from PyQt5.QtWidgets import (
-    QApplication, QMainWindow, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QLabel,
-    QTreeWidgetItem, QTreeWidget, QDateEdit, QTextEdit, QComboBox, QMessageBox, QLineEdit, QDialog, QDialogButtonBox
-)
 from PyQt5.QtCore import Qt, QDate, QSize, QCoreApplication, pyqtSignal
 from PyQt5.QtGui import QPalette, QColor, QIcon, QKeySequence, QPixmap
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QLabel, QLineEdit, QTextEdit, QComboBox,
-    QDateEdit, QVBoxLayout, QPushButton, QMessageBox, QGridLayout, QListWidget, QListWidgetItem, QProgressBar, QAction
+    QDateEdit, QVBoxLayout, QPushButton, QMessageBox, QGridLayout, QListWidget, QListWidgetItem, QProgressBar, QAction, QDialog, QHBoxLayout, QMainWindow
 )  # Modules de PyQt5 pour créer l'interface graphique.
 from lib.custom import AEScipher, AESsocket # Classes personnalisées pour gérer le chiffrement AES et les connexions sécurisées.
 import sys
 import pymysql.cursors  # Module pour gérer les connexions MySQL avec curseurs.
 import pymysql  # Module pour interagir avec une base de données MySQL.
 import socket  # Pour gérer les connexions réseau via des sockets.
-from datetime import datetime  # Utilisé pour les opérations sur les dates/heures.
 import json
-import hashlib
 import bcrypt
 import time
-from bcrypt import gensalt
-from statsmodels.distributions import ECDFDiscrete
 import re
 import requests
-from typing import Tuple
 
 #Création de la tâche (Yann)
 class FormulaireTache(QWidget):
@@ -202,7 +193,6 @@ class TodoListApp(QMainWindow):
             self.client_socket = AESsocket(self.client_socket, is_server=False)
             time.sleep(0.5)
             self.client_socket.send(f"AUTH:{pseudonyme_utilisateur}:{motdepasse_utilisateur}")
-
             self.creerActions()
             self.creerMenu()
         except Exception as e:
@@ -219,7 +209,6 @@ class TodoListApp(QMainWindow):
         # Boutons de la sidebar
         self.settings_button = QPushButton("Paramètres")
         self.help_button = QPushButton("Aide")
-        self.credits_button = QPushButton("Crédits")
         self.bouton_actualiser = QPushButton("Actualiser")
         self.bouton_restaurer_corb = QPushButton("Restaurer la corbeille")
         self.bouton_vider_corb = QPushButton("Vider la corbeille")
@@ -228,7 +217,6 @@ class TodoListApp(QMainWindow):
         # Ajout des boutons dans la sidebar
         sidebar_layout.addWidget(self.settings_button)
         sidebar_layout.addWidget(self.help_button)
-        sidebar_layout.addWidget(self.credits_button)
         sidebar_layout.addWidget(self.bouton_actualiser)
         sidebar_layout.addWidget(self.bouton_restaurer_corb)
         sidebar_layout.addWidget(self.bouton_vider_corb)
@@ -281,13 +269,13 @@ class TodoListApp(QMainWindow):
         # Connexion des signaux pour les boutons
         self.settings_button.clicked.connect(self.open_settings)
         self.help_button.clicked.connect(self.open_help)
-        self.credits_button.clicked.connect(self.open_credits)
         self.bouton_actualiser.clicked.connect(self.actualiser)
         self.bouton_restaurer_corb.clicked.connect(self.restaurer)
         self.bouton_vider_corb.clicked.connect(self.vider)
         self.bouton_quitter.clicked.connect(self.quitter)
 
         self.cnx = pymysql.connect(host="127.0.0.1", user="root", password="toto", database="TheTotoDB")
+
         self.actualiser()
 
         main_layout.addWidget(self.main_widget)
@@ -295,6 +283,9 @@ class TodoListApp(QMainWindow):
         self.is_dark_mode = False
 
     def actualiser(self):
+
+        """Actualise la liste des tâches."""
+
         """Fonction d'actualisation des tâches.
         Lorsque le bouton est cliqué, effectue une requête dans la table tâche et récupère le champ 'titre_tache' pour \
         l'afficher dans la fenêtre principale."""
@@ -304,11 +295,12 @@ class TodoListApp(QMainWindow):
         # Extraction de tous les titres des taches principales
         curseur.execute("SELECT id_tache, titre_tache, datesuppression_tache FROM taches;")
         resultache = curseur.fetchall()
+        print("Tâches principales récupérées :", resultache)
 
         # Extraction de tous les titres des sous taches
-        curseur.execute("SELECT id_soustache, titre_soustache, soustache_id_tache, datesuppression_soustache FROM "
-                        "soustaches;")
+        curseur.execute("SELECT id_soustache, titre_soustache, soustache_id_tache, datesuppression_soustache FROM soustaches;")
         sousresultache = curseur.fetchall()
+        print("Sous-tâches récupérées :", sousresultache)
 
         self.taches.clear()
 
@@ -341,7 +333,6 @@ class TodoListApp(QMainWindow):
 
         bouton.clicked.connect(lambda: self.detail(id_tache, soustache_id_tache))
         suppr.clicked.connect(lambda: self.supprimer(id_tache, soustache_id_tache))
-
         item.setSizeHint(tache.sizeHint())
 
         self.taches.addItem(item)
@@ -417,9 +408,15 @@ class TodoListApp(QMainWindow):
         :return:
         """
         menuBar = self.menuBar()
-        file = menuBar.addMenu("Option")
-        file.addAction(self.actChangemotDePasse)
-        file.addAction(self.actExit)
+
+        # Menu Options
+        optionsMenu = menuBar.addMenu("Options")
+        optionsMenu.addAction(self.actChangemotDePasse)
+        optionsMenu.addAction(self.actExit)
+
+        # Menu Options
+        creditsMenu = menuBar.addMenu("À propos")
+        creditsMenu.addAction(self.actCredits)
 
     def creerActions(self):
         """
@@ -434,6 +431,10 @@ class TodoListApp(QMainWindow):
         self.actExit.setShortcut(QKeySequence("Alt+F4"))
         self.actExit.setStatusTip("Exit")
         self.actExit.triggered.connect(self.fermeture)
+
+        # Action Crédits
+        self.actCredits = QAction("Crédits", self)
+        self.actCredits.triggered.connect(self.open_credits)
 
     def fermeture(self):
         self.client_socket.close()

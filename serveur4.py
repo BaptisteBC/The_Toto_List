@@ -115,10 +115,6 @@ def creerChaineEvenement(premierX: int, deuxiemeX: int, troisiemeX: int, listeY,
         if connexion is not None:
             connexion.close()
 
-
-
-
-
 class Server:
     def __init__(self):
         '''
