@@ -64,23 +64,21 @@ class PagePrincipale(QWidget):
     def actualiser(self):
         """ Actualise la liste des tâches et sous-tâches depuis la base de données. """
         try:
-
             curseur = self.cnx.cursor()
             curseur.execute("SELECT id_tache, titre_tache, statut_tache FROM taches;")
             taches = curseur.fetchall()
 
 
-            curseur.execute("SELECT id_soustache, titre_soustache, soustache_id_tache FROM soustaches;")
+            curseur.execute("SELECT id_soustache, titre_soustache, soustache_id_tache, statut_soustache FROM soustaches;")
             sousTaches = curseur.fetchall()
 
             self.listeTaches.clear()
-
             for idTache, titreTache, statutTache in taches:
                 self.ajouterTache(titreTache, idTache, statutTache)
-                for idSousTache, titreSousTache, parentId in sousTaches:
+                for idSousTache, titreSousTache, parentId, statutSousTache in sousTaches:
                     if parentId == idTache:
-                        self.ajouterSousTacheListe(titreSousTache, idSousTache)
-
+                        self.ajouterSousTacheListe(titreSousTache, idSousTache, statutSousTache)
+            self.listeTaches.repaint()
         except pymysql.MySQLError as e:
             QMessageBox.critical(self, 'Erreur', f'Erreur MySQL : {e}')
         finally:
@@ -116,6 +114,7 @@ class PagePrincipale(QWidget):
         self.listeTaches.addItem(elementListe)
         self.listeTaches.setItemWidget(elementListe, widgetTache)
 
+
     def mettreAJourStyle(self, labelTache, idTache, coche):
         """
         Met à jour le style de la tâche et son statut de validation dans la base de données.
@@ -134,25 +133,53 @@ class PagePrincipale(QWidget):
             labelTache.setStyleSheet("")
             self.mettreAJourValidation(idTache, 0)
 
-    def ajouterSousTacheListe(self, titreSousTache, idSousTache):
+    def ajouterSousTacheListe(self, titreSousTache, idSousTache, statutSousTache):
         widgetSousTache = QWidget()
         layout = QHBoxLayout(widgetSousTache)
+        caseCocheSousTache = QCheckBox()
+        caseCocheSousTache.setChecked(statutSousTache == 1)
 
         labelSousTache = QLabel(f"  ↳ {titreSousTache}")
         labelSousTache.setStyleSheet("color: darkgray;")
 
+        if statutSousTache == 1:
+            labelSousTache.setStyleSheet("text-decoration: line-through; color: gray;")
+        else:
+            labelSousTache.setStyleSheet("")
+
         boutonModifier = QPushButton("Modifier")
         boutonModifier.setFixedWidth(60)
+
+        layout.addWidget(caseCocheSousTache)
         layout.addWidget(labelSousTache)
         layout.addWidget(boutonModifier)
         layout.addStretch()
 
+        caseCocheSousTache.stateChanged.connect(lambda: self.mettreAJourStyleSousTache(labelSousTache, idSousTache, caseCocheSousTache.isChecked()))
         boutonModifier.clicked.connect(lambda: self.modifierSousTache(idSousTache))
 
         elementListe = QListWidgetItem()
         elementListe.setSizeHint(widgetSousTache.sizeHint())
         self.listeTaches.addItem(elementListe)
         self.listeTaches.setItemWidget(elementListe, widgetSousTache)
+
+    def mettreAJourStyleSousTache(self, labelSousTache, idSousTache, cocheSousTache):
+        """
+        Met à jour le style de la tâche et son statut de validation dans la base de données.
+
+        :param labelSousTache: Widget QLabel représentant le titre de la tâche
+        :type labelSousTache: QLabel
+        :param idSousTache: Identifiant unique de la tâche
+        :type idSousTache: int
+        :param cocheSousTache: Statut de la case cochée (True si cochée, False sinon)
+        :type cocheSousTache: bool
+        """
+        if cocheSousTache:
+            labelSousTache.setStyleSheet("text-decoration: line-through; color: gray;")
+            self.mettreAJourValidationSousTache(idSousTache, 1)
+        else:
+            labelSousTache.setStyleSheet("")
+            self.mettreAJourValidationSousTache(idSousTache, 0)
 
     def afficherMenuTache(self, idTache, bouton):
         menu = QMenu(self)
@@ -185,6 +212,28 @@ class PagePrincipale(QWidget):
             QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la mise à jour de la validation de la tâche {idTache} : {e}')
         finally:
             aes_socket.close()
+
+    def mettreAJourValidationSousTache(self, idSousTache, statutSousValidation):
+        """
+        Met à jour le champ validation de la tâche dans la base de données.
+
+        :param idSousTache: Identifiant unique de la tâche
+        :type idSousTache: int
+        :param statutSousValidation: Nouveau statut de validation (0 ou 1)
+        :type statutSousValidation: int
+        :raises pymysql.MySQLError: En cas d'erreur lors de la mise à jour de la base de données
+        """
+        try:
+            aes_socket = self.conection()
+            if not aes_socket:
+                print("Erreur de connexion au serveur.")
+            message = f"validationSousTache:{idSousTache}:{statutSousValidation}"
+            aes_socket.send(message)
+        except pymysql.MySQLError as e:
+            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la mise à jour de la validation de la sous tâche {idSousTache} : {e}')
+        finally:
+            aes_socket.close()
+
     def modifierTache(self, idTache):
         try:
             aes_socket = self.conection()  # Tentative de connexion

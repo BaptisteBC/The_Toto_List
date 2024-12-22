@@ -101,6 +101,10 @@ class TaskServer:
                 details = command.split("|")[1:]
                 return self.modifSousTache(*details)
 
+            elif command.startswith("validationSousTache"):
+                details = command.split(":")[1:]
+                return self.validationSousTache(*details)
+
             elif command.startswith("validation"):
                 details = command.split(":")[1:]
                 return self.validation(*details)
@@ -202,10 +206,10 @@ class TaskServer:
         try:
             with self.dbConnection.cursor() as cursor:
                 cursor.execute("""
-                    INSERT INTO soustaches (soustache_id_tache, titre_soustache, description_soustache, datefin_soustache, daterappel_soustache, datecreation_soustache)
-                            VALUES (%s, %s, %s, %s, %s, NOW());
+                    INSERT INTO soustaches (soustache_id_tache, titre_soustache, description_soustache, datefin_soustache, daterappel_soustache, datecreation_soustache, statut_soustache)
+                            VALUES (%s, %s, %s, %s, %s, NOW(), 0);
                         """, (soustache_id_tache, titre_soustache, description_soustache, datefin_soustache,
-                              daterappel_soustache if daterappel_soustache != 'NULL' else None))
+                              daterappel_soustache if daterappel_soustache != 'NULL' else None) )
                 self.dbConnection.commit()
                 return "Sous tâche crée avec succès."
         except Exception as e:
@@ -221,8 +225,17 @@ class TaskServer:
         except Exception as e:
             print(f"Erreur MySQL: {e}")
             return "Erreur MySQL."
+
+    def validationSousTache(self, idSousTache, etatValidationSousTache):
+        try:
+            with self.dbConnection.cursor() as cursor:
+                cursor.execute("UPDATE soustaches SET statut_soustache = %s WHERE id_soustache = %s;", (etatValidationSousTache, idSousTache))
+                self.dbConnection.commit()
+                return "Validation sous tache modifier avec succes"
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return "Erreur MySQL."
 if __name__ == "__main__":
 
-    # Point d'entrée du script : lancement du serveur
     taskServer = TaskServer()
     taskServer.start()
