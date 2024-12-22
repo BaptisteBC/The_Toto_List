@@ -1,4 +1,5 @@
 import socket
+from abc import abstractstaticmethod, abstractmethod
 from random import Random
 import lib.pyDHE as pyDHE
 from Cryptodome.Cipher import AES
@@ -6,6 +7,7 @@ from Cryptodome.Random import get_random_bytes
 from Cryptodome.Util.Padding import pad, unpad
 from base64 import b64encode, b64decode
 from Cryptodome.Util.number import long_to_bytes
+import time
 
 
 class AEScipher:
@@ -230,31 +232,6 @@ class SecureSocket:
     """
 
     @staticmethod
-    def create_socket(host, port, is_server=False):
-        """
-        Crée et initialise un socket sécurisé.
-
-        Paramètres :
-        -----------
-        - host : str
-            L'adresse IP ou le nom d'hôte.
-        - port : int
-            Le port à utiliser pour la connexion.
-        - is_server : bool
-            Indique si le socket agit en tant que serveur (par défaut : False).
-
-        Retourne :
-        ---------
-        - AESsocket :
-            Une instance de la classe AESsocket pour la communication sécurisée.
-        """
-        base_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-        if is_server:
-            base_socket.bind((host, port))
-            base_socket.listen(5)
-            client_socket, addr = base_socket.accept()
-            return AESsocket(client_socket, is_server=True), addr
-        else:
-            base_socket.connect((host, port))
-            return AESsocket(base_socket, is_server=False)
+    @abstractmethod
+    def create_socket(host, port, is_server=False, maxclient: int | None = 20, delay: int | None = None):
+        raise NotImplementedError('Méthode non implémentée')
