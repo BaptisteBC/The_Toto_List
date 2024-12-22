@@ -1,6 +1,6 @@
 import socket
 import pymysql.cursors
-from lib.custom import AESsocket  # Importation de la classe personnalisée pour le chiffrement AES
+from lib.custom import AESsocket
 import json
 from datetime import datetime
 
@@ -8,30 +8,32 @@ class TaskServer:
     """
     Classe représentant le serveur de gestion des tâches.
 
-    Attributes:
-        host (str): Adresse IP ou nom d'hôte pour le serveur.
-        port (int): Port sur lequel le serveur écoute.
-        dbConnection (pymysql.connections.Connection): Connexion à la base de données MySQL.
+    :param host: Adresse IP ou nom d'hôte pour le serveur, defaults to 'localhost'
+    :type host: str, optional
+    :param port: Port sur lequel le serveur écoute, defaults to 12345
+    :type port: int, optional
+    :param dbConnection: Connexion à la base de données MySQL
+    :type dbConnection: pymysql.connections.Connection
     """
 
     def __init__(self, host='localhost', port=12345):
         """
         Initialise le serveur avec les paramètres réseau et configure la connexion à la base de données.
 
-        Args:
-            host (str): Adresse IP ou nom d'hôte pour le serveur. Par défaut, 'localhost'.
-            port (int): Port sur lequel le serveur écoutera. Par défaut, 12345.
+        :param host: Adresse IP ou nom d'hôte pour le serveur, defaults to 'localhost'
+        :type host: str, optional
+        :param port: Port sur lequel le serveur écoutera, defaults to 12345
+        :type port: int, optional
         """
         self.host = host
         self.port = port
 
-        # Configuration de la connexion à la base de données MySQL
         self.dbConnection = pymysql.connect(
-            host='127.0.0.1' , # Remplace par l'adresse IP publique ou le nom d'hôte de la base de données distante
-            user = 'root',  # Le nom d'utilisateur de la base de données
-            password = 'toto',  # Le mot de passe associé à l'utilisateur
-            database = 'TheTotoDB',  # Le nom de la base de données
-            port = 3306 , # Le port spécifique sur lequel le serveur MySQL écoute
+            host='127.0.0.1' ,
+            user = 'root',
+            password = 'toto',
+            database = 'TheTotoDB',
+            port = 3306 ,
 
         )
 
@@ -39,37 +41,34 @@ class TaskServer:
         """
         Démarre le serveur et écoute les connexions entrantes.
         Chaque client est servi via un socket sécurisé AES.
+
+        :raises Exception: Si une erreur se produit lors de la gestion des sockets ou de la communication.
         """
-        # Création et configuration du socket serveur
         serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        serverSocket.bind((self.host, self.port))  # Associe le socket à l'adresse et au port
-        serverSocket.listen(5)  # Écoute jusqu'à 5 connexions simultanées
+        serverSocket.bind((self.host, self.port))
+        serverSocket.listen(5)
         print(f"Serveur en écoute sur {self.host}:{self.port}")
 
         while True:
-            # Acceptation d'une nouvelle connexion client
             clientSocket, clientAddress = serverSocket.accept()
             print(f"Connexion établie avec {clientAddress}")
 
-            # Passage du socket à un socket sécurisé AES
             aesSocket = AESsocket(clientSocket, is_server=True)
 
             try:
                 while True:
                     command = aesSocket.recv(1024)
-                    if not command:  # Si aucune commande reçue, fermer la connexion
+                    if not command:
                         break
 
                     print(f"Commande reçue: {command}")
-                    response = self.interpretCommand(command)  # Traite la commande
+                    response = self.interpretCommand(command)
                     aesSocket.send(response)
-
 
             except Exception as e:
                 print(f"Erreur: {e}")
 
             finally:
-                # Ferme le socket client après utilisation
                 clientSocket.close()
                 print(f"Connexion fermée avec {clientAddress}")
 
@@ -77,16 +76,14 @@ class TaskServer:
         """
         Interprète et exécute une commande reçue du client.
 
-        Args:
-            command (str): Commande envoyée par le client.
-
-        Returns:
-            str: Réponse à retourner au client.
+        :param command: Commande envoyée par le client
+        :type command: str
+        :return: Réponse à retourner au client
+        :rtype: str
         """
         try:
-            # Gestion des différentes commandes possibles
             if command.startswith("MODIF_TACHE"):
-                details = command.split("|")[1:]  # Utilise | comme séparateur
+                details = command.split("|")[1:]
                 return self.modifTache(*details)
 
             elif command.startswith("GET_tache"):
@@ -125,11 +122,11 @@ class TaskServer:
         """
         Récupère les informations sur une tâche spécifique.
 
-        Args:
-            idTache (str): ID de la tâche à récupérer.
-
-        Returns:
-            str: JSON contenant les informations sur la tâche (avec datetime sérialisé).
+        :param idTache: ID de la tâche à récupérer
+        :type idTache: str
+        :return: JSON contenant les informations sur la tâche (avec datetime sérialisé)
+        :rtype: str
+        :raises Exception: Si une erreur MySQL se produit
         """
         try:
             with self.dbConnection.cursor() as cursor:
@@ -138,7 +135,7 @@ class TaskServer:
                     (idTache,)
                 )
 
-                results = cursor.fetchall()  # Liste de tuples
+                results = cursor.fetchall()
 
                 if results:
                     serialized_results = [[ value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row ] for row in results ]
@@ -151,6 +148,25 @@ class TaskServer:
             return json.dumps({"error": "Erreur MySQL."})
 
     def modifTache(self, idTache, titre, description, dateFin, recurrence, dateRappel):
+        """
+        Modifie une tâche existante.
+
+        :param idTache: ID de la tâche à modifier
+        :type idTache: str
+        :param titre: Nouveau titre de la tâche
+        :type titre: str
+        :param description: Nouvelle description de la tâche
+        :type description: str
+        :param dateFin: Nouvelle date de fin de la tâche
+        :type dateFin: str
+        :param recurrence: Nouvelle récurrence de la tâche
+        :type recurrence: str
+        :param dateRappel: Nouvelle date de rappel de la tâche, peut être 'NULL'
+        :type dateRappel: str, optional
+        :return: Message de succès ou d'erreur
+        :rtype: str
+        :raises Exception: Si une erreur MySQL se produit
+        """
         try:
 
             with self.dbConnection.cursor() as cursor:
@@ -166,13 +182,13 @@ class TaskServer:
 
     def getSousTache(self, idSousTache):
         """
-        Récupère les informations sur une sous tâche spécifique.
+        Récupère les informations sur une sous-tâche spécifique.
 
-        Args:
-            idSousTache (str): ID de la sousSELECT titre_soustache, description_soustache, datefin_soustache, daterappel_soustache FROM soustaches WHERE id_soustache = %s;", (idSousTache,) tâche à récupérer.
-
-        Returns:
-            str: JSON contenant les informations sur la tâche (avec datetime sérialisé).
+        :param idSousTache: ID de la sous-tâche à récupérer
+        :type idSousTache: str
+        :return: JSON contenant les informations sur la sous-tâche (avec datetime sérialisé)
+        :rtype: str
+        :raises Exception: Si une erreur MySQL se produit
         """
         try:
             with self.dbConnection.cursor() as cursor:
@@ -190,6 +206,23 @@ class TaskServer:
             print(f"Erreur MySQL: {e}")
             return json.dumps({"error": "Erreur MySQL."})
     def modifSousTache(self, idSousTache, titre, description, dateFin, dateRappel):
+        """
+        Modifie une sous-tâche existante.
+
+        :param idSousTache: ID de la sous-tâche à modifier
+        :type idSousTache: str
+        :param titre: Nouveau titre de la sous-tâche
+        :type titre: str
+        :param description: Nouvelle description de la sous-tâche
+        :type description: str
+        :param dateFin: Nouvelle date de fin de la sous-tâche
+        :type dateFin: str
+        :param dateRappel: Nouvelle date de rappel de la sous-tâche, peut être 'NULL'
+        :type dateRappel: str, optional
+        :return: Message de succès ou d'erreur
+        :rtype: str
+        :raises Exception: Si une erreur MySQL se produit
+        """
         try:
             with self.dbConnection.cursor() as cursor:
                 cursor.execute("""
@@ -203,6 +236,23 @@ class TaskServer:
             return "Erreur MySQL."
 
     def creationSousTache(self, soustache_id_tache, titre_soustache, description_soustache, datefin_soustache, daterappel_soustache):
+        """
+        Crée une nouvelle sous-tâche.
+
+        :param soustache_id_tache: ID de la tâche parent
+        :type soustache_id_tache: str
+        :param titre_soustache: Titre de la nouvelle sous-tâche
+        :type titre_soustache: str
+        :param description_soustache: Description de la nouvelle sous-tâche
+        :type description_soustache: str
+        :param datefin_soustache: Date de fin de la nouvelle sous-tâche
+        :type datefin_soustache: str
+        :param daterappel_soustache: Date de rappel de la nouvelle sous-tâche, peut être 'NULL'
+        :type daterappel_soustache: str, optional
+        :return: Message de succès ou d'erreur
+        :rtype: str
+        :raises Exception: Si une erreur MySQL se produit
+        """
         try:
             with self.dbConnection.cursor() as cursor:
                 cursor.execute("""
@@ -217,6 +267,17 @@ class TaskServer:
             return "Erreur MySQL."
 
     def validation(self, idTache, etatValidation):
+        """
+        Modifie le statut de validation d'une tâche.
+
+        :param idTache: ID de la tâche à valider
+        :type idTache: str
+        :param etatValidation: Nouveau statut de validation
+        :type etatValidation: str
+        :return: Message de succès ou d'erreur
+        :rtype: str
+        :raises Exception: Si une erreur MySQL se produit
+        """
         try:
             with self.dbConnection.cursor() as cursor:
                 cursor.execute("UPDATE taches SET statut_tache = %s WHERE id_tache = %s;", (etatValidation, idTache))
@@ -227,6 +288,17 @@ class TaskServer:
             return "Erreur MySQL."
 
     def validationSousTache(self, idSousTache, etatValidationSousTache):
+        """
+        Modifie le statut de validation d'une sous-tâche.
+
+        :param idSousTache: ID de la sous-tâche à valider
+        :type idSousTache: str
+        :param etatValidationSousTache: Nouveau statut de validation
+        :type etatValidationSousTache: str
+        :return: Message de succès ou d'erreur
+        :rtype: str
+        :raises Exception: Si une erreur MySQL se produit
+        """
         try:
             with self.dbConnection.cursor() as cursor:
                 cursor.execute("UPDATE soustaches SET statut_soustache = %s WHERE id_soustache = %s;", (etatValidationSousTache, idSousTache))

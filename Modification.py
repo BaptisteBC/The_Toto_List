@@ -13,9 +13,21 @@ from PyQt5.QtWidgets import (
 
 class PagePrincipale(QWidget):
     """
-    Classe principale gérant l'interface pour la gestion des tâches et sous-tâches.
-    Fusion des fonctionnalités des deux scripts fournis.
-    """
+        Classe représentant la page principale de l'application, contenant une interface graphique
+    pour afficher et gérer des tâches et sous-tâches.
+
+        :param hote: Adresse de l'hôte de la base de données, defaults to '127.0.0.1'
+        :type hote: str, optional
+        :param utilisateur: Nom d'utilisateur pour la connexion à la base de données, defaults to 'root'
+        :type utilisateur: str, optional
+        :param motDePasse: Mot de passe pour la connexion à la base de données, defaults to 'toto'
+        :type motDePasse: str, optional
+        :param baseDeDonnees: Nom de la base de données à utiliser, defaults to 'thetotodb'
+        :type baseDeDonnees: str, optional
+
+        :raises pymysql.MySQLError: Si la connexion à la base de données échoue.
+        """
+
     def __init__(self, hote: str = '127.0.0.1', utilisateur: str = 'root', motDePasse='toto', baseDeDonnees: str = 'thetotodb'):
         super().__init__()
         self.setWindowTitle("Page Principale")
@@ -42,27 +54,36 @@ class PagePrincipale(QWidget):
             QMessageBox.critical(self, "Erreur", f"Erreur de connexion à la base de données : {e}")
 
     def quitter(self):
+        """
+            Quitte l'application en fermant la session actuelle.
+
+            :return: None
+            :rtype: NoneType
+        """
         QCoreApplication.exit(0)
 
     def conection(self):
         """
         Établit une connexion sécurisée avec le serveur via un socket.
 
-        Returns:
-            AESsocket: Socket sécurisé pour échanger des données chiffrées.
+        :return: Socket sécurisé pour échanger des données chiffrées.
+        :rtype: AESsocket
+        :raises Exception: Si la connexion au serveur échoue.
         """
         try:
-            # Création du socket pour la connexion avec le serveur (adresse locale et port 12345)
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect(('localhost', 12345))  # Connexion au serveur local
-            return AESsocket(client_socket, is_server=False)  # Retourne un socket sécurisé
+            client_socket.connect(('localhost', 12345))
+            return AESsocket(client_socket, is_server=False)
         except Exception as e:
-            # Affichage d'un message d'erreur si la connexion échoue
             QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
             return None
 
     def actualiser(self):
-        """ Actualise la liste des tâches et sous-tâches depuis la base de données. """
+        """
+        Actualise la liste des tâches et sous-tâches depuis la base de données.
+
+        :raises pymysql.MySQLError: Erreur lors de la connexion ou l'exécution des requêtes SQL sur la base de données.
+        """
         try:
             curseur = self.cnx.cursor()
             curseur.execute("SELECT id_tache, titre_tache, statut_tache FROM taches;")
@@ -86,6 +107,16 @@ class PagePrincipale(QWidget):
                 curseur.close()
 
     def ajouterTache(self, titreTache, idTache, statutTache):
+        """
+        Ajoute une tâche à la liste des tâches affichée dans l'interface utilisateur.
+
+        :param titreTache: Le titre de la tâche
+        :type titreTache: str
+        :param idTache: L'identifiant unique de la tâche
+        :type idTache: int
+        :param statutTache: Le statut de la tâche (1 si complétée, 0 sinon)
+        :type statutTache: int
+        """
         widgetTache = QWidget()
         layout = QHBoxLayout(widgetTache)
 
@@ -134,6 +165,16 @@ class PagePrincipale(QWidget):
             self.mettreAJourValidation(idTache, 0)
 
     def ajouterSousTacheListe(self, titreSousTache, idSousTache, statutSousTache):
+        """
+        Ajoute une sous-tâche associée à une tâche à la liste des tâches affichée dans l'interface utilisateur.
+
+        :param titreSousTache: Le titre de la sous-tâche
+        :type titreSousTache: str
+        :param idSousTache: L'identifiant unique de la sous-tâche
+        :type idSousTache: int
+        :param statutSousTache: Le statut de la sous-tâche (1 si complétée, 0 sinon)
+        :type statutSousTache: int
+        """
         widgetSousTache = QWidget()
         layout = QHBoxLayout(widgetSousTache)
         caseCocheSousTache = QCheckBox()
@@ -165,11 +206,11 @@ class PagePrincipale(QWidget):
 
     def mettreAJourStyleSousTache(self, labelSousTache, idSousTache, cocheSousTache):
         """
-        Met à jour le style de la tâche et son statut de validation dans la base de données.
+        Met à jour le style visuel de la sous-tâche et son statut de validation dans la base de données.
 
-        :param labelSousTache: Widget QLabel représentant le titre de la tâche
+        :param labelSousTache: Widget QLabel représentant le titre de la sous-tâche
         :type labelSousTache: QLabel
-        :param idSousTache: Identifiant unique de la tâche
+        :param idSousTache: Identifiant unique de la sous-tâche
         :type idSousTache: int
         :param cocheSousTache: Statut de la case cochée (True si cochée, False sinon)
         :type cocheSousTache: bool
@@ -182,6 +223,14 @@ class PagePrincipale(QWidget):
             self.mettreAJourValidationSousTache(idSousTache, 0)
 
     def afficherMenuTache(self, idTache, bouton):
+        """
+        Affiche un menu contextuel avec des options pour une tâche spécifique.
+
+        :param idTache: Identifiant unique de la tâche
+        :type idTache: int
+        :param bouton: Bouton source qui déclenche l'affichage du menu
+        :type bouton: QPushButton
+        """
         menu = QMenu(self)
         actionModifier = QAction("Modifier", self)
         actionAjouterSousTache = QAction("Ajouter sous-tâche", self)
@@ -194,7 +243,7 @@ class PagePrincipale(QWidget):
 
     def mettreAJourValidation(self, idTache, statutValidation):
         """
-        Met à jour le champ validation de la tâche dans la base de données.
+        Met à jour le champ de validation d'une tâche dans la base de données.
 
         :param idTache: Identifiant unique de la tâche
         :type idTache: int
@@ -215,9 +264,9 @@ class PagePrincipale(QWidget):
 
     def mettreAJourValidationSousTache(self, idSousTache, statutSousValidation):
         """
-        Met à jour le champ validation de la tâche dans la base de données.
+        Met à jour le champ de validation d'une sous-tâche dans la base de données.
 
-        :param idSousTache: Identifiant unique de la tâche
+        :param idSousTache: Identifiant unique de la sous-tâche
         :type idSousTache: int
         :param statutSousValidation: Nouveau statut de validation (0 ou 1)
         :type statutSousValidation: int
@@ -235,8 +284,16 @@ class PagePrincipale(QWidget):
             aes_socket.close()
 
     def modifierTache(self, idTache):
+        """
+        Ouvre une fenêtre pour modifier les détails d'une tâche existante.
+
+        :param idTache: Identifiant unique de la tâche
+        :type idTache: int
+        :raises json.JSONDecodeError: En cas d'erreur lors du décodage des données JSON de la tâche
+        :raises Exception: En cas d'autres erreurs inattendues
+        """
         try:
-            aes_socket = self.conection()  # Tentative de connexion
+            aes_socket = self.conection()
             if not aes_socket:
                 print("Erreur de connexion au serveur.")
                 return
@@ -293,6 +350,27 @@ class PagePrincipale(QWidget):
             aes_socket.close()
 
     def sauvegarderModification(self, idTache, titre, description, dateFin, recurrence, dateRappel, dialog):
+        """
+        Sauvegarde les modifications d'une tâche.
+
+        :param idTache: Identifiant de la tâche à modifier.
+        :type idTache: str
+        :param titre: Nouveau titre de la tâche.
+        :type titre: str
+        :param description: Nouvelle description de la tâche.
+        :type description: str
+        :param dateFin: Nouvelle date de fin de la tâche.
+        :type dateFin: QDateTime
+        :param recurrence: Récurrence de la tâche.
+        :type recurrence: str
+        :param dateRappel: Nouvelle date de rappel de la tâche, defaults to None.
+        :type dateRappel: QDateTime, optional
+        :param dialog: Fenêtre de dialogue associée.
+        :type dialog: QDialog
+        :raises pymysql.MySQLError: En cas d'erreur SQL lors de la modification.
+        :return: None
+        :rtype: None
+        """
         try:
 
             aes_socket = self.conection()
@@ -308,6 +386,15 @@ class PagePrincipale(QWidget):
             aes_socket.close()
 
     def modifierSousTache(self, idSousTache):
+        """
+        Ouvre un formulaire pour modifier une sous-tâche.
+
+        :param idSousTache: Identifiant de la sous-tâche à modifier.
+        :type idSousTâche: str
+        :raises pymysql.MySQLError: En cas d'erreur SQL lors de la récupération des données de la sous-tâche.
+        :return: None
+        :rtype: None
+        """
         try:
             aes_socket = self.conection()
             if not aes_socket:
@@ -364,6 +451,25 @@ class PagePrincipale(QWidget):
             aes_socket.close()
 
     def sauvegarderModificationSousTache(self, idSousTache, titre, description, dateFin, dateRappel, dialog):
+        """
+        Sauvegarde les modifications d'une sous-tâche.
+
+        :param idSousTache: Identifiant de la sous-tâche à modifier.
+        :type idSousTache: str
+        :param titre: Nouveau titre de la sous-tâche.
+        :type titre: str
+        :param description: Nouvelle description de la sous-tâche.
+        :type description: str
+        :param dateFin: Nouvelle date de fin de la sous-tâche.
+        :type dateFin: QDateTime
+        :param dateRappel: Nouvelle date de rappel de la sous-tâche, defaults to None.
+        :type dateRappel: QDateTime, optional
+        :param dialog: Fenêtre de dialogue associée.
+        :type dialog: QDialog
+        :raises pymysql.MySQLError: En cas d'erreur SQL lors de la modification.
+        :return: None
+        :rtype: None
+        """
         try:
             aes_socket = self.conection()
             if not aes_socket:
@@ -378,6 +484,14 @@ class PagePrincipale(QWidget):
             aes_socket.close()
 
     def ajouterSousTache(self, idTacheParent):
+        """
+        Ouvre un formulaire pour ajouter une nouvelle sous-tâche.
+
+        :param idTacheParent: Identifiant de la tâche parent.
+        :type idTacheParent: str
+        :return: None
+        :rtype: None
+        """
         dialog = QDialog(self)
         dialog.setWindowTitle("Ajouter une sous-tâche")
         form = QFormLayout(dialog)
@@ -408,6 +522,25 @@ class PagePrincipale(QWidget):
         dialog.exec_()
 
     def creerSousTache(self, idTacheParent, titre, description, dateFin, dateRappel, dialog):
+        """
+        Crée une nouvelle sous-tâche et l'enregistre dans la base de données.
+
+        :param idTacheParent: Identifiant de la tâche parent.
+        :type idTacheParent: str
+        :param titre: Titre de la sous-tâche.
+        :type titre: str
+        :param description: Description de la sous-tâche.
+        :type description: str
+        :param dateFin: Date de fin de la sous-tâche.
+        :type dateFin: QDateTime
+        :param dateRappel: Date de rappel de la sous-tâche, defaults to None.
+        :type dateRappel: QDateTime, optional
+        :param dialog: Fenêtre de dialogue associée.
+        :type dialog: QDialog
+        :raises pymysql.MySQLError: En cas d'erreur SQL lors de la création.
+        :return: None
+        :rtype: None
+        """
         try:
             aes_socket = self.conection()
             if not aes_socket:
@@ -421,8 +554,6 @@ class PagePrincipale(QWidget):
             QMessageBox.critical(self, "Erreur", f"Erreur MySQL lors de la création de la sous-tâche : {e}")
         finally:
             aes_socket.close()
-
-
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
