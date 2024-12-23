@@ -286,6 +286,7 @@ class TodoListApp(QMainWindow):
 
         self.is_dark_mode = False
 
+
     def actualiser(self):
 
         """Actualise la liste des tâches."""
