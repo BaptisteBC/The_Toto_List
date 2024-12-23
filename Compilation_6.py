@@ -16,6 +16,9 @@ import re
 import requests
 from datetime import datetime
 
+from pandas.core.computation.common import result_type_many
+
+
 #Création de la tâche (Yann)
 class FormulaireTache(QWidget):
     """
@@ -279,49 +282,40 @@ class TodoListApp(QMainWindow):
         self.bouton_vider_corb.clicked.connect(self.vider)
         self.bouton_quitter.clicked.connect(self.quitter)
 
-        self.cnx = pymysql.connect(host="127.0.0.1", user="root", password="toto", database="TheTotoDB")
-        self.actualiser(first_auth=True) # On lance l'actualisation après la connexion
 
         main_layout.addWidget(self.main_widget)
 
         self.is_dark_mode = False
 
-
     def actualiser(self):
-
         """Actualise la liste des tâches."""
+        aes_socket = self.conection()
+        if not aes_socket:
+            return
 
-        """Fonction d'actualisation des tâches.
-        Lorsque le bouton est cliqué, effectue une requête dans la table tâche et récupère le champ 'titre_tache' pour \
-        l'afficher dans la fenêtre principale."""
+        try:
+            # Envoyer la commande GET_tache pour récupérer toutes les tâches
+            aes_socket.send("GET_tache")
+            response = aes_socket.recv(1024)  # Réception des données du serveur
+            taches = json.loads(response)  # Convertir en objet Python
 
-        curseur = self.cnx.cursor()
+            if "error" in taches:
+                QMessageBox.critical(self, "Erreur", taches["error"])
+                return
 
-        # Extraction de tous les titres des taches principales
-        curseur.execute("SELECT id_tache, titre_tache, datesuppression_tache FROM taches;")
-        resultache = curseur.fetchall()
-        print("Tâches principales récupérées :", resultache)
+            self.taches.clear()
 
-        # Extraction de tous les titres des sous taches
-        curseur.execute("SELECT id_soustache, titre_soustache, soustache_id_tache, datesuppression_soustache FROM soustaches;")
-        sousTaches = curseur.fetchall()
-        print("Sous-tâches récupérées :", sousTaches)
+            # Afficher les tâches dans l'interface
+            for tache in taches:
+                self.afficherTache(
+                    tache["id_tache"],
+                    tache["titre_tache"]
+                )
 
-        self.taches.clear()
-
-        for id_tache, titre_tache, datesuppression_tache in resultache:
-            if datesuppression_tache:
-                pass
-            else:
-                self.afficherTache(id_tache, titre_tache)
-
-                for id_soustache, titre_soustache, soustache_id_tache, datesuppression_tache in sousTaches:
-                    if datesuppression_tache:
-                        pass
-                    elif soustache_id_tache == id_tache:
-                        self.afficherTache(id_soustache, f'|=>{titre_soustache}', soustache_id_tache)
-
-        curseur.close()
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur", f"Erreur lors de l'actualisation : {e}")
+        finally:
+            aes_socket.close()
 
     def conection(self):
         """
@@ -338,44 +332,6 @@ class TodoListApp(QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
             return None
-
-    def actualiser(self, first_auth=False):
-        """
-        Actualise la liste des tâches et sous-tâches depuis la base de données.
-
-        :raises pymysql.MySQLError: Erreur lors de la connexion ou l'exécution des requêtes SQL sur la base de données.
-        """
-        try:
-            """
-            aes_socket = self.conection()
-            if not aes_socket:
-                return
-
-            aes_socket.send("GET_tache")
-            reponse_taches = aes_socket.recv(1024)
-
-            print(reponse_taches)"""
-            curseur = self.cnx.cursor()
-            curseur.execute("SELECT id_tache, titre_tache, statut_tache FROM taches;")
-            taches = curseur.fetchall()
-
-
-            curseur.execute("SELECT id_soustache, titre_soustache, soustache_id_tache, statut_soustache FROM soustaches;")
-            sousTaches = curseur.fetchall()
-
-            self.taches.clear()
-            for idTache, titreTache, statutTache in taches:
-                self.ajouterTache(titreTache, idTache, statutTache)
-                for idSousTache, titreSousTache, parentId, statutSousTache in sousTaches:
-                    if parentId == idTache:
-                        self.ajouterSousTacheListe(titreSousTache, idSousTache, statutSousTache)
-            self.taches.repaint()
-
-        except pymysql.MySQLError as e:
-            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL : {e}')
-        finally:
-            if 'curseur' in locals():
-                curseur.close()
 
     def ajouterTache(self, titreTache, idTache, statutTache):
         """

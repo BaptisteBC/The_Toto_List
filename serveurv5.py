@@ -535,7 +535,6 @@ class Server:
             print(f"Erreur dans l'interprétation de la commande: {e}")
             return "Erreur serveur."
 
-
     def getTache(self, idTache):
         """
         Récupère les informations sur une tâche spécifique.
@@ -623,6 +622,7 @@ class Server:
         except Exception as e:
             print(f"Erreur MySQL: {e}")
             return json.dumps({"error": "Erreur MySQL."})
+
     def modifSousTache(self, idSousTache, titre, description, dateFin, dateRappel):
         """
         Modifie une sous-tâche existante.
