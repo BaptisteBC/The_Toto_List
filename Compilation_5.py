@@ -283,40 +283,32 @@ class TodoListApp(QMainWindow):
         self.is_dark_mode = False
 
     def actualiser(self):
+        """
+        Actualise la liste des tâches et sous-tâches depuis la base de données.
 
-        """Actualise la liste des tâches."""
+        :raises pymysql.MySQLError: Erreur lors de la connexion ou l'exécution des requêtes SQL sur la base de données.
+        """
+        try:
+            curseur = self.cnx.cursor()
+            curseur.execute("SELECT id_tache, titre_tache, statut_tache FROM taches;")
+            taches = curseur.fetchall()
 
-        """Fonction d'actualisation des tâches.
-        Lorsque le bouton est cliqué, effectue une requête dans la table tâche et récupère le champ 'titre_tache' pour \
-        l'afficher dans la fenêtre principale."""
+            curseur.execute(
+                "SELECT id_soustache, titre_soustache, soustache_id_tache, statut_soustache FROM soustaches;")
+            sousTaches = curseur.fetchall()
 
-        curseur = self.cnx.cursor()
-
-        # Extraction de tous les titres des taches principales
-        curseur.execute("SELECT id_tache, titre_tache, datesuppression_tache FROM taches;")
-        resultache = curseur.fetchall()
-        print("Tâches principales récupérées :", resultache)
-
-        # Extraction de tous les titres des sous taches
-        curseur.execute("SELECT id_soustache, titre_soustache, soustache_id_tache, datesuppression_soustache FROM soustaches;")
-        sousTaches = curseur.fetchall()
-        print("Sous-tâches récupérées :", sousTaches)
-
-        self.taches.clear()
-
-        for id_tache, titre_tache, datesuppression_tache in resultache:
-            if datesuppression_tache:
-                pass
-            else:
-                self.afficherTache(id_tache, titre_tache)
-
-                for id_soustache, titre_soustache, soustache_id_tache, datesuppression_tache in sousTaches:
-                    if datesuppression_tache:
-                        pass
-                    elif soustache_id_tache == id_tache:
-                        self.afficherTache(id_soustache, f'|=>{titre_soustache}', soustache_id_tache)
-
-        curseur.close()
+            self.taches.clear()
+            for idTache, titreTache, statutTache in taches:
+                self.ajouterTache(titreTache, idTache, statutTache)
+                for idSousTache, titreSousTache, parentId, statutSousTache in sousTaches:
+                    if parentId == idTache:
+                        self.ajouterSousTacheListe(titreSousTache, idSousTache, statutSousTache)
+            self.taches.repaint()
+        except pymysql.MySQLError as e:
+            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL : {e}')
+        finally:
+            if 'curseur' in locals():
+                curseur.close()
 
     def conection(self):
         """
@@ -334,33 +326,7 @@ class TodoListApp(QMainWindow):
             QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
             return None
 
-    def actualiser(self):
-        """
-        Actualise la liste des tâches et sous-tâches depuis la base de données.
 
-        :raises pymysql.MySQLError: Erreur lors de la connexion ou l'exécution des requêtes SQL sur la base de données.
-        """
-        try:
-            curseur = self.cnx.cursor()
-            curseur.execute("SELECT id_tache, titre_tache, statut_tache FROM taches;")
-            taches = curseur.fetchall()
-
-
-            curseur.execute("SELECT id_soustache, titre_soustache, soustache_id_tache, statut_soustache FROM soustaches;")
-            sousTaches = curseur.fetchall()
-
-            self.taches.clear()
-            for idTache, titreTache, statutTache in taches:
-                self.ajouterTache(titreTache, idTache, statutTache)
-                for idSousTache, titreSousTache, parentId, statutSousTache in sousTaches:
-                    if parentId == idTache:
-                        self.ajouterSousTacheListe(titreSousTache, idSousTache, statutSousTache)
-            self.taches.repaint()
-        except pymysql.MySQLError as e:
-            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL : {e}')
-        finally:
-            if 'curseur' in locals():
-                curseur.close()
 
     def ajouterTache(self, titreTache, idTache, statutTache):
         """
@@ -494,7 +460,7 @@ class TodoListApp(QMainWindow):
         actionModifier.triggered.connect(lambda: self.modifierTache(idTache))
         actionAjouterSousTache.triggered.connect(lambda: self.ajouterSousTache(idTache))
         actionSupprimerTache.triggered.connect(lambda: self.supprimer())
-        actionDetailTache.triggered.connect(lambda: self.detail())
+        actionDetailTache.triggered.connect(lambda: self.detail(idTache))
         menu.addAction(actionDetailTache)
         menu.addAction(actionSupprimerTache)
         menu.addAction(actionModifier)
@@ -560,14 +526,12 @@ class TodoListApp(QMainWindow):
                 return
             aes_socket.send(f"GET_tache:{idTache}")
             tache_data = aes_socket.recv(1024)
-            aes_socket.close()
             tache_j = json.loads(tache_data)
             if isinstance(tache_j, list) and tache_j:
                 tache = tuple(datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if i in [2, 4] and value else value for i, value in enumerate(tache_j[0]))
             else:
                 QMessageBox.information(self, "Info", "Aucune tâche trouvée.")
                 return
-
             dialog = QDialog(self)
             dialog.setWindowTitle("Modifier la Tâche")
             form = QFormLayout(dialog)
@@ -815,53 +779,46 @@ class TodoListApp(QMainWindow):
         finally:
             aes_socket.close()
 
-    def afficherTache(self, id_tache, titre_tache, soustache_id_tache=None):
-        item = QListWidgetItem()
-        tache = QWidget()
 
-        bouton = QPushButton(titre_tache)
-        suppr = QPushButton('X')
-        suppr.setFixedWidth(30)
-
-        layout = QHBoxLayout(tache)
-        layout.addWidget(bouton)
-        layout.addWidget(suppr)
-        layout.addStretch()
-
-        bouton.clicked.connect(lambda: self.detail(id_tache, soustache_id_tache))
-        suppr.clicked.connect(lambda: self.supprimer(id_tache, soustache_id_tache))
-        item.setSizeHint(tache.sizeHint())
-
-        self.taches.addItem(item)
-        self.taches.setItemWidget(item, tache)
-
-    def detail(self, id_tache, soustache_id_tache):
+    def detailSousTache(self, soustache_id_tache):
         curseur = self.cnx.cursor()
-        if soustache_id_tache:
-            curseur.execute(f'SELECT titre_soustache, description_soustache, datecreation_soustache, '
-                            f'datefin_soustache, statut_soustache, daterappel_soustache FROM soustaches '
-                            f'WHERE id_soustache = {id_tache};')
-            soustache = curseur.fetchall()
-            curseur.execute(f'SELECT titre_tache FROM taches WHERE id_tache = {soustache_id_tache};')
-            tache_parent = curseur.fetchone()
 
-            for (titre_soustache, description_soustache, datecreation_soustache, datefin_soustache, statut_soustache,
-                 daterappel_soustache) in soustache:
-                Detail(titre_soustache, description_soustache, datecreation_soustache, datefin_soustache,
-                       statut_soustache, daterappel_soustache, soustache_id_tache, tache_parent[0]).exec()
+        curseur.execute(f'SELECT titre_soustache, description_soustache, datecreation_soustache, '
+                        f'datefin_soustache, statut_soustache, daterappel_soustache FROM soustaches '
+                        f'WHERE id_soustache = {idTache};')
+        soustache = curseur.fetchall()
+        curseur.execute(f'SELECT titre_tache FROM taches WHERE id_tache = {soustache_id_tache};')
+        tache_parent = curseur.fetchone()
 
+        for (titre_soustache, description_soustache, datecreation_soustache, datefin_soustache, statut_soustache,
+             daterappel_soustache) in soustache:
+            Detail(titre_soustache, description_soustache, datecreation_soustache, datefin_soustache,
+                   statut_soustache, daterappel_soustache, soustache_id_tache, tache_parent[0]).exec()
+
+
+
+    def detail(self, idTache,):
+
+        aes_socket = self.conection()
+        if not aes_socket:
+            print("Erreur de connexion au serveur.")
+            return
+        aes_socket.send(f"GET_tacheDetail:{idTache}")
+        tache_data = aes_socket.recv(1024)
+        tache_j = json.loads(tache_data)
+        if isinstance(tache_j, list) and tache_j:
+            tache = tuple(
+                datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if i in [2, 3,5] and value else value for i, value in
+                enumerate(tache_j[0]))
         else:
-            curseur.execute(f'SELECT titre_tache, description_tache, datecreation_tache, '
-                            f'datefin_tache, statut_tache, daterappel_tache FROM taches '
-                            f'WHERE id_tache = {id_tache};')
-            tache = curseur.fetchall()
+            QMessageBox.information(self, "Info", "Aucune tâche trouvée.")
+            return
 
-            for (titre_tache, description_tache, datecreation_tache, datefin_tache, statut_tache,
-                 daterappel_tache) in tache:
-                Detail(titre_tache, description_tache, datecreation_tache, datefin_tache,
-                       statut_tache, daterappel_tache).exec()
+        try:
+            FenetreDetail(tache[0],tache[1], tache[2],tache[3],tache[4], tache[5]).exec()
+        except:
+            print("erreur execution detail")
 
-        curseur.close()
 
     def restaurer(self):
         Restaurer(self.cnx).exec()
@@ -1180,9 +1137,8 @@ class Restaurer(QDialog):
     def stop(self):
        self.close()
 
-class Detail(QDialog):
-    def __init__(self, titre, description, datecreation, datefin, statut, daterappel, soustache_id_tache=None,
-                 tache_parent=None):
+class FenetreDetail(QDialog):
+    def __init__(self, titre, description, datecreation, datefin, statut, daterappel, soustache_id_tache=None, tache_parent=None):
         super().__init__()
 
         self.setWindowTitle("Détail")
@@ -1196,7 +1152,7 @@ class Detail(QDialog):
         self.datecreation = QLabel(f'Date de création : {datecreation}')
         self.datefin = QLabel(f'Date de fin : {datefin}')
 
-        if statut == 1:
+        if statut == 0:
             self.statut = QLabel("Statut : En cours")
         else:
             self.statut = QLabel("Statut : Terminée")
