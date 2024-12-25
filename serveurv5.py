@@ -13,6 +13,10 @@ import pymysql.cursors
 from lib.custom import AESsocket  # Importation de la classe personnalisée pour le chiffrement AES
 import json
 
+
+
+
+
 # Fonction de journalisation
 def journalisation(utilisateurId: int, typeEvenement: str):
     """Enregistre un événement dans la table de journalisation.
@@ -532,16 +536,15 @@ class Server:
         :raises Exception: Si une erreur MySQL se produit
         """
         try:
-            with self.dbConnection.cursor() as cursor:
+            with self.db_connection.cursor() as cursor:
                 cursor.execute(
                     "SELECT titre_tache, description_tache, datefin_tache, recurrence_tache, daterappel_tache FROM taches WHERE id_tache = %s;",
                     (idTache,)
                 )
-
                 results = cursor.fetchall()
-                print(results)
                 if results:
                     serialized_results = [[ value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row ] for row in results ]
+                    print(serialized_results)
                     return json.dumps(serialized_results)
                 else:
                     return json.dumps([])
@@ -572,12 +575,12 @@ class Server:
         """
         try:
 
-            with self.dbConnection.cursor() as cursor:
+            with self.db_connection.cursor() as cursor:
                 cursor.execute("""
                     UPDATE taches SET titre_tache = %s, description_tache = %s, datefin_tache = %s, recurrence_tache = %s, daterappel_tache = %s
                     WHERE id_tache = %s;
                 """, (titre, description, dateFin, recurrence, dateRappel if dateRappel != 'NULL' else None, idTache))
-                self.dbConnection.commit()
+                self.db_connection.commit()
                 return "Tâche modifiée avec succès."
         except Exception as e:
             print(f"Erreur MySQL: {e}")
@@ -594,7 +597,7 @@ class Server:
         :raises Exception: Si une erreur MySQL se produit
         """
         try:
-            with self.dbConnection.cursor() as cursor:
+            with self.db_connection.cursor() as cursor:
                 cursor.execute(
                     "SELECT titre_soustache, description_soustache, datefin_soustache, daterappel_soustache FROM soustaches WHERE id_soustache = %s;", (idSousTache,)
                 )
@@ -628,12 +631,12 @@ class Server:
         :raises Exception: Si une erreur MySQL se produit
         """
         try:
-            with self.dbConnection.cursor() as cursor:
+            with self.db_connection.cursor() as cursor:
                 cursor.execute("""
                     UPDATE soustaches SET titre_soustache = %s, description_soustache = %s, datefin_soustache = %s, daterappel_soustache = %s
                             WHERE id_soustache = %s;
                 """, (titre, description, dateFin,dateRappel if dateRappel != 'NULL' else None, idSousTache))
-                self.dbConnection.commit()
+                self.db_connection.commit()
                 return "Sous tâche modifiée avec succès."
         except Exception as e:
             print(f"Erreur MySQL: {e}")
@@ -658,13 +661,13 @@ class Server:
         :raises Exception: Si une erreur MySQL se produit
         """
         try:
-            with self.dbConnection.cursor() as cursor:
+            with self.db_connection.cursor() as cursor:
                 cursor.execute("""
                     INSERT INTO soustaches (soustache_id_tache, titre_soustache, description_soustache, datefin_soustache, daterappel_soustache, datecreation_soustache, statut_soustache)
                             VALUES (%s, %s, %s, %s, %s, NOW(), 0);
                         """, (soustache_id_tache, titre_soustache, description_soustache, datefin_soustache,
                               daterappel_soustache if daterappel_soustache != 'NULL' else None) )
-                self.dbConnection.commit()
+                self.db_connection.commit()
                 return "Sous tâche crée avec succès."
         except Exception as e:
             print(f"Erreur MySQL: {e}")
@@ -683,9 +686,9 @@ class Server:
         :raises Exception: Si une erreur MySQL se produit
         """
         try:
-            with self.dbConnection.cursor() as cursor:
+            with self.db_connection.cursor() as cursor:
                 cursor.execute("UPDATE taches SET statut_tache = %s WHERE id_tache = %s;", (etatValidation, idTache))
-                self.dbConnection.commit()
+                self.db_connection.commit()
                 return "Validation modifier avec succes"
         except Exception as e:
             print(f"Erreur MySQL: {e}")
@@ -704,9 +707,9 @@ class Server:
         :raises Exception: Si une erreur MySQL se produit
         """
         try:
-            with self.dbConnection.cursor() as cursor:
+            with self.db_connection.cursor() as cursor:
                 cursor.execute("UPDATE soustaches SET statut_soustache = %s WHERE id_soustache = %s;", (etatValidationSousTache, idSousTache))
-                self.dbConnection.commit()
+                self.db_connection.commit()
                 return "Validation sous tache modifier avec succes"
         except Exception as e:
             print(f"Erreur MySQL: {e}")
