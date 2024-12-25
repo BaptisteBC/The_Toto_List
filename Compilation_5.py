@@ -560,7 +560,6 @@ class TodoListApp(QMainWindow):
                 return
             aes_socket.send(f"GET_tache:{idTache}")
             tache_data = aes_socket.recv(1024)
-            aes_socket.close()
             tache_j = json.loads(tache_data)
             if isinstance(tache_j, list) and tache_j:
                 tache = tuple(datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if i in [2, 4] and value else value for i, value in enumerate(tache_j[0]))

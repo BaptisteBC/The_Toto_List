@@ -315,11 +315,11 @@ class Server:
 
             elif informations.startswith("ID_LISTE"):
                 listName = informations.split(":")[1]
-                return self.getListId(listName)
+                client_socket.send(self.getListId(listName))
 
             elif informations.startswith("CREATION_TACHE"):
                 details = informations.split(":")[1:]
-                return self.createTask(*details)
+                client_socket.send(self.createTask(*details))
 
             elif informations.startswith("GET_LISTES"):
                 listes = self.getListId()
@@ -327,6 +327,35 @@ class Server:
                     client_socket.send(listes)  # Pas de encode() ni decode(), car AESsocket le fait
                 except Exception as e:
                     print(f"Erreur lors de l'envoi des utilisateurs : {e}")
+
+            elif informations.startswith("MODIF_TACHE"):
+                details = informations.split("|")[1:]
+                client_socket.send(self.modifTache(*details))
+
+            elif informations.startswith("GET_tache"):
+                idTache = informations.split(":")[1]
+                client_socket.send(self.getTache(idTache))
+
+            elif informations.startswith("GET_sousTache"):
+                idSousTache = informations.split(":")[1]
+                client_socket.send(self.getSousTache(idSousTache))
+
+            elif informations.startswith("modifSousTache"):
+                details = informations.split("|")[1:]
+                client_socket.send(self.modifSousTache(*details))
+
+            elif informations.startswith("validationSousTache"):
+                details = informations.split(":")[1:]
+                client_socket.send(self.validationSousTache(*details))
+
+            elif informations.startswith("validation"):
+                details = informations.split(":")[1:]
+                client_socket.send(self.validation(*details))
+
+            elif informations.startswith("creationSousTache"):
+                details = informations.split("|")[1:]
+                client_socket.send(self.creationSousTache(*details))
+
 
             else:
                 return "Commande inconnue."
@@ -490,50 +519,7 @@ class Server:
             print(f"Erreur MySQL: {e}")
             return "Erreur lors de la création de la tâche."
 
-    def interpretCommand(self, command):
-        """
-        Interprète et exécute une commande reçue du client.
 
-        :param command: Commande envoyée par le client
-        :type command: str
-        :return: Réponse à retourner au client
-        :rtype: str
-        """
-        try:
-            if command.startswith("MODIF_TACHE"):
-                details = command.split("|")[1:]
-                return self.modifTache(*details)
-
-            elif command.startswith("GET_tache"):
-                idTache = command.split(":")[1]
-                return self.getTache(idTache)
-
-            elif command.startswith("GET_sousTache"):
-                idSousTache = command.split(":")[1]
-                return self.getSousTache(idSousTache)
-
-            elif command.startswith("modifSousTache"):
-                details = command.split("|")[1:]
-                return self.modifSousTache(*details)
-
-            elif command.startswith("validationSousTache"):
-                details = command.split(":")[1:]
-                return self.validationSousTache(*details)
-
-            elif command.startswith("validation"):
-                details = command.split(":")[1:]
-                return self.validation(*details)
-
-            if command.startswith("creationSousTache"):
-                details = command.split("|")[1:]
-                return self.creationSousTache(*details)
-
-            else:
-                return "Commande inconnue."
-
-        except Exception as e:
-            print(f"Erreur dans l'interprétation de la commande: {e}")
-            return "Erreur serveur."
 
     def getTache(self, idTache):
         """
@@ -553,7 +539,7 @@ class Server:
                 )
 
                 results = cursor.fetchall()
-
+                print(results)
                 if results:
                     serialized_results = [[ value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row ] for row in results ]
                     return json.dumps(serialized_results)
