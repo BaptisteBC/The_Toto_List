@@ -336,6 +336,10 @@ class Server:
                 details = informations.split("|")[1:]
                 client_socket.send(self.modifTache(*details))
 
+            elif informations.startswith("GET_tacheDetail"):
+                idTache = informations.split(":")[1]
+                client_socket.send(self.getTacheDetail(idTache))
+
             elif informations.startswith("GET_tache"):
                 idTache = informations.split(":")[1]
                 client_socket.send(self.getTache(idTache))
@@ -539,6 +543,34 @@ class Server:
             with self.db_connection.cursor() as cursor:
                 cursor.execute(
                     "SELECT titre_tache, description_tache, datefin_tache, recurrence_tache, daterappel_tache FROM taches WHERE id_tache = %s;",
+                    (idTache,)
+                )
+                results = cursor.fetchall()
+                if results:
+                    serialized_results = [[ value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row ] for row in results ]
+                    print(serialized_results)
+                    return json.dumps(serialized_results)
+                else:
+                    return json.dumps([])
+
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return json.dumps({"error": "Erreur MySQL."})
+
+    def getTacheDetail(self, idTache):
+        """
+        Récupère les informations sur une tâche spécifique.
+
+        :param idTache: ID de la tâche à récupérer
+        :type idTache: str
+        :return: JSON contenant les informations sur la tâche (avec datetime sérialisé)
+        :rtype: str
+        :raises Exception: Si une erreur MySQL se produit
+        """
+        try:
+            with self.db_connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT titre_tache, description_tache,datecreation_tache, datefin_tache, statut_tache, daterappel_tache FROM taches WHERE id_tache = %s;",
                     (idTache,)
                 )
                 results = cursor.fetchall()
