@@ -283,32 +283,74 @@ class TodoListApp(QMainWindow):
         self.is_dark_mode = False
 
     def actualiser(self):
+
         """
         Actualise la liste des tâches et sous-tâches depuis la base de données.
 
         :raises pymysql.MySQLError: Erreur lors de la connexion ou l'exécution des requêtes SQL sur la base de données.
         """
         try:
-            curseur = self.cnx.cursor()
-            curseur.execute("SELECT id_tache, titre_tache, statut_tache FROM taches;")
-            taches = curseur.fetchall()
+            aes_socket = self.conection()
+            if not aes_socket:
+                print("Erreur de connexion au serveur.")
+                return
+            aes_socket.send("GET_listeTache")
+            tache_data = aes_socket.recv(1024)
+            aes_socket.close()
+            tache_j = json.loads(tache_data)
 
-            curseur.execute(
-                "SELECT id_soustache, titre_soustache, soustache_id_tache, statut_soustache FROM soustaches;")
-            sousTaches = curseur.fetchall()
+            if isinstance(tache_j, list) and tache_j:
+                taches = [
+                    tuple(
+                        datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if i == 3 and value else value
+                        for i, value in enumerate(tache)
+                    )
+                    for tache in tache_j
+                ]
+            else:
+                QMessageBox.information(self, "Info", "Aucune tâche trouvée.")
+                return
+
+            aes_socket = self.conection()
+            if not aes_socket:
+                print("Erreur de connexion au serveur.")
+                return
+            aes_socket.send("GET_listeSousTache")
+            tache_data = aes_socket.recv(1024)
+            aes_socket.close()
+            tache_js = json.loads(tache_data)
+
+            if isinstance(tache_js, list) and tache_js:
+                sousTaches = [
+                    tuple(
+                        datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if i == 4 and value else value
+                        for i, value in enumerate(sous_tache)
+                    )
+                    for sous_tache in tache_js
+                ]
+            else:
+                QMessageBox.information(self, "Info", "Aucune sous tâche trouvée.")
+                return
 
             self.taches.clear()
-            for idTache, titreTache, statutTache in taches:
+            for idTache, titreTache, statutTache, datesuppression_tache in taches:
+                if datesuppression_tache:
+                    continue
                 self.ajouterTache(titreTache, idTache, statutTache)
-                for idSousTache, titreSousTache, parentId, statutSousTache in sousTaches:
+
+                for idSousTache, titreSousTache, parentId, statutSousTache, datesuppression_soustache in sousTaches:
+                    if datesuppression_soustache:
+                        continue
                     if parentId == idTache:
                         self.ajouterSousTacheListe(titreSousTache, idSousTache, statutSousTache)
+
             self.taches.repaint()
+
         except pymysql.MySQLError as e:
             QMessageBox.critical(self, 'Erreur', f'Erreur MySQL : {e}')
         finally:
-            if 'curseur' in locals():
-                curseur.close()
+            if 'aes_socket' in locals() and aes_socket:
+                aes_socket.close()
 
     def conection(self):
         """

@@ -352,6 +352,12 @@ class Server:
                 idSousTache = informations.split(":")[1]
                 client_socket.send(self.getSousTache(idSousTache))
 
+            elif informations.startswith("GET_listeTache"):
+                client_socket.send(self.getListeTache())
+
+            elif informations.startswith("GET_listeSousTache"):
+                client_socket.send(self.getListeSousTache())
+
             elif informations.startswith("SUP_Tache"):
                 idTache = informations.split(":")[1]
                 client_socket.send(self.supprimerTache(idTache))
@@ -438,6 +444,8 @@ class Server:
             if client[0] == client_socket:
 
                 self.clients.remove(client)
+
+
 
     def commande(self):
         '''
@@ -539,6 +547,40 @@ class Server:
             print(f"Erreur MySQL: {e}")
             return "Erreur lors de la création de la tâche."
 
+    def getListeTache(self):
+        try:
+            with self.db_connection.cursor() as cursor:
+                cursor.execute("SELECT id_tache, titre_tache, statut_tache, datesuppression_tache FROM taches;")
+
+                results = cursor.fetchall()
+                if results:
+                    serialized_results = [
+                        [value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row]
+                        for row in results]
+                    print(serialized_results)
+                    return json.dumps(serialized_results)
+                else:
+                    return json.dumps([])
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return json.dumps({"error": "Erreur MySQL."})
+
+    def getListeSousTache(self):
+        try:
+            with self.db_connection.cursor() as cursor:
+                cursor.execute("SELECT id_soustache, titre_soustache, soustache_id_tache, statut_soustache, datesuppression_soustache FROM soustaches;")
+
+                results = cursor.fetchall()
+                if results:
+                    serialized_results = [
+                        [value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row] for row in results]
+                    print(serialized_results)
+                    return json.dumps(serialized_results)
+                else:
+                    return json.dumps([])
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return json.dumps({"error": "Erreur MySQL."})
 
 
     def getTache(self, idTache):
