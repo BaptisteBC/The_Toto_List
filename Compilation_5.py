@@ -439,7 +439,7 @@ class TodoListApp(QMainWindow):
         actionSupprimerTache = QAction("Supprimer la sous tâche", self)
         actionDetailTache = QAction("Détails sous tache", self)
         actionModifier.triggered.connect(lambda: self.modifierSousTache(idSousTache))
-        actionSupprimerTache.triggered.connect(lambda: self.supprimerSousTache(idSousTache))
+        actionSupprimerTache.triggered.connect(lambda: self.supprimerTache(idSousTache))
         actionDetailTache.triggered.connect(lambda: self.detailSousTache(idSousTache))
         menu.addAction(actionDetailTache)
         menu.addAction(actionSupprimerTache)
@@ -481,7 +481,7 @@ class TodoListApp(QMainWindow):
         actionDetailTache = QAction("Détails", self)
         actionModifier.triggered.connect(lambda: self.modifierTache(idTache))
         actionAjouterSousTache.triggered.connect(lambda: self.ajouterSousTache(idTache))
-        actionSupprimerTache.triggered.connect(lambda: self.supprimer())
+        actionSupprimerTache.triggered.connect(lambda: self.supprimer(idTache))
         actionDetailTache.triggered.connect(lambda: self.detail(idTache))
         menu.addAction(actionDetailTache)
         menu.addAction(actionSupprimerTache)
@@ -854,11 +854,11 @@ class TodoListApp(QMainWindow):
 
     def supprimer(self, id_tache, soustache_id_tache):
         if not soustache_id_tache:  # Tache
-            Supprimer(id_tache, soustache_id_tache, self.cnx).exec()
+            Supprimer(id_tache, soustache_id_tache).exec()
             self.actualiser()
 
         else:  # Sous-tache
-            Supprimer(id_tache, soustache_id_tache, self.cnx).exec()
+            Supprimer(id_tache).exec()
             self.actualiser()
 
     def vider(self):
@@ -1034,7 +1034,7 @@ class TodoListApp(QMainWindow):
         QMessageBox.information(self, "Crédits","Application développée par les personnes suivantes : \n\n - BLANC-CARRIER Baptiste \n - BLANCK Yann \n - COSENZA Thibaut \n - DE AZEVEDO Kévin \n - GASSER Timothée \n - MARTIN Jean-Christophe \n - MERCKLE Florian \n - MOUROT Corentin \n - TRÉPIER Timothée\n\n © 2024 TheTotoList. Tous droits réservés. Développé par TheTotoGroup.")
 
 class Supprimer(QDialog):
-    def __init__(self, id_tache, soustache_id_tache, cnx):
+    def __init__(self, id_tache, soustache_id_tache):
         super().__init__()
 
         self.setWindowTitle("Supprimer")
