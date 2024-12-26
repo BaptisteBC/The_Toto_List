@@ -439,7 +439,7 @@ class TodoListApp(QMainWindow):
         actionSupprimerTache = QAction("Supprimer la sous tâche", self)
         actionDetailTache = QAction("Détails sous tache", self)
         actionModifier.triggered.connect(lambda: self.modifierSousTache(idSousTache))
-        actionSupprimerTache.triggered.connect(lambda: self.supprimerTache(idSousTache))
+        actionSupprimerTache.triggered.connect(lambda: self.supprimerSousTache(idSousTache))
         actionDetailTache.triggered.connect(lambda: self.detailSousTache(idSousTache))
         menu.addAction(actionDetailTache)
         menu.addAction(actionSupprimerTache)
@@ -852,14 +852,20 @@ class TodoListApp(QMainWindow):
         Restaurer(self.cnx).exec()
         self.actualiser()
 
-    def supprimer(self, id_tache, soustache_id_tache):
-        if not soustache_id_tache:  # Tache
-            Supprimer(id_tache, soustache_id_tache).exec()
+    def supprimer(self, id_tache):
+        try:
+            SupprimerTache(id_tache, 0).exec()
             self.actualiser()
+        except:
+            print("erreur ouverture fenetre suppresion")
 
-        else:  # Sous-tache
-            Supprimer(id_tache).exec()
+    def supprimerSousTache(self, id_tache):
+        try:
+            SupprimerTache(id_tache, 1).exec()
             self.actualiser()
+        except:
+            print("erreur ouverture fenetre suppresion")
+
 
     def vider(self):
         Vider_corbeille(self.cnx).exec()
@@ -919,8 +925,6 @@ class TodoListApp(QMainWindow):
         self.actCredits.triggered.connect(self.open_credits)
 
     def fermeture(self):
-        self.client_socket.close()
-        self.close()
         app.exit(0)
         sys.exit(0)
 
@@ -1033,8 +1037,8 @@ class TodoListApp(QMainWindow):
     def open_credits(self):
         QMessageBox.information(self, "Crédits","Application développée par les personnes suivantes : \n\n - BLANC-CARRIER Baptiste \n - BLANCK Yann \n - COSENZA Thibaut \n - DE AZEVEDO Kévin \n - GASSER Timothée \n - MARTIN Jean-Christophe \n - MERCKLE Florian \n - MOUROT Corentin \n - TRÉPIER Timothée\n\n © 2024 TheTotoList. Tous droits réservés. Développé par TheTotoGroup.")
 
-class Supprimer(QDialog):
-    def __init__(self, id_tache, soustache_id_tache):
+class SupprimerTache(QDialog):
+    def __init__(self, idTache, typeTache):
         super().__init__()
 
         self.setWindowTitle("Supprimer")
@@ -1051,25 +1055,43 @@ class Supprimer(QDialog):
         grid.addWidget(self.confirmer)
         grid.addWidget(self.annuler)
 
-        self.id_tache:str = id_tache
-        self.cnx = cnx
-        self.soustache_id_tache = soustache_id_tache
+        self.idTache:str = idTache
+        self.typeTache: str = typeTache
 
         self.confirmer.clicked.connect(self.conf)
         self.annuler.clicked.connect(self.stop)
 
+    def conection(self):
+        """
+        Établit une connexion sécurisée avec le serveur via un socket.
+
+        :return: Socket sécurisé pour échanger des données chiffrées.
+        :rtype: AESsocket
+        :raises Exception: Si la connexion au serveur échoue.
+        """
+        try:
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect(('localhost', 55555))
+            return AESsocket(client_socket, is_server=False)
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
+            return None
+
     def conf(self):
         try :
-            curseur = self.cnx.cursor()
-            if not self.soustache_id_tache:
-                curseur.execute(f'UPDATE taches SET datesuppression_tache = NOW() WHERE id_tache = "{self.id_tache}";')
-                curseur.execute(f'UPDATE soustaches SET datesuppression_soustache = NOW() '
-                                f'WHERE soustache_id_tache = "{self.id_tache}";')
+            if self.typeTache == 0 :
+                aes_socket = self.conection()
+                if not aes_socket:
+                    print("Erreur de connexion au serveur.")
+                    return
+                aes_socket.send(f"SUP_Tache:{self.idTache}")
+
             else:
-                curseur.execute(f'UPDATE soustaches SET datesuppression_soustache = NOW() '
-                            f'WHERE id_soustache = "{self.id_tache}";')
-            self.cnx.commit()
-            curseur.close()
+                aes_socket = self.conection()
+                if not aes_socket:
+                    print("Erreur de connexion au serveur.")
+                    return
+                aes_socket.send(f"SUP_sousTache:{self.idTache}")
 
             msg = QMessageBox()
             msg.setWindowTitle("Confirmation")

@@ -352,6 +352,14 @@ class Server:
                 idSousTache = informations.split(":")[1]
                 client_socket.send(self.getSousTache(idSousTache))
 
+            elif informations.startswith("SUP_Tache"):
+                idTache = informations.split(":")[1]
+                client_socket.send(self.supprimerTache(idTache))
+
+            elif informations.startswith("SUP_sousTache"):
+                idSousTache = informations.split(":")[1]
+                client_socket.send(self.supprimerSousTache(idSousTache))
+
             elif informations.startswith("modifSousTache"):
                 details = informations.split("|")[1:]
                 client_socket.send(self.modifSousTache(*details))
@@ -619,6 +627,35 @@ class Server:
         except Exception as e:
             print(f"Erreur MySQL: {e}")
             return json.dumps({"error": "Erreur MySQL."})
+
+    def supprimerTache(self, idTache):
+        try:
+            with self.db_connection.cursor() as cursor:
+                cursor.execute(f'UPDATE taches SET datesuppression_tache = NOW() WHERE id_tache = "{idTache}";')
+                cursor.execute("UPDATE soustaches SET datesuppression_soustache = NOW() WHERE soustache_id_tache = %s",(idTache))
+                self.db_connection.commit()
+                return "Tâche supprimer avec succès."
+            self.actualiser()
+
+
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return "Erreur MySQL."
+
+    def supprimerSousTache(self, idTache):
+        try:
+            with self.db_connection.cursor() as cursor:
+                cursor.execute(f'UPDATE soustaches SET datesuppression_soustache = NOW() '
+                                f'WHERE id_soustache = "{idTache}";')
+                self.db_connection.commit()
+                return "Sous tâche supprimer avec succès."
+            self.actualiser()
+
+
+
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return "Erreur MySQL."
 
     def modifTache(self, idTache, titre, description, dateFin, recurrence, dateRappel):
         """
