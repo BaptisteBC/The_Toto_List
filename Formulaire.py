@@ -13,13 +13,24 @@ class FormulaireTache(QWidget):
     """
     Classe représentant l'interface graphique pour créer une tâche.
 
+    Cette classe permet à un utilisateur de saisir les informations nécessaires pour créer une tâche.
+    Elle récupère la liste des utilisateurs et des listes disponibles depuis le serveur
+    et permet de soumettre les données de la tâche via un formulaire.
+
     Attributes:
         listes (dict): Liste des listes disponibles pour organiser les tâches.
         utilisateurs (dict): Liste des utilisateurs assignables à une tâche.
     """
 
     def __init__(self):
-        """Initialise le formulaire, configure l'interface graphique et charge les données nécessaires."""
+        """
+        Initialise le formulaire, configure l'interface graphique et charge les données nécessaires.
+
+        Cette méthode crée et configure les différents éléments du formulaire (champs de texte, menus déroulants, etc.)
+        et charge les données des utilisateurs et des listes disponibles depuis le serveur.
+
+        Elle configure aussi l'apparence de la fenêtre et définit la structure du layout.
+        """
         super().__init__()
 
         # Configuration de la fenêtre principale : titre et dimensions de la fenêtre
@@ -88,6 +99,9 @@ class FormulaireTache(QWidget):
         """
         Établit une connexion sécurisée avec le serveur via un socket.
 
+        Cette méthode crée un socket, se connecte au serveur et retourne un socket sécurisé
+        utilisant le chiffrement AES pour les échanges de données.
+
         Returns:
             AESsocket: Socket sécurisé pour échanger des données chiffrées.
         """
@@ -102,7 +116,14 @@ class FormulaireTache(QWidget):
             return None
 
     def ChargerListes(self):
-        """Charge les listes disponibles depuis le serveur et les ajoute au menu déroulant."""
+        """
+        Charge les listes disponibles depuis le serveur et les ajoute au menu déroulant.
+
+        Cette méthode envoie une requête au serveur pour obtenir la liste des listes disponibles,
+        puis elle met à jour le menu déroulant avec les noms de listes récupérées.
+
+        Si une erreur survient, un message d'avertissement est affiché.
+        """
         try:
             aes_socket = self.conection()  # Tentative de connexion
             if not aes_socket:
@@ -123,7 +144,14 @@ class FormulaireTache(QWidget):
             QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des listes : {e}")
 
     def ChargerUtilisateurs(self):
-        """Charge les utilisateurs assignables à une tâche depuis le serveur et les ajoute au menu déroulant."""
+        """
+        Charge les utilisateurs assignables à une tâche depuis le serveur et les ajoute au menu déroulant.
+
+        Cette méthode envoie une requête au serveur pour obtenir la liste des utilisateurs disponibles,
+        puis elle met à jour le menu déroulant avec les pseudonymes des utilisateurs récupérés.
+
+        Si une erreur survient, un message d'avertissement est affiché.
+        """
         try:
             aes_socket = self.conection()  # Tentative de connexion
             if not aes_socket:
@@ -145,7 +173,17 @@ class FormulaireTache(QWidget):
             QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des utilisateurs : {e}")
 
     def Envoie(self):
-        """Récupère les données du formulaire et les envoie au serveur pour créer une nouvelle tâche."""
+        """
+        Récupère les données du formulaire et les envoie au serveur pour créer une nouvelle tâche.
+
+        Cette méthode collecte les informations saisies par l'utilisateur dans le formulaire
+        et les envoie au serveur via un socket sécurisé pour créer la tâche.
+
+        Si une erreur survient, un message d'erreur est affiché.
+
+        Returns:
+            None
+        """
         try:
             # Récupération des informations du formulaire
             titre_tache = self.champ_nom.text().strip()

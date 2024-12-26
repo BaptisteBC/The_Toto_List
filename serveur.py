@@ -8,6 +8,9 @@ class TaskServer:
     """
     Classe représentant le serveur de gestion des tâches.
 
+    Cette classe gère un serveur qui communique avec les clients via des sockets sécurisés.
+    Le serveur permet de gérer les tâches dans une base de données MySQL.
+
     Attributes:
         host (str): Adresse IP ou nom d'hôte pour le serveur.
         port (int): Port sur lequel le serveur écoute.
@@ -27,18 +30,23 @@ class TaskServer:
 
         # Configuration de la connexion à la base de données MySQL
         self.dbConnection = pymysql.connect(
-            host='127.0.0.1' , # Remplace par l'adresse IP publique ou le nom d'hôte de la base de données distante
-            user = 'root',  # Le nom d'utilisateur de la base de données
-            password = 'toto',  # Le mot de passe associé à l'utilisateur
-            database = 'TheTotoDB',  # Le nom de la base de données
-            port = 3306 , # Le port spécifique sur lequel le serveur MySQL écoute
+            host='127.0.0.1',  # Remplace par l'adresse IP publique ou le nom d'hôte de la base de données distante
+            user='root',  # Le nom d'utilisateur de la base de données
+            password='toto',  # Le mot de passe associé à l'utilisateur
+            database='TheTotoDB',  # Le nom de la base de données
+            port=3306,  # Le port spécifique sur lequel le serveur MySQL écoute
             cursorclass=pymysql.cursors.DictCursor
         )
 
     def start(self):
         """
         Démarre le serveur et écoute les connexions entrantes.
-        Chaque client est servi via un socket sécurisé AES.
+
+        Cette méthode met en place le serveur pour accepter les connexions entrantes et utilise
+        un socket sécurisé AES pour la communication avec le client. Le serveur répond aux
+        commandes reçues via un protocole défini.
+
+        Le serveur écoute indéfiniment et gère les connexions jusqu'à ce qu'il soit arrêté manuellement.
         """
         # Création et configuration du socket serveur
         serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -78,6 +86,10 @@ class TaskServer:
         """
         Interprète et exécute une commande reçue du client.
 
+        Cette méthode analyse la commande envoyée par le client et appelle la fonction
+        appropriée pour répondre à la demande. Elle gère différentes commandes pour
+        récupérer des informations des utilisateurs, des listes, ou pour créer des tâches.
+
         Args:
             command (str): Commande envoyée par le client.
 
@@ -107,14 +119,17 @@ class TaskServer:
             print(f"Erreur dans l'interprétation de la commande: {e}")
             return "Erreur serveur."
 
-
     def getUserId(self):
         """
-           Récupère les ID et pseudonymes des utilisateurs.
+        Récupère les ID et pseudonymes des utilisateurs.
 
-           Returns:
-               str: Liste d'objets JSON contenant les ID et pseudonymes des utilisateurs.
-           """
+        Cette méthode interroge la base de données pour obtenir les informations des utilisateurs
+        stockées dans la table `utilisateurs`. Elle renvoie une liste d'objets JSON contenant
+        les IDs et les pseudonymes des utilisateurs.
+
+        Returns:
+            str: Liste d'objets JSON contenant les ID et pseudonymes des utilisateurs.
+        """
         try:
             with self.dbConnection.cursor() as cursor:
                 cursor.execute("SELECT id_utilisateur, pseudonyme_utilisateur FROM utilisateurs")
@@ -133,11 +148,14 @@ class TaskServer:
 
     def getListId(self):
         """
-           Récupère les IDs et noms de toutes les listes disponibles.
+        Récupère les IDs et noms de toutes les listes disponibles.
 
-           Returns:
-               str: JSON contenant les IDs et noms des listes, ou un message d'erreur.
-           """
+        Cette méthode interroge la base de données pour obtenir les informations des listes
+        dans la table `listes`. Elle renvoie un objet JSON contenant les IDs et les noms des listes.
+
+        Returns:
+            str: JSON contenant les IDs et noms des listes, ou un message d'erreur.
+        """
         try:
             with self.dbConnection.cursor() as cursor:
                 cursor.execute("SELECT id_liste, nom_liste FROM listes")
@@ -157,6 +175,10 @@ class TaskServer:
     def createTask(self, userId, listId, taskTitle, taskDescription, dueDate, status, reminderDate):
         """
         Crée une nouvelle tâche dans la base de données.
+
+        Cette méthode insère une nouvelle tâche dans la table `taches` de la base de données.
+        Elle prend les informations de la tâche fournies par le client et les enregistre dans
+        la base de données MySQL.
 
         Args:
             userId (str): ID de l'utilisateur assigné.
@@ -188,7 +210,6 @@ class TaskServer:
 
 
 if __name__ == "__main__":
-
     # Point d'entrée du script : lancement du serveur
     taskServer = TaskServer()
     taskServer.start()
