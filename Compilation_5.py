@@ -1152,7 +1152,7 @@ class FenetreDetail(QDialog):
         self.datecreation = QLabel(f'Date de création : {datecreation}')
         self.datefin = QLabel(f'Date de fin : {datefin}')
 
-        if statut == 1:
+        if statut == 0:
             self.statut = QLabel("Statut : En cours")
         else:
             self.statut = QLabel("Statut : Terminée")
