@@ -340,6 +340,10 @@ class Server:
                 idTache = informations.split(":")[1]
                 client_socket.send(self.getTacheDetail(idTache))
 
+            elif informations.startswith("GET_sousTacheDetail"):
+                idSousTache = informations.split(":")[1]
+                client_socket.send(self.getSousTacheDetail(idSousTache))
+
             elif informations.startswith("GET_tache"):
                 idTache = informations.split(":")[1]
                 client_socket.send(self.getTache(idTache))
@@ -577,6 +581,37 @@ class Server:
                 if results:
                     serialized_results = [[ value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row ] for row in results ]
                     print(serialized_results)
+                    return json.dumps(serialized_results)
+                else:
+                    return json.dumps([])
+
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return json.dumps({"error": "Erreur MySQL."})
+
+    def getSousTacheDetail(self, idSousTache):
+        """
+        Récupère les informations sur une tâche spécifique.
+
+        :param idTache: ID de la tâche à récupérer
+        :type idTache: str
+        :return: JSON contenant les informations sur la tâche (avec datetime sérialisé)
+        :rtype: str
+        :raises Exception: Si une erreur MySQL se produit
+        """
+        try:
+            with self.db_connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT titre_soustache, description_soustache, datecreation_soustache,datefin_soustache, statut_soustache,daterappel_soustache, soustache_id_tache FROM soustaches WHERE id_soustache = %s ", (idSousTache))
+                results = cursor.fetchall()
+                if results:
+                    serialized_results = [[ value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row ] for row in results ]
+                    idTache = serialized_results[0][-1]
+                    cursor.execute("SELECT titre_tache FROM taches WHERE id_tache = %s",(idTache))
+                    resultsT = cursor.fetchall()
+
+                    nomTache = resultsT[0][0]
+                    serialized_results[0].append(nomTache)
                     return json.dumps(serialized_results)
                 else:
                     return json.dumps([])

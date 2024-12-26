@@ -435,9 +435,9 @@ class TodoListApp(QMainWindow):
         :type bouton: QPushButton
         """
         menu = QMenu(self)
-        actionModifier = QAction("Modifier", self)
+        actionModifier = QAction("Modifier sous tache", self)
         actionSupprimerTache = QAction("Supprimer la sous tâche", self)
-        actionDetailTache = QAction("Détails", self)
+        actionDetailTache = QAction("Détails sous tache", self)
         actionModifier.triggered.connect(lambda: self.modifierSousTache(idSousTache))
         actionSupprimerTache.triggered.connect(lambda: self.supprimerSousTache(idSousTache))
         actionDetailTache.triggered.connect(lambda: self.detailSousTache(idSousTache))
@@ -802,21 +802,27 @@ class TodoListApp(QMainWindow):
             aes_socket.close()
 
 
-    def detailSousTache(self, soustache_id_tache):
-        curseur = self.cnx.cursor()
+    def detailSousTache(self, idSousTache):
+        aes_socket = self.conection()
+        if not aes_socket:
+            print("Erreur de connexion au serveur.")
+            return
+        aes_socket.send(f"GET_sousTacheDetail:{idSousTache}")
+        tache_data = aes_socket.recv(1024)
+        tache_j = json.loads(tache_data)
+        if isinstance(tache_j, list) and tache_j:
+            tache = tuple(
+                datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if i in [2, 3, 5] and value else value for i, value in
+                enumerate(tache_j[0]))
+        else:
+            QMessageBox.information(self, "Info", "Aucune tâche trouvée.")
+            return
 
-        curseur.execute(f'SELECT titre_soustache, description_soustache, datecreation_soustache, '
-                        f'datefin_soustache, statut_soustache, daterappel_soustache FROM soustaches '
-                        f'WHERE id_soustache = {idTache};')
-        soustache = curseur.fetchall()
-        curseur.execute(f'SELECT titre_tache FROM taches WHERE id_tache = {soustache_id_tache};')
-        tache_parent = curseur.fetchone()
+        try:
+            FenetreDetail(tache[0], tache[1], tache[2], tache[3], tache[4], tache[5], tache[6], tache[7]).exec()
 
-        for (titre_soustache, description_soustache, datecreation_soustache, datefin_soustache, statut_soustache,
-             daterappel_soustache) in soustache:
-            Detail(titre_soustache, description_soustache, datecreation_soustache, datefin_soustache,
-                   statut_soustache, daterappel_soustache, soustache_id_tache, tache_parent[0]).exec()
-
+        except:
+            print("problème d'execution de la fenetre de detail sous tache")
 
 
     def detail(self, idTache,):
