@@ -409,21 +409,43 @@ class TodoListApp(QMainWindow):
         else:
             labelSousTache.setStyleSheet("")
 
-        boutonModifier = QPushButton("Modifier")
-        boutonModifier.setFixedWidth(60)
+        boutonPlus = QPushButton("...")
+        boutonPlus.setFixedWidth(30)
 
         layout.addWidget(caseCocheSousTache)
         layout.addWidget(labelSousTache)
-        layout.addWidget(boutonModifier)
+        layout.addWidget(boutonPlus)
         layout.addStretch()
 
         caseCocheSousTache.stateChanged.connect(lambda: self.mettreAJourStyleSousTache(labelSousTache, idSousTache, caseCocheSousTache.isChecked()))
-        boutonModifier.clicked.connect(lambda: self.modifierSousTache(idSousTache))
+        boutonPlus.clicked.connect(lambda: self.afficherMenuSousTache(idSousTache, boutonPlus))
 
         elementListe = QListWidgetItem()
         elementListe.setSizeHint(widgetSousTache.sizeHint())
         self.taches.addItem(elementListe)
         self.taches.setItemWidget(elementListe, widgetSousTache)
+
+    def afficherMenuSousTache(self, idSousTache, bouton):
+        """
+        Affiche un menu contextuel avec des options pour une tâche spécifique.
+
+        :param idSousTache: Identifiant unique de la tâche
+        :type idSousTache: int
+        :param bouton: Bouton source qui déclenche l'affichage du menu
+        :type bouton: QPushButton
+        """
+        menu = QMenu(self)
+        actionModifier = QAction("Modifier", self)
+        actionSupprimerTache = QAction("Supprimer la sous tâche", self)
+        actionDetailTache = QAction("Détails", self)
+        actionModifier.triggered.connect(lambda: self.modifierSousTache(idSousTache))
+        actionSupprimerTache.triggered.connect(lambda: self.supprimerSousTache(idSousTache))
+        actionDetailTache.triggered.connect(lambda: self.detailSousTache(idSousTache))
+        menu.addAction(actionDetailTache)
+        menu.addAction(actionSupprimerTache)
+        menu.addAction(actionModifier)
+        position = bouton.mapToGlobal(bouton.rect().bottomLeft())
+        menu.exec_(position)
 
     def mettreAJourStyleSousTache(self, labelSousTache, idSousTache, cocheSousTache):
         """
