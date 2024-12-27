@@ -172,7 +172,6 @@ class FormulaireTache(QWidget):
             aes_socket.send(message)
 
             QMessageBox.information(self, "Succès", "Tâche créée avec succès.")
-
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors de l'envoi : {e}")
 
@@ -995,6 +994,7 @@ class TodoListApp(QMainWindow):
         try:
             self.formulaire_window = FormulaireTache()
             self.formulaire_window.show()
+            self.actualiser()
         except Exception as e:
             print(f"Erreur lors de l'ouverture du formulaire : {e}")
 

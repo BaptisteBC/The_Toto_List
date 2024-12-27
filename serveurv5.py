@@ -16,109 +16,6 @@ import json
 
 
 
-
-# Fonction de journalisation
-def journalisation(utilisateurId: int, typeEvenement: str):
-    """Enregistre un événement dans la table de journalisation.
-
-    :param utilisateurId: Identifiant de l'utilisateur.
-    :type utilisateurId: int
-    :param typeEvenement: Chaine d'evenement, il est conseiller d'utiliser la fonction "creerChaineEvenement".
-    :type typeEvenement: str
-    :raises pymysql.MySQLError: Erreur lors de l'insertion dans la base de données.
-    :return: None
-    :rtype: None
-    """
-    try:
-        connexion = pymysql.connect(
-            host="127.0.0.1",
-            user="root",
-            password="toto",
-            database="TheTotoDB"
-        )
-
-        curseur = connexion.cursor()
-        dateEvenement = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        requete = """
-        INSERT INTO journalisation (journalisation_id_utilisateur, type_evenement, date_evenement)
-        VALUES (%s, %s, %s)
-        """
-        valeurs = (utilisateurId, typeEvenement, dateEvenement)
-        curseur.execute(requete, valeurs)
-        connexion.commit()
-        print("Informations insérées dans la table 'journalisation'.")
-
-    except pymysql.MySQLError as erreur:
-        print(f"Erreur d'insertion : {erreur}")
-
-    finally:
-        if curseur is not None:
-            curseur.close()
-        if connexion is not None:
-            connexion.close()
-
-def creerChaineEvenement(premierX: int, deuxiemeX: int, troisiemeX: int, listeY, listeZ):
-    """Crée une chaîne d'événements formatée pour la fonction journalisation.
-
-    :param premierX: Type d'évènement : 0 Ajout ; 1 Modification ; 2 Suppression.
-    :type premierX: int
-    :param deuxiemeX:  Objet affecté par l'évènement : 0 Utilisateur ; 1 Tache ; 2 Sous tâche ; 3 Liste ; 4 Group ; 5 Groupes_utilisateurs ; 6 Etiquettes ; 7 Etiquettes_elements
-    :type deuxiemeX: int
-    :param troisiemeX: Id de l'entrée affectée.
-    :type troisiemeX: int
-    :param listeY: Liste de noms ou d'indices de colonnes, selon le cas.
-    :type listeY: list | str
-    :param listeZ: Liste des valeurs modifiées dans l'ordre des N° de colonne.
-    :type listeZ: list
-    :raises pymysql.MySQLError: Erreur lors de la connexion à la base de données.
-    :raises ValueError: Si certaines colonnes dans listeY ne correspondent pas.
-    :return: Chaîne d’événements formatée.
-    :rtype: str | None
-    """
-    try:
-        connexion = pymysql.connect(
-            host="127.0.0.1",
-            user="root",
-            password="toto",
-            database="TheTotoDB"
-        )
-
-        curseur = connexion.cursor()
-
-        if isinstance(listeY, list):
-            if all(isinstance(element, str) for element in listeY):
-                tables = [
-                    "utilisateurs", "taches", "soustaches", "listes", "groupes",
-                    "groupes_utilisateurs", "etiquettes", "etiquettes_elements"
-                ]
-                nomTable = tables[deuxiemeX]
-                colonnesValides = []
-                for colonne in listeY:
-                    requete = f"SHOW COLUMNS FROM {nomTable} LIKE %s"
-                    curseur.execute(requete, (colonne,))
-                    resultat = curseur.fetchone()
-                    if resultat:
-                        colonnesValides.append(resultat[0])
-                if len(colonnesValides) != len(listeY):
-                    print("Certaines colonnes ne correspondent pas, annulation de l'opération.")
-                    return None
-                listeY = [colonnesValides.index(colonne) + 1 for colonne in colonnesValides]
-
-        listeYStr = ".".join(map(str, listeY)) if isinstance(listeY, list) else str(listeY)
-        zStr = ".".join(map(str, listeZ))
-        chaineEvenement = f"{premierX}.{deuxiemeX}.{troisiemeX}.{{{listeYStr}}}.{{{zStr}}}"
-
-        return chaineEvenement
-
-    except pymysql.MySQLError as erreur:
-        print(f"Erreur de connexion : {erreur}")
-
-    finally:
-        if curseur is not None:
-            curseur.close()
-        if connexion is not None:
-            connexion.close()
-
 class Server:
     def __init__(self):
         '''
@@ -537,9 +434,9 @@ class Server:
                 listeY = ["titre_tache", "description_tache", "datefin_tache", "statut_tache", "daterappel_tache"]
                 listeZ = [taskTitle, taskDescription, dueDate, status, reminderDate]
 
-                chaineEvenement = creerChaineEvenement(0, 1, taskId, listeY, listeZ)
+                chaineEvenement = self.creerChaineEvenement(0, 1, taskId, listeY, listeZ)
                 if chaineEvenement:
-                    journalisation(userId, chaineEvenement)
+                    self.journalisation(userId, chaineEvenement)
 
                 return "Tâche créée avec succès."
 
@@ -551,8 +448,8 @@ class Server:
         try:
             with self.db_connection.cursor() as cursor:
                 cursor.execute("SELECT id_tache, titre_tache, statut_tache, datesuppression_tache FROM taches;")
-
                 results = cursor.fetchall()
+                print(results)
                 if results:
                     serialized_results = [
                         [value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row]
@@ -860,6 +757,84 @@ class Server:
         except Exception as e:
             print(f"Erreur MySQL: {e}")
             return "Erreur MySQL."
+
+    # Fonction de journalisation
+    def journalisation(self, utilisateurId: int, typeEvenement: str):
+        """Enregistre un événement dans la table de journalisation.
+
+        :param utilisateurId: Identifiant de l'utilisateur.
+        :type utilisateurId: int
+        :param typeEvenement: Chaine d'evenement, il est conseiller d'utiliser la fonction "creerChaineEvenement".
+        :type typeEvenement: str
+        :raises pymysql.MySQLError: Erreur lors de l'insertion dans la base de données.
+        :return: None
+        :rtype: None
+        """
+        try:
+            with self.db_connection.cursor() as cursor:
+                dateEvenement = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                requete = """
+                INSERT INTO journalisation (journalisation_id_utilisateur, type_evenement, date_evenement)
+                VALUES (%s, %s, %s)
+                """
+                valeurs = (utilisateurId, typeEvenement, dateEvenement)
+                cursor.execute(requete, valeurs)
+                self.db_connection.commit()
+                print("Informations insérées dans la table 'journalisation'.")
+
+        except pymysql.MySQLError as erreur:
+            print(f"Erreur d'insertion : {erreur}")
+
+
+    def creerChaineEvenement(self, premierX: int, deuxiemeX: int, troisiemeX: int, listeY, listeZ):
+        """Crée une chaîne d'événements formatée pour la fonction journalisation.
+
+        :param premierX: Type d'évènement : 0 Ajout ; 1 Modification ; 2 Suppression.
+        :type premierX: int
+        :param deuxiemeX:  Objet affecté par l'évènement : 0 Utilisateur ; 1 Tache ; 2 Sous tâche ; 3 Liste ; 4 Group ; 5 Groupes_utilisateurs ; 6 Etiquettes ; 7 Etiquettes_elements
+        :type deuxiemeX: int
+        :param troisiemeX: Id de l'entrée affectée.
+        :type troisiemeX: int
+        :param listeY: Liste de noms ou d'indices de colonnes, selon le cas.
+        :type listeY: list | str
+        :param listeZ: Liste des valeurs modifiées dans l'ordre des N° de colonne.
+        :type listeZ: list
+        :raises pymysql.MySQLError: Erreur lors de la connexion à la base de données.
+        :raises ValueError: Si certaines colonnes dans listeY ne correspondent pas.
+        :return: Chaîne d’événements formatée.
+        :rtype: str | None
+        """
+        try:
+
+            if isinstance(listeY, list):
+                if all(isinstance(element, str) for element in listeY):
+                    tables = [
+                        "utilisateurs", "taches", "soustaches", "listes", "groupes",
+                        "groupes_utilisateurs", "etiquettes", "etiquettes_elements"
+                    ]
+                    nomTable = tables[deuxiemeX]
+                    colonnesValides = []
+                    for colonne in listeY:
+                        with self.db_connection.cursor() as cursor:
+                            requete = f"SHOW COLUMNS FROM {nomTable} LIKE %s"
+                            cursor.execute(requete, (colonne,))
+                            resultat = cursor.fetchall()
+                        if resultat:
+                            colonnesValides.append(resultat[0])
+                    if len(colonnesValides) != len(listeY):
+                        print("Certaines colonnes ne correspondent pas, annulation de l'opération.")
+                        return None
+                    listeY = [colonnesValides.index(colonne) + 1 for colonne in colonnesValides]
+
+            listeYStr = ".".join(map(str, listeY)) if isinstance(listeY, list) else str(listeY)
+            zStr = ".".join(map(str, listeZ))
+            chaineEvenement = f"{premierX}.{deuxiemeX}.{troisiemeX}.{{{listeYStr}}}.{{{zStr}}}"
+
+            return chaineEvenement
+
+        except pymysql.MySQLError as erreur:
+            print(f"Erreur de connexion : {erreur}")
+
 
 if __name__ == '__main__':
 
