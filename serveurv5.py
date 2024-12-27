@@ -453,12 +453,10 @@ class Server:
             with self.db_connection.cursor() as cursor:
                 cursor.execute("SELECT id_tache, titre_tache, statut_tache, datesuppression_tache FROM taches;")
                 results = cursor.fetchall()
-                print(results)
                 if results:
                     serialized_results = [
                         [value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row]
                         for row in results]
-                    print(serialized_results)
                     return json.dumps(serialized_results)
                 else:
                     return json.dumps([])
@@ -475,7 +473,6 @@ class Server:
                 if results:
                     serialized_results = [
                         [value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row] for row in results]
-                    print(serialized_results)
                     return json.dumps(serialized_results)
                 else:
                     return json.dumps([])
@@ -503,7 +500,6 @@ class Server:
                 results = cursor.fetchall()
                 if results:
                     serialized_results = [[ value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row ] for row in results ]
-                    print(serialized_results)
                     return json.dumps(serialized_results)
                 else:
                     return json.dumps([])
@@ -531,7 +527,6 @@ class Server:
                 results = cursor.fetchall()
                 if results:
                     serialized_results = [[ value.strftime('%Y-%m-%d %H:%M:%S') if isinstance(value, datetime) else value for value in row ] for row in results ]
-                    print(serialized_results)
                     return json.dumps(serialized_results)
                 else:
                     return json.dumps([])

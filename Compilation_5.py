@@ -308,6 +308,7 @@ class TodoListApp(QMainWindow):
                 QMessageBox.information(self, "Info", "Aucune tâche trouvée.")
                 return
 
+            # Récupération des sous-tâches
             aes_socket = self.conection()
             if not aes_socket:
                 print("Erreur de connexion au serveur.")
@@ -315,19 +316,21 @@ class TodoListApp(QMainWindow):
             aes_socket.send("GET_listeSousTache")
             tache_data = aes_socket.recv(1024)
             aes_socket.close()
-            tache_js = json.loads(tache_data)
 
-            if isinstance(tache_js, list) and tache_js:
-                sousTaches = [
-                    tuple(
-                        datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if i == 4 and value else value
-                        for i, value in enumerate(sous_tache)
-                    )
-                    for sous_tache in tache_js
-                ]
-            else:
-                QMessageBox.information(self, "Info", "Aucune sous tâche trouvée.")
-                return
+            try:
+                tache_js = json.loads(tache_data)
+                if isinstance(tache_js, list) and tache_js:
+                    sousTaches = [
+                        tuple(
+                            datetime.strptime(value, '%Y-%m-%d %H:%M:%S') if i == 4 and value else value
+                            for i, value in enumerate(sous_tache)
+                        )
+                        for sous_tache in tache_js
+                    ]
+                else:
+                    sousTaches = []  # Aucune sous-tâche trouvée
+            except json.JSONDecodeError:
+                sousTaches = []  # Gérer une réponse mal formée ou vide
 
             self.taches.clear()
             for idTache, titreTache, statutTache, datesuppression_tache in taches:
@@ -335,6 +338,7 @@ class TodoListApp(QMainWindow):
                     continue
                 self.ajouterTache(titreTache, idTache, statutTache)
 
+                # Ajouter les sous-tâches associées si elles existent
                 for idSousTache, titreSousTache, parentId, statutSousTache, datesuppression_soustache in sousTaches:
                     if datesuppression_soustache:
                         continue
@@ -342,6 +346,10 @@ class TodoListApp(QMainWindow):
                         self.ajouterSousTacheListe(titreSousTache, idSousTache, statutSousTache)
 
             self.taches.repaint()
+
+        except Exception as e:
+            print(f"Une erreur s'est produite : {e}")
+
 
         finally:
             if 'aes_socket' in locals() and aes_socket:
