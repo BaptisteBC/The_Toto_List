@@ -26,10 +26,10 @@ class FormulaireTache(QWidget):
         utilisateurs (dict): Liste des utilisateurs assignables à une tâche.
     """
 
-    def __init__(self):
+    def __init__(self, todo_list_app):
         """Initialise le formulaire, configure l'interface graphique et charge les données nécessaires."""
         super().__init__()
-
+        self.TodoListApp = todo_list_app
         # Configuration de la fenêtre principale
         self.setWindowTitle("Formulaire de Tâche")
         self.setGeometry(100, 100, 400, 600)
@@ -172,6 +172,7 @@ class FormulaireTache(QWidget):
             aes_socket.send(message)
 
             QMessageBox.information(self, "Succès", "Tâche créée avec succès.")
+            self.TodoListApp.actualiser()
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors de l'envoi : {e}")
 
@@ -185,7 +186,7 @@ class TodoListApp(QMainWindow):
             self.utilisateur = pseudonyme_utilisateur
             self.motDePasse = motdepasse_utilisateur
             self.initUI()
-            self.formulaire = FormulaireTache()
+            self.formulaire = FormulaireTache(self)
             self.setWindowTitle("The Toto List")
             self.setGeometry(100, 100, 500, 700)
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -280,6 +281,7 @@ class TodoListApp(QMainWindow):
         main_layout.addWidget(self.main_widget)
 
         self.is_dark_mode = False
+
 
     def actualiser(self):
 
@@ -992,9 +994,8 @@ class TodoListApp(QMainWindow):
     def open_formulaire(self):
         print("Signal reçu : ouverture du formulaire en cours...")
         try:
-            self.formulaire_window = FormulaireTache()
+            self.formulaire_window = FormulaireTache(self)
             self.formulaire_window.show()
-            self.actualiser()
         except Exception as e:
             print(f"Erreur lors de l'ouverture du formulaire : {e}")
 
