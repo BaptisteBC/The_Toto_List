@@ -6,8 +6,6 @@ from PyQt5.QtWidgets import (
 )  # Modules de PyQt5 pour créer l'interface graphique.
 from lib.custom import AEScipher, AESsocket # Classes personnalisées pour gérer le chiffrement AES et les connexions sécurisées.
 import sys
-import pymysql.cursors  # Module pour gérer les connexions MySQL avec curseurs.
-import pymysql  # Module pour interagir avec une base de données MySQL.
 import socket  # Pour gérer les connexions réseau via des sockets.
 import json
 import bcrypt
@@ -345,8 +343,6 @@ class TodoListApp(QMainWindow):
 
             self.taches.repaint()
 
-        except pymysql.MySQLError as e:
-            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL : {e}')
         finally:
             if 'aes_socket' in locals() and aes_socket:
                 aes_socket.close()
@@ -547,8 +543,6 @@ class TodoListApp(QMainWindow):
                 print("Erreur de connexion au serveur.")
             message = f"validation:{idTache}:{statutValidation}"
             aes_socket.send(message)
-        except pymysql.MySQLError as e:
-            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la mise à jour de la validation de la tâche {idTache} : {e}')
         finally:
             aes_socket.close()
 
@@ -568,8 +562,6 @@ class TodoListApp(QMainWindow):
                 print("Erreur de connexion au serveur.")
             message = f"validationSousTache:{idSousTache}:{statutSousValidation}"
             aes_socket.send(message)
-        except pymysql.MySQLError as e:
-            QMessageBox.critical(self, 'Erreur', f'Erreur MySQL lors de la mise à jour de la validation de la sous tâche {idSousTache} : {e}')
         finally:
             aes_socket.close()
 
@@ -667,8 +659,8 @@ class TodoListApp(QMainWindow):
             aes_socket.send(message)
             dialog.accept()
             self.actualiser()
-        except pymysql.MySQLError as e:
-            QMessageBox.critical(self, "Erreur", f"Erreur MySQL lors de la modification : {e}")
+        except:
+            print("Erreur sauvegarderModification")
         finally:
             aes_socket.close()
 
@@ -732,8 +724,8 @@ class TodoListApp(QMainWindow):
             form.addWidget(boutons)
 
             dialog.exec_()
-        except pymysql.MySQLError as e:
-            QMessageBox.critical(self, "Erreur", f"Erreur MySQL : {e}")
+        except:
+            print("Erreur modifierSousTache")
         finally:
             aes_socket.close()
 
@@ -765,8 +757,8 @@ class TodoListApp(QMainWindow):
             aes_socket.send(message)
             dialog.accept()
             self.actualiser()
-        except pymysql.MySQLError as e:
-            QMessageBox.critical(self, "Erreur", f"Erreur MySQL lors de la modification : {e}")
+        except:
+            print("Erreur SauvegarderModificationSousTache")
         finally:
             aes_socket.close()
 
@@ -837,8 +829,6 @@ class TodoListApp(QMainWindow):
             aes_socket.close()
             dialog.accept()
             self.actualiser()
-        except pymysql.MySQLError as e:
-            QMessageBox.critical(self, "Erreur", f"Erreur MySQL lors de la création de la sous-tâche : {e}")
         finally:
             aes_socket.close()
 
