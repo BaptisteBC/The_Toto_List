@@ -279,7 +279,11 @@ class Server:
                 details = informations.split("|")[1:]
                 client_socket.send(self.creationSousTache(*details))
 
+            elif informations.startswith("viderCorbeille"):
+                client_socket.send(self.viderCorbeille())
 
+            elif informations.startswith("restaurerCorbeille"):
+                client_socket.send(self.restaurerCorbeille())
             else:
                 return "Commande inconnue."
 
@@ -574,7 +578,7 @@ class Server:
                 cursor.execute("UPDATE soustaches SET datesuppression_soustache = NOW() WHERE soustache_id_tache = %s",(idTache))
                 self.db_connection.commit()
                 return "Tâche supprimer avec succès."
-            self.actualiser()
+
 
 
         except Exception as e:
@@ -588,7 +592,7 @@ class Server:
                                 f'WHERE id_soustache = "{idTache}";')
                 self.db_connection.commit()
                 return "Sous tâche supprimer avec succès."
-            self.actualiser()
+
 
 
 
@@ -834,6 +838,29 @@ class Server:
 
         except pymysql.MySQLError as erreur:
             print(f"Erreur de connexion : {erreur}")
+
+    def viderCorbeille(self):
+        try:
+            with self.db_connection.cursor() as cursor:
+                cursor.execute("DELETE FROM soustaches WHERE datesuppression_soustache is not NULL;")
+                cursor.execute("DELETE FROM taches WHERE datesuppression_tache is not NULL;")
+                self.db_connection.commit()
+
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return json.dumps({"error": "Erreur MySQL."})
+
+    def restaurerCorbeille(self):
+        try:
+            with self.db_connection.cursor() as cursor:
+                cursor.execute("UPDATE taches SET datesuppression_tache = NULL WHERE datesuppression_tache IS NOT NULL;")
+                cursor.execute("UPDATE soustaches SET datesuppression_soustache = NULL WHERE datesuppression_soustache IS NOT NULL;")
+                self.db_connection.commit()
+
+        except Exception as e:
+            print(f"Erreur MySQL: {e}")
+            return json.dumps({"error": "Erreur MySQL."})
+
 
 
 if __name__ == '__main__':

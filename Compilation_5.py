@@ -274,8 +274,6 @@ class TodoListApp(QMainWindow):
         self.bouton_restaurer_corb.clicked.connect(self.restaurer)
         self.bouton_vider_corb.clicked.connect(self.vider)
         self.bouton_quitter.clicked.connect(self.quitter)
-
-        self.cnx = pymysql.connect(host="127.0.0.1", user="root", password="toto", database="TheTotoDB")
         self.actualiser()
 
         main_layout.addWidget(self.main_widget)
@@ -892,7 +890,7 @@ class TodoListApp(QMainWindow):
 
 
     def restaurer(self):
-        Restaurer(self.cnx).exec()
+        Restaurer().exec()
         self.actualiser()
 
     def supprimer(self, id_tache):
@@ -911,10 +909,9 @@ class TodoListApp(QMainWindow):
 
 
     def vider(self):
-        Vider_corbeille(self.cnx).exec()
+        Vider_corbeille().exec()
 
     def quitter(self):
-        self.cnx.close()
         QCoreApplication.exit(0)
 
     def set_icon_from_url(self, button, url):
@@ -1149,10 +1146,8 @@ class SupprimerTache(QDialog):
        self.close()
 
 class Vider_corbeille(QDialog):
-    def __init__(self, cnx):
+    def __init__(self):
         super().__init__()
-
-        self.cnx = cnx
 
         self.setWindowTitle("Vider la corbeille")
 
@@ -1171,13 +1166,28 @@ class Vider_corbeille(QDialog):
         self.confirmer.clicked.connect(self.conf)
         self.annuler.clicked.connect(self.stop)
 
-    def conf(self):
-        curseur = self.cnx.cursor()
-        curseur.execute(f'DELETE FROM soustaches WHERE datesuppression_soustache is not NULL;')
-        curseur.execute(f'DELETE FROM taches WHERE datesuppression_tache is not NULL;')
+    def conection(self):
+        """
+        Établit une connexion sécurisée avec le serveur via un socket.
 
-        self.cnx.commit()
-        curseur.close()
+        :return: Socket sécurisé pour échanger des données chiffrées.
+        :rtype: AESsocket
+        :raises Exception: Si la connexion au serveur échoue.
+        """
+        try:
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect(('localhost', 55555))
+            return AESsocket(client_socket, is_server=False)
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
+            return None
+
+    def conf(self):
+        aes_socket = self.conection()
+        if not aes_socket:
+            print("Erreur de connexion au serveur.")
+            return
+        aes_socket.send(f"viderCorbeille")
 
         msg = QMessageBox()
         msg.setWindowTitle("Confirmation")
@@ -1190,10 +1200,8 @@ class Vider_corbeille(QDialog):
        self.close()
 
 class Restaurer(QDialog):
-    def __init__(self, cnx):
+    def __init__(self):
         super().__init__()
-
-        self.cnx = cnx
 
         self.setWindowTitle("Restaurer la corbeille")
 
@@ -1212,13 +1220,28 @@ class Restaurer(QDialog):
         self.confirmer.clicked.connect(self.conf)
         self.annuler.clicked.connect(self.stop)
 
+    def conection(self):
+        """
+        Établit une connexion sécurisée avec le serveur via un socket.
+
+        :return: Socket sécurisé pour échanger des données chiffrées.
+        :rtype: AESsocket
+        :raises Exception: Si la connexion au serveur échoue.
+        """
+        try:
+            client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            client_socket.connect(('localhost', 55555))
+            return AESsocket(client_socket, is_server=False)
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
+            return None
+
     def conf(self):
-        curseur = self.cnx.cursor()
-        curseur.execute('UPDATE taches SET datesuppression_tache = NULL WHERE datesuppression_tache IS NOT NULL;')
-        curseur.execute('UPDATE soustaches SET datesuppression_soustache = NULL WHERE datesuppression_soustache '
-                        'IS NOT NULL;')
-        self.cnx.commit()
-        curseur.close()
+        aes_socket = self.conection()
+        if not aes_socket:
+            print("Erreur de connexion au serveur.")
+            return
+        aes_socket.send(f"restaurerCorbeille")
 
         msg = QMessageBox()
         msg.setWindowTitle("Confirmation")
