@@ -1,0 +1,19 @@
+name: TOTO_LIST
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pymysql
+  - pyqt
+  - sphinx
+  - furo
+  - sphinx-autobuild
+  - mysql
+  - mysql-connector-python
+  - pycryptodomex
+  - pycryptodome
+  - cryptocode
+  - bcrypt
+  - statsmodels
+

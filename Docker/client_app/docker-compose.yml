@@ -1,0 +1,23 @@
+version: '3.9'
+
+services:
+  gui_container:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gui_image
+    container_name: gui_container
+    environment: # pour linux vous pouvez mettre :0 pour display
+      - DISPLAY=VOTRE_IP:0.0
+    volumes: # si vous êtes sur windows/mac mettez le deuxième volume en commentaire
+      - ./myapp:/opt/The_Toto_List
+      #- /tmp/.X11-unix:/tmp/.X11-unix:ro
+    networks:
+      - bridge
+    stdin_open: true
+    tty: true
+    restart: "no"  # Corrigé pour être une chaîne valide
+
+networks:
+  bridge:
+    driver: bridge
