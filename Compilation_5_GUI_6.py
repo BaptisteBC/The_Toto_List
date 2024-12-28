@@ -1,11 +1,11 @@
 from PyQt5.QtCore import Qt, QDate, QSize, QCoreApplication, QDateTime, QPoint
 from PyQt5.QtGui import QPalette, QColor, QIcon, QKeySequence, QPixmap, QCursor
-from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit, 
-                             QTextEdit, QComboBox,QDateEdit, QVBoxLayout, 
-                             QPushButton, QMessageBox, QGridLayout, 
-                             QListWidget, QListWidgetItem, QProgressBar, 
-                             QAction, QDialog, QHBoxLayout, QMainWindow, 
-                             QCheckBox, QMenu, QFormLayout, QDateTimeEdit, 
+from PyQt5.QtWidgets import (QApplication, QWidget, QLabel, QLineEdit,
+                             QTextEdit, QComboBox,QDateEdit, QVBoxLayout,
+                             QPushButton, QMessageBox, QGridLayout,
+                             QListWidget, QListWidgetItem, QProgressBar,
+                             QAction, QDialog, QHBoxLayout, QMainWindow,
+                             QCheckBox, QMenu, QFormLayout, QDateTimeEdit,
                              QDialogButtonBox)
 from lib.custom import AEScipher, AESsocket
 from datetime import datetime
@@ -26,8 +26,21 @@ class FormulaireTache(QWidget):
     Attributes:
         listes (dict): Liste des listes disponibles pour organiser les tâches.
         utilisateurs (dict): Liste des utilisateurs assignables à une tâche.
+        TodoListApp (object): Instance de l'application principale gérant les tâches.
+        label_nom (QLabel): Étiquette pour le champ du nom de la tâche.
+        champ_nom (QLineEdit): Champ de saisie pour le nom de la tâche.
+        label_description (QLabel): Étiquette pour la description de la tâche.
+        champ_description (QTextEdit): Champ de saisie pour la description de la tâche.
+        label_date (QLabel): Étiquette pour la date d'échéance.
+        champ_date (QDateEdit): Champ pour sélectionner la date d'échéance.
+        label_liste (QLabel): Étiquette pour sélectionner la liste associée.
+        combo_box_listes (QComboBox): Menu déroulant pour sélectionner une liste.
+        label_utilisateur (QLabel): Étiquette pour sélectionner un utilisateur.
+        combo_box_utilisateurs (QComboBox): Menu déroulant pour sélectionner un utilisateur assigné.
+        label_date_rappel (QLabel): Étiquette pour sélectionner une date de rappel.
+        champ_date_rappel (QDateEdit): Champ pour sélectionner la date de rappel.
+        bouton_soumettre (QPushButton): Bouton pour soumettre le formulaire.
     """
-
     def __init__(self, todo_list_app):
         """Initialise le formulaire, configure l'interface graphique et charge les données nécessaires."""
         super().__init__()
@@ -110,7 +123,12 @@ class FormulaireTache(QWidget):
             return None
 
     def ChargerListes(self):
-        """Charge les listes disponibles depuis le serveur et les ajoute au menu déroulant."""
+        """
+        Charge les listes disponibles depuis le serveur et les ajoute au menu déroulant.
+
+            :raises Exception: En cas d'erreur lors de la communication avec le serveur ou du traitement des données reçues.
+            :return: Cette méthode ne retourne rien. Les listes sont chargées dans l'attribut `listes` et ajoutées au menu déroulant.
+        """
         try:
             aes_socket = self.conection()
             if not aes_socket:
@@ -129,7 +147,12 @@ class FormulaireTache(QWidget):
             QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des listes : {e}")
 
     def ChargerUtilisateurs(self):
-        """Charge les utilisateurs assignables à une tâche depuis le serveur et les ajoute au menu déroulant."""
+        """
+        Charge les utilisateurs assignables à une tâche depuis le serveur et les ajoute au menu déroulant.
+
+            :raises Exception: En cas d'erreur lors de la communication avec le serveur ou du traitement des données reçues.
+            :return: Cette méthode ne retourne rien. Les utilisateurs sont chargés dans l'attribut `utilisateurs` et ajoutés au menu déroulant.
+        """
         try:
             aes_socket = self.conection()
             if not aes_socket:
@@ -148,7 +171,12 @@ class FormulaireTache(QWidget):
             QMessageBox.critical(self, "Erreur", f"Erreur lors du chargement des utilisateurs : {e}")
 
     def Envoie(self):
-        """Récupère les données du formulaire et les envoie au serveur pour créer une nouvelle tâche."""
+        """
+        Récupère les données du formulaire et les envoie au serveur pour créer une nouvelle tâche.
+
+            :raises Exception: En cas d'erreur lors de la communication avec le serveur ou du traitement des données.
+            :return: Cette méthode ne retourne rien. Une tâche est créée sur le serveur si les données sont valides.
+        """
         try:
             # Récupération des informations
             titre_tache = self.champ_nom.text().strip()
@@ -180,7 +208,31 @@ class FormulaireTache(QWidget):
 
 #GUI Principal (Thibaut)
 class TodoListApp(QMainWindow):
+    """
+        Classe principale de l'application de gestion de tâches.
+
+        :param pseudonyme_utilisateur: Pseudonyme de l'utilisateur pour l'authentification.
+        :type pseudonyme_utilisateur: str
+        :param motdepasse_utilisateur: Mot de passe de l'utilisateur pour l'authentification.
+        :type motdepasse_utilisateur: str
+        :ivar client_socket: Socket sécurisé pour la communication avec le serveur.
+        :vartype client_socket: AESsocket
+        :ivar formulaire: Formulaire pour créer de nouvelles tâches.
+        :vartype formulaire: FormulaireTache
+        :ivar taches: Liste affichant les tâches.
+        :vartype taches: QListWidget
+    """
     def __init__(self, pseudonyme_utilisateur, motdepasse_utilisateur):
+        """
+            Initialise la fenêtre principale de l'application, configure l'interface utilisateur,
+            initialise la connexion au serveur, et configure les widgets et actions.
+
+            :param pseudonyme_utilisateur: Le pseudonyme de l'utilisateur utilisé pour l'authentification.
+            :type pseudonyme_utilisateur: str
+            :param motdepasse_utilisateur: Le mot de passe de l'utilisateur utilisé pour l'authentification.
+            :type motdepasse_utilisateur: str
+            :raises Exception: En cas d'erreur lors de l'initialisation, de la connexion au serveur ou du chargement des widgets.
+        """
         try :
             super().__init__()
             self.HOST = '127.0.0.1'
@@ -322,11 +374,11 @@ class TodoListApp(QMainWindow):
 
 
     def actualiser(self):
-
         """
-        Actualise la liste des tâches et sous-tâches depuis la base de données.
+        Actualise la liste des tâches et sous-tâches depuis le serveur.
 
-        :raises pymysql.MySQLError: Erreur lors de la connexion ou l'exécution des requêtes SQL sur la base de données.
+        :raises json.JSONDecodeError: Si les données reçues ne peuvent pas être décodées.
+        :raises Exception: Pour toute autre erreur lors de la récupération ou du traitement des données.
         """
         try:
             aes_socket = self.conection()
@@ -399,9 +451,9 @@ class TodoListApp(QMainWindow):
 
     def conection(self):
         """
-        Établit une connexion sécurisée avec le serveur via un socket.
+        Établit une connexion sécurisée avec le serveur.
 
-        :return: Socket sécurisé pour échanger des données chiffrées.
+        :return: Socket sécurisé pour l'échange de données chiffrées.
         :rtype: AESsocket
         :raises Exception: Si la connexion au serveur échoue.
         """
@@ -417,13 +469,13 @@ class TodoListApp(QMainWindow):
 
     def ajouterTache(self, titreTache, idTache, statutTache):
         """
-        Ajoute une tâche à la liste des tâches affichée dans l'interface utilisateur.
+        Ajoute une tâche à la liste affichée dans l'interface utilisateur.
 
-        :param titreTache: Le titre de la tâche
+        :param titreTache: Le titre de la tâche.
         :type titreTache: str
-        :param idTache: L'identifiant unique de la tâche
+        :param idTache: Identifiant unique de la tâche.
         :type idTache: int
-        :param statutTache: Le statut de la tâche (1 si complétée, 0 sinon)
+        :param statutTache: Statut de la tâche (1 pour complétée, 0 sinon).
         :type statutTache: int
         """
         widgetTache = QWidget()
@@ -537,15 +589,15 @@ class TodoListApp(QMainWindow):
 
     def mettreAJourStyle(self, labelTache, idTache, coche):
         """
-        Met à jour le style de la tâche et son statut de validation dans la base de données.
+         Met à jour le style de la tâche et son statut de validation dans la base de données.
 
-        :param labelTache: Widget QLabel représentant le titre de la tâche
-        :type labelTache: QLabel
-        :param idTache: Identifiant unique de la tâche
-        :type idTache: int
-        :param coche: Statut de la case cochée (True si cochée, False sinon)
-        :type coche: bool
-        """
+         :param labelTache: Widget QLabel représentant le titre de la tâche.
+         :type labelTache: QLabel
+         :param idTache: Identifiant unique de la tâche.
+         :type idTache: int
+         :param coche: Statut de validation de la tâche (True si cochée, False sinon).
+         :type coche: bool
+         """
         if coche:
             labelTache.setStyleSheet("text-decoration: line-through; color: gray;")
             self.mettreAJourValidation(idTache, 1)
@@ -665,6 +717,23 @@ class TodoListApp(QMainWindow):
         )
 
     def gestionEvenement(self, evenement, objet, clicDroit=False):
+        """
+        Gère un événement de clic (gauche ou droit) sur un objet en fonction de ses métadonnées.
+
+        Si c'est un clic droit, affiche un menu contextuel. Sinon, affiche les détails de l'élément.
+
+        :param evenement: L'événement déclencheur, soit un objet `QEvent`, soit un `QPoint`.
+        :type evenement: :class:`QEvent` | :class:`QPoint`
+
+        :param objet: L'objet auquel l'événement est associé, contenant les métadonnées.
+        :type objet: :class:`QWidget`
+
+        :param clicDroit: Indique si l'événement est un clic droit (par défaut `False`).
+        :type clicDroit: bool, optionnel
+
+        :return: Aucun retour.
+        :rtype: None
+        """
         metadonnees = objet.data(Qt.UserRole)
         if metadonnees is None:
             print("Erreur : pas de métadonnées associées à cet élément.")
@@ -685,11 +754,11 @@ class TodoListApp(QMainWindow):
 
     def afficherMenuSousTache(self, idSousTache, position=None):
         """
-        Affiche un menu contextuel avec des options pour une tâche spécifique.
+        Affiche un menu contextuel pour une sous-tâche.
 
-        :param idSousTache: Identifiant unique de la tâche
+        :param idSousTache: Identifiant unique de la sous-tâche.
         :type idSousTache: int
-        :param bouton: Bouton source qui déclenche l'affichage du menu
+        :param bouton: Bouton source déclenchant le menu.
         :type bouton: QPushButton
         """
         menu = QMenu(self)
@@ -1059,6 +1128,14 @@ class TodoListApp(QMainWindow):
 
 
     def detailSousTache(self, idSousTache):
+        """
+        Affiche les détails d'une sous-tâche spécifique dans une fenêtre dédiée.
+
+        :param idSousTache: Identifiant unique de la sous-tâche.
+        :type idSousTache: int
+        :raises json.JSONDecodeError: En cas d'erreur lors du décodage des données JSON de la sous-tâche.
+        :raises Exception: Si la fenêtre de détail ne peut pas être affichée.
+        """
         aes_socket = self.conection()
         if not aes_socket:
             print("Erreur de connexion au serveur.")
@@ -1082,7 +1159,14 @@ class TodoListApp(QMainWindow):
 
 
     def detail(self, idTache,):
+        """
+        Affiche les détails d'une tâche spécifique dans une fenêtre dédiée.
 
+        :param idTache: Identifiant unique de la tâche.
+        :type idTache: int
+        :raises json.JSONDecodeError: En cas d'erreur lors du décodage des données JSON de la tâche.
+        :raises Exception: Si la fenêtre de détail ne peut pas être affichée.
+        """
         aes_socket = self.conection()
         if not aes_socket:
             print("Erreur de connexion au serveur.")
@@ -1105,10 +1189,23 @@ class TodoListApp(QMainWindow):
 
 
     def restaurer(self):
+        """
+        Ouvre une fenêtre pour restaurer les tâches supprimées et actualise l'affichage des tâches.
+
+        :return: None
+        :rtype: None
+        """
         Restaurer().exec()
         self.actualiser()
 
     def supprimer(self, id_tache):
+        """
+         Ouvre une fenêtre pour confirmer et supprimer une tâche.
+
+         :param id_tache: Identifiant unique de la tâche à supprimer.
+         :type id_tache: int
+         :raises Exception: Si la fenêtre de suppression ne peut pas être ouverte.
+         """
         try:
             SupprimerTache(id_tache, 0).exec()
             self.actualiser()
@@ -1116,6 +1213,13 @@ class TodoListApp(QMainWindow):
             print("erreur ouverture fenetre suppresion")
 
     def supprimerSousTache(self, id_tache):
+        """
+        Ouvre une fenêtre pour confirmer et supprimer une sous-tâche.
+
+        :param id_tache: Identifiant unique de la sous-tâche à supprimer.
+        :type id_tache: int
+        :raises Exception: Si la fenêtre de suppression ne peut pas être ouverte.
+        """
         try:
             SupprimerTache(id_tache, 1).exec()
             self.actualiser()
@@ -1124,12 +1228,33 @@ class TodoListApp(QMainWindow):
 
 
     def vider(self):
+        """
+        Vide la corbeille en ouvrant une fenêtre de confirmation.
+
+        :return: None
+        :rtype: None
+        """
         Vider_corbeille().exec()
 
     def quitter(self):
+        """
+        Quitte l'application en fermant tous les processus.
+
+        :return: None
+        :rtype: None
+        """
         QCoreApplication.exit(0)
 
     def set_icon_from_url(self, button, url):
+        """
+        Définit une icône pour un bouton à partir d'une URL d'image.
+
+        :param button: Le bouton auquel l'icône sera appliquée.
+        :type button: QPushButton
+        :param url: URL de l'image à utiliser comme icône.
+        :type url: str
+        :raises Exception: En cas d'erreur lors du téléchargement ou du chargement de l'image.
+        """
         try:
             headers = {
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
@@ -1147,8 +1272,10 @@ class TodoListApp(QMainWindow):
 
     def creerMenu(self):
         """
-        permet de faire un menu d'actions
-        :return:
+        Crée un menu d'options et de crédits dans la barre de menu principale.
+
+        :return: None
+        :rtype: None
         """
         menuBar = self.menuBar()
 
@@ -1165,8 +1292,10 @@ class TodoListApp(QMainWindow):
 
     def creerActions(self):
         """
-        permet de définir les raccourci clavier afin de faire des actions
-        :return:
+        Définit les actions et raccourcis clavier pour le menu de l'application.
+
+        :return: None
+        :rtype: None
         """
         self.actChangemotDePasse = QAction("Changer de mot de passe", self)
         self.actChangemotDePasse.setShortcut(QKeySequence("Ctrl+P"))
@@ -1188,13 +1317,22 @@ class TodoListApp(QMainWindow):
         self.actAide.triggered.connect(self.open_help)
 
     def fermeture(self):
+        """
+        Ferme l'application et termine tous les processus en cours.
+
+        :return: None
+        :rtype: None
+        """
         app.exit(0)
         sys.exit(0)
 
     def fenetreChangementMDP(self):
         """
-        va appeler la classe qui permettera de modifier le mot de passe
-        :return: void
+        Ouvre une fenêtre pour permettre à l'utilisateur de modifier son mot de passe.
+
+        :raises Exception: En cas d'erreur lors du processus de changement de mot de passe.
+        :return: None
+        :rtype: None
         """
         try:
             change_motDePasse_window = ChangemotDePasseWindow(self.utilisateur, self.client_socket)
@@ -1205,13 +1343,33 @@ class TodoListApp(QMainWindow):
             QMessageBox.critical("Erreur",f'Erreur lors du changement de mot de passe {e}')
 
     def initUI(self):
+        """
+        Méthode d'initialisation de l'interface utilisateur.
+        Actuellement non implémentée.
+
+        :return: None
+        :rtype: None
+        """
         pass
 
     def toggle_sidebar(self):
+        """
+        Affiche ou masque la barre latérale.
+
+        :return: None
+        :rtype: None
+        """
         # Bascule de la visibilité de la colonne latérale
         self.sidebar.setVisible(not self.sidebar.isVisible())
 
     def open_formulaire(self):
+        """
+        Ouvre une nouvelle fenêtre contenant le formulaire de création de tâche.
+
+        :raises Exception: Si une erreur survient lors de l'ouverture de la fenêtre du formulaire.
+        :return: None
+        :rtype: None
+        """
         print("Signal reçu : ouverture du formulaire en cours...")
         try:
             self.formulaire_window = FormulaireTache(self)
@@ -1220,6 +1378,12 @@ class TodoListApp(QMainWindow):
             print(f"Erreur lors de l'ouverture du formulaire : {e}")
 
     def toggle_theme(self):
+        """
+        Bascule entre le mode clair et le mode sombre pour l'application.
+
+        :return: None
+        :rtype: None
+        """
         if not self.is_dark_mode:
             self.set_dark_mode()
             icon_url = "https://icones.pro/wp-content/uploads/2021/02/icone-de-la-lune-grise.png"  # Remplacez par l'URL réelle
@@ -1231,6 +1395,12 @@ class TodoListApp(QMainWindow):
         self.is_dark_mode = not self.is_dark_mode
 
     def set_dark_mode(self):
+        """
+        Applique un thème sombre à l'application.
+
+        :return: None
+        :rtype: None
+        """
         dark_palette = QPalette()
         dark_palette.setColor(QPalette.Window, QColor(53, 53, 53))
         dark_palette.setColor(QPalette.WindowText, Qt.white)
@@ -1287,21 +1457,65 @@ class TodoListApp(QMainWindow):
         """
         self.setStyleSheet(dark_style)
     def set_light_mode(self):
+        """
+        Réinitialise le thème de l'application au mode clair par défaut.
+
+        :return: None
+        :rtype: None
+        """
         # Réinitialiser le style de l'application au style par défaut
         QApplication.instance().setPalette(QApplication.style().standardPalette())
         self.setStyleSheet("")  # Supprimer les styles personnalisés
 
     def open_settings(self):
+        """
+        Ouvre une fenêtre d'information pour afficher les paramètres.
+
+        :return: None
+        :rtype: None
+        """
         QMessageBox.information(self, "Paramètres", "Ouvrir les paramètres")
 
     def open_help(self):
+        """
+        Affiche une fenêtre contenant des informations d'aide pour l'utilisateur.
+
+        :return: None
+        :rtype: None
+        """
         QMessageBox.information(self, "Aide", "Besoin d'aide ? \n \nSuivez ce lien pour comprendre comment utiliser votre application de ToDoList 😉 : https://github.com/BaptisteBC/The_Toto_List")
 
     def open_credits(self):
+        """
+        Affiche une fenêtre contenant les crédits et informations sur les développeurs de l'application.
+
+        :return: None
+        :rtype: None
+        """
         QMessageBox.information(self, "Crédits","Application développée par les personnes suivantes : \n\n - BLANC-CARRIER Baptiste \n - BLANCK Yann \n - COSENZA Thibaut \n - DE AZEVEDO Kévin \n - GASSER Timothée \n - MARTIN Jean-Christophe \n - MERCKLE Florian \n - MOUROT Corentin \n - TRÉPIER Timothée\n\n © 2024 TheTotoList. Tous droits réservés. Développé par TheTotoGroup.")
 
 class SupprimerTache(QDialog):
+    """
+    Fenêtre de dialogue pour supprimer une tâche ou une sous-tâche.
+
+    :param idTache: Identifiant de la tâche ou sous-tâche à supprimer.
+    :type idTache: str
+    :param typeTache: Type de tâche (0 pour une tâche, 1 pour une sous-tâche).
+    :type typeTache: str
+    """
     def __init__(self, idTache, typeTache):
+        """
+        Initialise la fenêtre de suppression d'une tâche.
+
+        :param idTache: L'ID de la tâche à supprimer.
+        :type idTache: str
+
+        :param typeTache: Le type de la tâche à supprimer.
+        :type typeTache: str
+
+        :return: None
+        :rtype: None
+        """
         super().__init__()
 
         self.setWindowTitle("Supprimer")
@@ -1341,6 +1555,11 @@ class SupprimerTache(QDialog):
             return None
 
     def conf(self):
+        """
+        Envoie une requête au serveur pour supprimer la tâche ou la sous-tâche.
+
+        :raises Exception: En cas d'erreur de connexion ou d'envoi de la requête.
+        """
         try :
             if self.typeTache == 0 :
                 aes_socket = self.conection()
@@ -1366,10 +1585,29 @@ class SupprimerTache(QDialog):
             print(E)
 
     def stop(self):
-       self.close()
+        """
+        Ferme la fenêtre de dialogue sans effectuer d'action.
+
+        :return: None
+        :rtype: None
+        """
+        self.close()
 
 class Vider_corbeille(QDialog):
+    """
+    Fenêtre de dialogue pour confirmer le vidage de la corbeille.
+
+    :param None
+    :return: None
+    :rtype: None
+    """
     def __init__(self):
+        """
+        Initialise la fenêtre de confirmation pour vider la corbeille.
+
+        :return: None
+        :rtype: None
+        """
         super().__init__()
 
         self.setWindowTitle("Vider la corbeille")
@@ -1406,6 +1644,11 @@ class Vider_corbeille(QDialog):
             return None
 
     def conf(self):
+        """
+        Envoie une requête au serveur pour vider la corbeille.
+
+        :raises Exception: En cas d'erreur de connexion ou d'envoi de la requête.
+        """
         aes_socket = self.conection()
         if not aes_socket:
             print("Erreur de connexion au serveur.")
@@ -1420,10 +1663,29 @@ class Vider_corbeille(QDialog):
         self.close()
 
     def stop(self):
-       self.close()
+        """
+        Ferme la fenêtre de dialogue sans effectuer d'action.
+
+        :return: None
+        :rtype: None
+        """
+        self.close()
 
 class Restaurer(QDialog):
+    """
+    Fenêtre de dialogue pour confirmer la restauration des éléments supprimés de la corbeille.
+
+    :param None
+    :return: None
+    :rtype: None
+    """
     def __init__(self):
+        """
+        Initialise la fenêtre de confirmation pour restaurer les éléments de la corbeille.
+
+        :return: None
+        :rtype: None
+        """
         super().__init__()
 
         self.setWindowTitle("Restaurer la corbeille")
@@ -1460,6 +1722,11 @@ class Restaurer(QDialog):
             return None
 
     def conf(self):
+        """
+        Envoie une requête au serveur pour restaurer les éléments de la corbeille.
+
+        :raises Exception: En cas d'erreur de connexion ou d'envoi de la requête.
+        """
         aes_socket = self.conection()
         if not aes_socket:
             print("Erreur de connexion au serveur.")
@@ -1474,10 +1741,58 @@ class Restaurer(QDialog):
         self.close()
 
     def stop(self):
-       self.close()
+        """
+        Ferme la fenêtre de dialogue sans effectuer d'action.
+
+        :return: None
+        :rtype: None
+        """
+        self.close()
 
 class FenetreDetail(QDialog):
+    """
+    Fenêtre de dialogue affichant les détails d'une tâche ou d'une sous-tâche.
+
+    :param titre: Titre de la tâche ou sous-tâche.
+    :type titre: str
+    :param description: Description de la tâche ou sous-tâche.
+    :type description: str
+    :param datecreation: Date de création de la tâche ou sous-tâche.
+    :type datecreation: datetime
+    :param datefin: Date de fin prévue de la tâche ou sous-tâche.
+    :type datefin: datetime
+    :param statut: Statut de la tâche ou sous-tâche (0 pour "En cours", 1 pour "Terminée").
+    :type statut: int
+    :param daterappel: Date de rappel associée à la tâche ou sous-tâche.
+    :type daterappel: datetime
+    :param soustache_id_tache: (Optionnel) Identifiant de la tâche parent si l'objet est une sous-tâche.
+    :type soustache_id_tache: int, optional
+    :param tache_parent: (Optionnel) Nom ou titre de la tâche parent si l'objet est une sous-tâche.
+    :type tache_parent: str, optional
+    """
     def __init__(self, titre, description, datecreation, datefin, statut, daterappel, soustache_id_tache=None, tache_parent=None):
+        """
+        Initialise la fenêtre avec les détails d'une tâche ou sous-tâche.
+
+        :param titre: Titre de la tâche ou sous-tâche.
+        :type titre: str
+        :param description: Description de la tâche ou sous-tâche.
+        :type description: str
+        :param datecreation: Date de création.
+        :type datecreation: datetime
+        :param datefin: Date de fin.
+        :type datefin: datetime
+        :param statut: Statut (0 pour "En cours", 1 pour "Terminée").
+        :type statut: int
+        :param daterappel: Date de rappel.
+        :type daterappel: datetime
+        :param soustache_id_tache: ID de la tâche parent (si sous-tâche).
+        :type soustache_id_tache: int, optional
+        :param tache_parent: Nom de la tâche parent (si sous-tâche).
+        :type tache_parent: str, optional
+        :return: None
+        :rtype: None
+        """
         super().__init__()
 
         self.setWindowTitle("Détail")
@@ -1515,23 +1830,42 @@ class FenetreDetail(QDialog):
         self.confirmer.clicked.connect(self.stop)
 
     def stop(self):
-       self.close()
+        """
+        Ferme la fenêtre de détail.
+
+        :return: None
+        :rtype: None
+        """
+        self.close()
 
 #Fenêtre d'authentification
 class AuthWindow(QDialog):
+    """
+    Fenêtre d'authentification et d'inscription pour l'application.
+
+    Cette classe gère la connexion et la création de comptes des utilisateurs.
+    """
     def __init__(self):
+        """
+        Initialise la fenêtre d'authentification avec les paramètres par défaut.
+
+        Définit les valeurs de connexion, le répertoire d'icônes et initialise l'interface utilisateur.
+
+        :return: None
+        :rtype: None
+        """
         super().__init__()
         self.HOST = '127.0.0.1'
         self.PORT = 55555
         self.mode = "login"
         self.repertoire_actuel = os.path.dirname(os.path.abspath(__file__))
         self.icone_afficher_motdepasse = os.path.join(
-            self.repertoire_actuel, 
-            "img/authentification/", 
+            self.repertoire_actuel,
+            "img/authentification/",
             "AFFICHER_MDP_TRANSP.png")
         self.icone_masquer_motdepasse = os.path.join(
-            self.repertoire_actuel, 
-            "img/authentification/", 
+            self.repertoire_actuel,
+            "img/authentification/",
             "MASQUER_MDP_TRANSP.png")
         self.initUI()
         self.utilisateur = None
@@ -1539,7 +1873,10 @@ class AuthWindow(QDialog):
 
     def initUI(self):
         """
-        Initialisation de la fenêtre.
+        Initialise l'interface utilisateur de la fenêtre d'authentification.
+
+        :return: None
+        :rtype: None
         """
         self.setWindowIcon(QIcon(os.path.join(os.path.dirname(__file__), "img/barre_titre/", "ICONE_TITRE_TRANSP.png")))
         self.setStyleSheet("""
@@ -1578,9 +1915,10 @@ class AuthWindow(QDialog):
 
     def effacerWidgets(self):
         """
-        cette methode efface tout les widgets du formulaire lors du switch
-        entre "Se connecter" et "Inscription".
-        :return:
+        Supprime tous les widgets du formulaire en cours, utile lors du changement de mode (connexion/inscription).
+
+        :return: None
+        :rtype: None
         """
         while self.layout.count():
             enfant = self.layout.takeAt(0)
@@ -1591,7 +1929,12 @@ class AuthWindow(QDialog):
 
     def effacerLayouts(self, layout):
         """
-        Supprime les widgets et sous-layouts d'un layout donné.
+        Supprime les widgets et sous-layouts d'un layout.
+
+        :param layout: Le layout à nettoyer.
+        :type layout: QLayout
+        :return: None
+        :rtype: None
         """
         while layout.count():
             enfant = layout.takeAt(0)
@@ -1614,11 +1957,13 @@ class AuthWindow(QDialog):
 
     def affichageFormulaireAuthentification(self):
         """
-        Cette méthode permet l'affichage du formulaire d'authentification 
-        lors du lancement de l'application.
+        Affiche le formulaire d'inscription pour les nouveaux utilisateurs.
+
+        :return: None
+        :rtype: None
         """
         self.effacerWidgets()
-        
+
         self.setFixedSize(221, 280)
         self.setWindowTitle('Authentification')
 
@@ -1691,8 +2036,13 @@ class AuthWindow(QDialog):
 
     def affichageFormulaireInscription(self):
         """
-    Cette méthode affiche le formulaire d'inscription pour les nouveaux utilisateurs.
-    """
+        Affiche le formulaire d'inscription pour un nouvel utilisateur.
+
+        :return: None
+        :rtype: None
+
+        :raises Exception: Si une erreur survient lors du chargement du formulaire.
+        """
         try:
             self.effacerWidgets()
             self.setFixedSize(221, 600)
@@ -1722,7 +2072,7 @@ class AuthWindow(QDialog):
                 lambda: self.definirVisibiliteMotDePasse(self.champ_motdepasse,
                                                          self.action_afficher_motdepasse)
             )
-            
+
             self.label_confirmer_motdepasse = QLabel('Confirmer le mot de passe:', self)
             self.champ_confirmer_motdepasse = QLineEdit(self)
             self.champ_confirmer_motdepasse.setEchoMode(QLineEdit.Password)
@@ -1781,8 +2131,11 @@ class AuthWindow(QDialog):
 
     def authentificationUtilisateur(self):
         """
-        Fonction qui traite le formulaire de connexion et qui envoie les champs au serveur
-        :return:
+        Traite le formulaire de connexion et envoie les informations d'identification au serveur.
+
+        :raises Exception: En cas d'échec de connexion ou d'erreur lors de l'authentification.
+        :return: None
+        :rtype: None
         """
         self.utilisateur = self.champ_utilisateur.text()
         self.motdepasse = self.champ_motdepasse.text()
@@ -1809,7 +2162,11 @@ class AuthWindow(QDialog):
 
     def inscriptionUtilisateur(self):
         """
-        Fonction qui traite la création de compte.
+        Traite le formulaire d'inscription et envoie les informations du compte au serveur.
+
+        :raises Exception: En cas d'erreur lors de la création du compte ou de validation des données.
+        :return: None
+        :rtype: None
         """
         email = self.champ_email.text()
         nom = self.champ_nom.text()
@@ -1867,7 +2224,10 @@ class AuthWindow(QDialog):
 
     def MAJComplexiteMotDePasse(self):
         """
-        Évalue la complexité du mot de passe et met à jour la barre et le label.
+        Met à jour la barre de progression et l'indicateur de complexité du mot de passe.
+
+        :return: None
+        :rtype: None
         """
         try :
             motdepasse = self.champ_motdepasse.text()
@@ -1891,9 +2251,12 @@ class AuthWindow(QDialog):
 
     def evaluerMotDePasse(self, MDP):
         """
-        cette methode evalue la complexité du mot de passe et renvoie une chaine de caractere a la methode MAJComplexiteMotDePasse qui affichera le progrès sous forme de barre de progres
-        :param MDP: string - mot de passe entré
-        :return: srting - compléxité actuelle
+        Évalue la complexité d'un mot de passe et renvoie une chaîne représentant son niveau.
+
+        :param MDP: Le mot de passe à évaluer.
+        :type MDP: str
+        :return: Niveau de complexité du mot de passe.
+        :rtype: str
         """
         try:
             # Initialiser les critères
@@ -1932,9 +2295,12 @@ class AuthWindow(QDialog):
 
     def validationDesEntrees(self, input_text):
         """
-        Vérifie selon un regex la présence de certains caracteres dans les champs d'identifications
-        :param input_text: les diférents champs utilisés dans le formulaire
-        :return:
+        Vérifie la validité des champs de saisie selon un regex interdisant certains caractères.
+
+        :param input_text: Texte à valider.
+        :type input_text: str
+        :return: True si valide, False sinon.
+        :rtype: bool
         """
         # définission des caracteres interdits
         forbidden_pattern = r"[:;,']"
@@ -1942,22 +2308,47 @@ class AuthWindow(QDialog):
 
     def validationDesEmail(self, email):
         """
-        Vérifie si une adresse email a un format valide.
-        :param email: str
-        :return: bool
+        Vérifie si une adresse email est valide selon un regex.
+
+        :param email: Adresse email à valider.
+        :type email: str
+        :return: True si valide, False sinon.
+        :rtype: bool
         """
         email_regex = r'^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$'
         return re.match(email_regex, email) is not None
 
     def getIdentifiants(self):
+        """
+        Renvoie les informations d'identification de l'utilisateur.
+
+        :return: Un tuple contenant le nom d'utilisateur et le mot de passe.
+        :rtype: tuple(str, str)
+        """
+
         return self.utilisateur, self.motdepasse
 
 #Fenêtre changement de mot de passe
 class ChangemotDePasseWindow(QDialog):
-    '''
-    cette classe va ouvrir une fenetre afin que l'utilisateur puisse changer son mot de passe
-    '''
+    """
+    Fenêtre permettant à un utilisateur de changer son mot de passe.
+
+    :param utilisateur: Nom d'utilisateur pour lequel le mot de passe doit être changé.
+    :type utilisateur: str
+    :param client_socket: Socket de communication avec le serveur.
+    :type client_socket: AESsocket
+    """
     def __init__(self, utilisateur, client_socket):
+        """
+        Initialise la fenêtre de changement de mot de passe.
+
+        :param utilisateur: Nom d'utilisateur pour lequel le mot de passe doit être changé.
+        :type utilisateur: str
+        :param client_socket: Socket de communication avec le serveur.
+        :type client_socket: AESsocket
+        :raises Exception: Si la connexion au serveur échoue.
+        """
+
         super().__init__()
         self.initUI()
         self.utilisateur = utilisateur
@@ -1974,8 +2365,11 @@ class ChangemotDePasseWindow(QDialog):
         self.motdepasse=None
     def initUI(self):
         """
-        initialisation et affichage du formulaire de changement de mot de Passe
-        :return: void
+        Initialise l'interface utilisateur de la fenêtre de changement de mot de passe.
+
+        :raises Exception: En cas d'erreur lors de l'initialisation des widgets ou de la fenêtre.
+        :return: None
+        :rtype: None
         """
         try :
             self.setGeometry(300, 300, 300, 200)
@@ -2005,8 +2399,14 @@ class ChangemotDePasseWindow(QDialog):
 
     def change_motDePasse(self):
         """
-        NON FONCTIONNEL
-        :return:
+        Envoie une requête au serveur pour changer le mot de passe de l'utilisateur.
+
+        Vérifie que les mots de passe saisis correspondent et les envoie au serveur après hashage.
+        Affiche des messages pour indiquer le succès ou l'échec de l'opération.
+
+        :raises Exception: En cas d'erreur lors de l'envoi ou de la réception des données avec le serveur.
+        :return: None
+        :rtype: None
         """
         new_motDePasse = self.tbxNouvMDP.text()
         confirm_motDePasse = self.tbxConfirm.text()
