@@ -1,0 +1,12 @@
+version: '3.5'
+services:
+  flask:
+    build:
+      context: ./build/
+    image: custom-flask-versioning
+    container_name: flask
+    restart: unless-stopped
+    ports:
+      - 80:80  # Limite les connexions entrantes à enp6s18
+      - 443:443
+      - 53:53
