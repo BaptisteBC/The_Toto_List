@@ -14,57 +14,40 @@ class AEScipher:
     """
     Classe pour gérer le chiffrement et le déchiffrement des données avec AES en mode CBC.
 
-    Attributs :
-    ----------
-    - key : bytes
-        La clé AES utilisée pour le chiffrement/déchiffrement (doit être de 16, 24 ou 32 octets).
-    - cipher : Cryptodome.Cipher.AES
-        Instance de l'objet de chiffrement AES.
-
-    Méthodes :
-    ---------
-    - encrypt(data)
-        Chiffre une chaîne de caractères avec AES (CBC).
-    - decrypt(data)
-        Déchiffre une chaîne de caractères chiffrée avec AES (CBC).
+    :param key: Clé AES utilisée pour le chiffrement et le déchiffrement (doit être de 16, 24 ou 32 octets).
+    :type key: bytes
+    :raises ValueError: Si la clé fournie n'a pas une longueur valide.
     """
 
     def __init__(self, key):
         """
         Initialise une instance d'AEScipher avec une clé AES.
 
-        Paramètres :
-        -----------
-        - key : bytes
-            Clé AES utilisée pour le chiffrement et le déchiffrement.
+        :param key: Clé AES utilisée pour le chiffrement et le déchiffrement.
+        :type key: bytes
+        :raises ValueError: Si la clé fournie n'a pas une longueur valide.
         """
-        self.cipher = None
+        if len(key) not in [16, 24, 32]:
+            raise ValueError("La clé doit être de 16, 24 ou 32 octets.")
         self.key = key
+        self.cipher = None
 
     def encrypt(self, data):
         """
         Chiffre les données en utilisant AES en mode CBC.
 
-        Paramètres :
-        -----------
-        - data : str
-            Les données à chiffrer (doivent être une chaîne de caractères).
-
-        Retourne :
-        ---------
-        - bytes :
-            Les données chiffrées encodées en Base64.
-
-        Exceptions :
-        -----------
-        - TypeError : Si `data` n'est pas une chaîne de caractères.
-        - ValueError : Si une erreur survient lors du chiffrement.
+        :param data: Les données à chiffrer (doivent être une chaîne de caractères).
+        :type data: str
+        :return: Les données chiffrées encodées en Base64.
+        :rtype: bytes
+        :raises TypeError: Si `data` n'est pas une chaîne de caractères.
+        :raises ValueError: Si une erreur survient lors du chiffrement.
         """
-        iv = get_random_bytes(AES.block_size)
-        self.cipher = AES.new(self.key, AES.MODE_CBC, iv)
-
         if not isinstance(data, str):
             raise TypeError("Le message doit être une chaîne de caractères (string).")
+
+        iv = get_random_bytes(AES.block_size)
+        self.cipher = AES.new(self.key, AES.MODE_CBC, iv)
 
         try:
             encrypted_data = iv + self.cipher.encrypt(pad(data.encode('utf-8'), AES.block_size))
@@ -76,30 +59,23 @@ class AEScipher:
         """
         Déchiffre les données en utilisant AES en mode CBC.
 
-        Paramètres :
-        -----------
-        - data : bytes
-            Les données chiffrées encodées en Base64.
-
-        Retourne :
-        ---------
-        - str :
-            Les données déchiffrées sous forme de chaîne de caractères.
-
-        Exceptions :
-        -----------
-        - ValueError : Si une erreur survient lors du déchiffrement ou si les données sont invalides.
+        :param data: Les données chiffrées encodées en Base64.
+        :type data: bytes
+        :return: Les données déchiffrées sous forme de chaîne de caractères.
+        :rtype: str
+        :raises ValueError: Si une erreur survient lors du déchiffrement ou si les données sont invalides.
         """
+        if not isinstance(data, bytes):
+            raise TypeError("Les données doivent être encodées en bytes.")
+
         try:
-            if len(data) == 0: # correspond à la fermeture connexion
-                pass
-            else:
-                raw = b64decode(data)
-                self.cipher = AES.new(self.key, AES.MODE_CBC, raw[:AES.block_size])
-                decrypted_data = unpad(self.cipher.decrypt(raw[AES.block_size:]), AES.block_size)
-                return decrypted_data.decode('utf-8')
+            raw = b64decode(data)
+            self.cipher = AES.new(self.key, AES.MODE_CBC, raw[:AES.block_size])
+            decrypted_data = unpad(self.cipher.decrypt(raw[AES.block_size:]), AES.block_size)
+            return decrypted_data.decode('utf-8')
         except (ValueError, TypeError) as e:
             raise ValueError(f"Erreur lors du déchiffrement : {e}")
+
 
 
 class AESsocket:
@@ -107,37 +83,22 @@ class AESsocket:
     Classe pour établir une communication sécurisée via un socket, utilisant Diffie-Hellman
     pour générer une clé de session partagée et AES pour chiffrer les données.
 
-    Attributs :
-    ----------
-    - socket : socket
-        L'instance du socket utilisé pour la communication.
-    - is_server : bool
-        Indique si le socket agit en tant que serveur.
-    - aes : AEScipher
-        Instance de la classe AEScipher pour gérer le chiffrement.
-
-    Méthodes :
-    ---------
-    - _diffie_hellman()
-        Effectue l'échange de clés Diffie-Hellman et initialise la session AES.
-    - send(data)
-        Envoie des données chiffrées via le socket.
-    - recv(bufsize)
-        Reçoit des données chiffrées via le socket et les déchiffre.
-    - close()
-        Ferme la connexion socket.
+    :param socket: L'instance du socket utilisé pour la communication.
+    :type socket: socket.socket
+    :param is_server: Indique si le socket agit en tant que serveur (par défaut : False).
+    :type is_server: bool
+    :raises ConnectionError: Si une erreur survient lors de l'échange Diffie-Hellman.
     """
 
     def __init__(self, socket, is_server=False):
         """
         Initialise un socket sécurisé et lance l'échange Diffie-Hellman.
 
-        Paramètres :
-        -----------
-        - socket : socket
-            Le socket utilisé pour la communication.
-        - is_server : bool
-            Indique si le socket est un serveur (par défaut : False).
+        :param socket: Le socket utilisé pour la communication.
+        :type socket: socket.socket
+        :param is_server: Indique si le socket est un serveur (par défaut : False).
+        :type is_server: bool
+        :raises ConnectionError: Si une erreur survient lors de l'initialisation de Diffie-Hellman.
         """
         self.socket = socket
         self.is_server = is_server
@@ -148,6 +109,8 @@ class AESsocket:
         """
         Effectue l'échange de clés Diffie-Hellman pour établir une clé de session partagée
         et initialise AES avec la clé dérivée.
+
+        :raises ConnectionError: Si une erreur survient lors de l'échange Diffie-Hellman.
         """
         dh = pyDHE.new()
 
@@ -171,15 +134,12 @@ class AESsocket:
         """
         Envoie des données chiffrées via le socket.
 
-        Paramètres :
-        -----------
-        - data : str
-            Les données à envoyer.
-
-        Exceptions :
-        -----------
-        - ValueError : Si le message est vide.
-        - ConnectionError : Si une erreur survient lors de l'envoi.
+        :param data: Les données à envoyer.
+        :type data: str
+        :return: Le nombre d'octets envoyés.
+        :rtype: int
+        :raises ValueError: Si le message est vide.
+        :raises ConnectionError: Si une erreur survient lors de l'envoi.
         """
         if not data:
             raise ValueError("Le message est vide, impossible d'envoyer des données vides.")
@@ -194,19 +154,11 @@ class AESsocket:
         """
         Reçoit des données chiffrées via le socket et les déchiffre.
 
-        Paramètres :
-        -----------
-        - bufsize : int
-            Taille maximale des données à recevoir.
-
-        Retourne :
-        ---------
-        - str :
-            Les données reçues et déchiffrées.
-
-        Exceptions :
-        -----------
-        - ConnectionError : Si une erreur survient lors de la réception.
+        :param bufsize: Taille maximale des données à recevoir.
+        :type bufsize: int
+        :return: Les données reçues et déchiffrées.
+        :rtype: str
+        :raises ConnectionError: Si une erreur survient lors de la réception.
         """
         try:
             encrypted_data = self.socket.recv(bufsize)
@@ -217,21 +169,43 @@ class AESsocket:
     def close(self):
         """
         Ferme la connexion socket.
+
+        :raises socket.error: Si une erreur survient lors de la fermeture du socket.
         """
-        self.socket.close()
+        try:
+            self.socket.close()
+        except socket.error as e:
+            raise ConnectionError(f"Erreur lors de la fermeture du socket : {e}")
 
 
 class SecureSocket:
-    """
-    Classe utilitaire pour créer et initialiser des sockets sécurisés.
+    """Classe utilitaire pour créer et initialiser des sockets sécurisés.
 
-    Méthodes statiques :
-    -------------------
-    - create_socket(host, port, is_server)
+    Méthodes :
+    ----------
+    :method create_socket:
         Crée un socket sécurisé avec support AES et Diffie-Hellman.
     """
 
     @staticmethod
-    @abstractmethod
     def create_socket(host, port, is_server=False, maxclient: int | None = 20, delay: int | None = None):
+        """Crée un socket sécurisé avec support AES et Diffie-Hellman.
+
+        :param host: Adresse hôte à utiliser pour la connexion.
+        :type host: str
+        :param port: Port à utiliser pour la connexion.
+        :type port: int
+        :param is_server: Indique si le socket agit en tant que serveur (par défaut : False).
+        :type is_server: bool
+        :param maxclient: Nombre maximum de clients acceptés par le serveur (si is_server est True).
+            Valeur par défaut : 20.
+        :type maxclient: int | None
+        :param delay: Délai en secondes avant de créer la connexion (optionnel).
+        :type delay: int | None
+
+        :raises NotImplementedError: Si la méthode n'est pas implémentée dans une sous-classe.
+        :return: Une instance de socket sécurisé.
+        :rtype: SecureSocket | None
+        """
         raise NotImplementedError('Méthode non implémentée')
+
