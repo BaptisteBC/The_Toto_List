@@ -120,7 +120,7 @@ class FormulaireTache(QWidget):
         """
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect(('localhost', 55555))
+            client_socket.connect(('85.10.235.60', 55555))
             return AESsocket(client_socket, is_server=False)
         except Exception as e:
             QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
@@ -631,7 +631,7 @@ class TodoListApp(QMainWindow):
         """
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect(('localhost', 55555))
+            client_socket.connect(('85.10.235.60', 55555))
             return AESsocket(client_socket, is_server=False)
         except Exception as e:
             QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
@@ -1984,7 +1984,7 @@ class SupprimerTache(QDialog):
         """
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect(('localhost', 55555))
+            client_socket.connect(('85.10.235.60', 55555))
             return AESsocket(client_socket, is_server=False)
         except Exception as e:
             QMessageBox.critical(self, "Erreur de connexion",
@@ -2078,7 +2078,7 @@ class ViderCorbeille(QDialog):
         """
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect(('localhost', 55555))
+            client_socket.connect(('85.10.235.60', 55555))
             return AESsocket(client_socket, is_server=False)
         except Exception as e:
             QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
@@ -2161,7 +2161,7 @@ class Restaurer(QDialog):
         """
         try:
             client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            client_socket.connect(('localhost', 55555))
+            client_socket.connect(('85.10.235.60', 55555))
             return AESsocket(client_socket, is_server=False)
         except Exception as e:
             QMessageBox.critical(self, "Erreur de connexion", f"Erreur de connexion au serveur : {e}")
