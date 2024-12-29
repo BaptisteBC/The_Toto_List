@@ -1,0 +1,1264 @@
+<!doctype html>
+<html class="no-js" lang="fr" data-content_root="../">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Recherche" href="../search.html" />
+
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.08.06 -->
+        <title>serveurv5 - Documentation The_Toto_List</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">Documentation The_Toto_List </div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="../_static/TOTO_2.png" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="../_static/TOTO_1.png" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Documentation The_Toto_List </span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Recherche" name="q" aria-label="Recherche">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../modules.html">The_Toto_List</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The_Toto_List</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../serveurv5.html">Serveur</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../custom.html">Custom package Diffie Hellman</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <h1>Code source de serveurv5</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">pymysql</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">bcrypt</span>
+<span class="kn">import</span> <span class="nn">pymysql.cursors</span>
+<span class="kn">from</span> <span class="nn">lib.custom</span> <span class="kn">import</span> <span class="n">AESsocket</span>
+<span class="kn">import</span> <span class="nn">json</span>
+
+
+
+
+<div class="viewcode-block" id="Server">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server">[docs]</a>
+<span class="k">class</span> <span class="nc">Server</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Classe représentant le serveur de l&#39;application.</span>
+
+<span class="sd">    Cette classe gère les connexions des clients, la communication avec la base de données,</span>
+<span class="sd">    et l&#39;exécution des commandes envoyées par les clients.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise le serveur et configure les paramètres nécessaires, y compris la connexion à la base de données,</span>
+<span class="sd">        le socket serveur et les threads pour écouter les connexions et les commandes.</span>
+
+<span class="sd">        :raises pymysql.MySQLError: Si la connexion à la base de données échoue.</span>
+<span class="sd">        :raises Exception: En cas d&#39;erreur lors de la configuration du serveur.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">HOST</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">PORT</span> <span class="o">=</span> <span class="mi">55555</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">serverstatus</span><span class="o">=</span><span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span> <span class="o">=</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="s1">&#39;localhost&#39;</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="s1">&#39;toto&#39;</span><span class="p">,</span>
+            <span class="n">database</span><span class="o">=</span><span class="s1">&#39;TheTotoDB&#39;</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="mi">3306</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbConnection</span> <span class="o">=</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="n">host</span><span class="o">=</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="s1">&#39;root&#39;</span><span class="p">,</span>
+            <span class="n">password</span><span class="o">=</span><span class="s1">&#39;toto&#39;</span><span class="p">,</span>
+            <span class="n">database</span><span class="o">=</span><span class="s1">&#39;TheTotoDB&#39;</span><span class="p">,</span>
+            <span class="n">port</span><span class="o">=</span><span class="mi">3306</span><span class="p">,</span>
+            <span class="n">cursorclass</span><span class="o">=</span><span class="n">pymysql</span><span class="o">.</span><span class="n">cursors</span><span class="o">.</span><span class="n">DictCursor</span>
+        <span class="p">)</span>
+
+        <span class="c1">#liste de tous les clients connectés</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clients</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_socket</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">HOST</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">PORT</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_socket</span><span class="o">.</span><span class="n">listen</span><span class="p">()</span>
+
+        <span class="c1"># Créer un thread pour écouter les connexions</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">listen_connections</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="c1">#démarage du thread de commande permettant l&#39;administration du serveur</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">commande</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Server.listen_connections">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.listen_connections">[docs]</a>
+    <span class="k">def</span> <span class="nf">listen_connections</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Écoute les nouvelles connexions des clients en continu grâce à un thread.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">serverstatus</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">client_socket</span><span class="p">,</span> <span class="n">client_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+            <span class="n">client_socket</span> <span class="o">=</span> <span class="n">AESsocket</span><span class="p">(</span><span class="n">client_socket</span><span class="p">,</span> <span class="n">is_server</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">client_socket</span><span class="p">,</span> <span class="n">client_address</span><span class="p">))</span>
+
+            <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">handle_client</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">(</span><span class="n">client_socket</span><span class="p">,</span> <span class="n">client_address</span><span class="p">))</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="Server.handle_client">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.handle_client">[docs]</a>
+    <span class="k">def</span> <span class="nf">handle_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_socket</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gère les interactions avec un client, notamment l&#39;authentification, les requêtes,</span>
+<span class="sd">        et les réponses aux commandes envoyées par le client.</span>
+
+<span class="sd">        :param client_socket: Socket du client.</span>
+<span class="sd">        :type client_socket: AESsocket</span>
+<span class="sd">        :param client_address: Adresse IP et port du client.</span>
+<span class="sd">        :type client_address: tuple</span>
+<span class="sd">        :raises Exception: En cas d&#39;erreur lors du traitement des données du client.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="n">informations</span> <span class="o">=</span> <span class="n">client_socket</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;AUTH&quot;</span><span class="p">):</span>
+                <span class="n">typeRequete</span><span class="p">,</span> <span class="n">utilisateur</span><span class="p">,</span> <span class="n">MDPclair</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">utilisateur</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">MDPclair</span><span class="p">)</span>
+
+                <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT pseudonyme_utilisateur,motdepasse_utilisateur FROM utilisateurs WHERE pseudonyme_utilisateur = </span><span class="si">%s</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">utilisateur</span><span class="p">))</span>
+                <span class="n">user</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">user</span><span class="p">:</span>
+                    <span class="n">nom_utilisateur</span><span class="p">,</span><span class="n">MDP</span> <span class="o">=</span> <span class="n">user</span>
+                    <span class="n">MDPclair</span><span class="o">=</span><span class="n">MDPclair</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                    <span class="n">MDP</span><span class="o">=</span><span class="n">MDP</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">bcrypt</span><span class="o">.</span><span class="n">checkpw</span><span class="p">(</span><span class="n">MDPclair</span><span class="p">,</span> <span class="n">MDP</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AUTHORIZED,</span><span class="si">{</span><span class="n">utilisateur</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">MDP</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+                        <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;AUTHORIZED,zerertghyrila*mle=1é&amp;&quot;</span><span class="p">)</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+                    <span class="k">else</span> <span class="p">:</span>
+                        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+                        <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;UNAUTHORIZED&quot;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;UNAUTHORIZED&quot;</span><span class="p">)</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">AESsocket</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">client_socket</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors de la fermeture du socket : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+                    <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;UNAUTHORIZED&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;UNAUTHORIZED&quot;</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">AESsocket</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">client_socket</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors de la fermeture du socket : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;CREATE_ACCOUNT&quot;</span><span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">typeRequete</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">nom</span><span class="p">,</span> <span class="n">prenom</span><span class="p">,</span> <span class="n">pseudo</span><span class="p">,</span> <span class="n">motDePasse</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                    <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">email</span> <span class="ow">and</span> <span class="n">nom</span> <span class="ow">and</span> <span class="n">prenom</span> <span class="ow">and</span> <span class="n">pseudo</span> <span class="ow">and</span> <span class="n">motDePasse</span><span class="p">):</span>
+                        <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;CREATE_ACCOUNT_ERROR&quot;</span><span class="p">)</span>
+                        <span class="k">return</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">validationDesEmail</span><span class="p">(</span><span class="n">email</span><span class="p">):</span>
+                        <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;CREATE_ACCOUNT_ERROR&quot;</span><span class="p">)</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;le champ email n</span><span class="se">\&#39;</span><span class="s1">est pas valide : </span><span class="si">{</span><span class="n">email</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="k">return</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                            <span class="s2">&quot;SELECT * FROM utilisateurs WHERE email_utilisateur = </span><span class="si">%s</span><span class="s2"> OR pseudonyme_utilisateur = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">pseudo</span><span class="p">))</span>
+                        <span class="n">existing_user</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+                        <span class="k">if</span> <span class="n">existing_user</span><span class="p">:</span>
+                            <span class="k">try</span><span class="p">:</span>
+                                <span class="k">if</span> <span class="n">existing_user</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="n">email</span><span class="p">:</span>
+                                    <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;EMAIL_TAKEN&quot;</span><span class="p">)</span>
+                                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;EMAIL_TAKEN&quot;</span><span class="p">)</span>
+                                <span class="k">elif</span> <span class="n">existing_user</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">==</span> <span class="n">pseudo</span><span class="p">:</span>
+                                    <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;PSEUDO_TAKEN&quot;</span><span class="p">)</span>
+                                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PSEUDO_TAKEN&quot;</span><span class="p">)</span>
+                            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;erreur lors du test des informations du compte </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                                   INSERT INTO utilisateurs (id_utilisateur, nom_utilisateur, prenom_utilisateur, email_utilisateur, motdepasse_utilisateur, pseudonyme_utilisateur, totp_utilisateur)</span>
+<span class="s2">                                   VALUES (NULL, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, &#39;0&#39;)</span>
+<span class="s2">                               &quot;&quot;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">nom</span><span class="p">,</span> <span class="n">prenom</span><span class="p">,</span> <span class="n">email</span><span class="p">,</span> <span class="n">motDePasse</span><span class="p">,</span> <span class="n">pseudo</span><span class="p">))</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                            <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;ACCOUNT_CREATED&quot;</span><span class="p">)</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ACCOUNT_CREATED&quot;</span><span class="p">)</span>
+
+                        <span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors de la création de compte : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                    <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;CREATE_ACCOUNT_ERROR&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;CHANGE_PASSWORD&quot;</span><span class="p">):</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;changement de mot de passe:&quot;</span><span class="p">)</span>
+                <span class="k">try</span> <span class="p">:</span>
+                    <span class="n">typeRequete</span><span class="p">,</span> <span class="n">pseudo</span><span class="p">,</span> <span class="n">motDePasse</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">informations</span><span class="p">)</span>
+                    <span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+                    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                        <span class="s2">&quot;UPDATE `utilisateurs` SET `motdepasse_utilisateur` = </span><span class="si">%s</span><span class="s2"> WHERE `utilisateurs`.`pseudonyme_utilisateur` = </span><span class="si">%s</span><span class="s2">; &quot;</span><span class="p">,</span>
+                        <span class="p">(</span><span class="n">motDePasse</span><span class="p">,</span><span class="n">pseudo</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;PASSWORD_CHANGED&quot;</span><span class="p">)</span>
+                    <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;PASSWORD_CHANGED&quot;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Erreur lors du changment de mot de passe </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                    <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;PASSWORD_CHANGED_ERROR&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;GET_UTILISATEURS&quot;</span><span class="p">):</span>
+                <span class="n">utilisateurs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getUserId</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">utilisateurs</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors de l&#39;envoi des utilisateurs : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;ID_LISTE&quot;</span><span class="p">):</span>
+                <span class="n">listName</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getListId</span><span class="p">(</span><span class="n">listName</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;CREATION_TACHE&quot;</span><span class="p">):</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">createTask</span><span class="p">(</span><span class="o">*</span><span class="n">details</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;GET_LISTES&quot;</span><span class="p">):</span>
+                <span class="n">listes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getListId</span><span class="p">()</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">listes</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors de l&#39;envoi des utilisateurs : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;MODIF_TACHE&quot;</span><span class="p">):</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modifTache</span><span class="p">(</span><span class="o">*</span><span class="n">details</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;GET_tacheDetail&quot;</span><span class="p">):</span>
+                <span class="n">idTache</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getTacheDetail</span><span class="p">(</span><span class="n">idTache</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;GET_sousTacheDetail&quot;</span><span class="p">):</span>
+                <span class="n">idSousTache</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSousTacheDetail</span><span class="p">(</span><span class="n">idSousTache</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;GET_tache&quot;</span><span class="p">):</span>
+                <span class="n">idTache</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getTache</span><span class="p">(</span><span class="n">idTache</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;GET_sousTache&quot;</span><span class="p">):</span>
+                <span class="n">idSousTache</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getSousTache</span><span class="p">(</span><span class="n">idSousTache</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;GET_listeTache&quot;</span><span class="p">):</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getListeTache</span><span class="p">())</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;GET_listeSousTache&quot;</span><span class="p">):</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getListeSousTache</span><span class="p">())</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;SUP_Tache&quot;</span><span class="p">):</span>
+                <span class="n">idTache</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">supprimerTache</span><span class="p">(</span><span class="n">idTache</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;SUP_sousTache&quot;</span><span class="p">):</span>
+                <span class="n">idSousTache</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">supprimerSousTache</span><span class="p">(</span><span class="n">idSousTache</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;modifSousTache&quot;</span><span class="p">):</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modifSousTache</span><span class="p">(</span><span class="o">*</span><span class="n">details</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;validationSousTache&quot;</span><span class="p">):</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validationSousTache</span><span class="p">(</span><span class="o">*</span><span class="n">details</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;validation&quot;</span><span class="p">):</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation</span><span class="p">(</span><span class="o">*</span><span class="n">details</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;creationSousTache&quot;</span><span class="p">):</span>
+                <span class="n">details</span> <span class="o">=</span> <span class="n">informations</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">creationSousTache</span><span class="p">(</span><span class="o">*</span><span class="n">details</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;viderCorbeille&quot;</span><span class="p">):</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">viderCorbeille</span><span class="p">())</span>
+
+            <span class="k">elif</span> <span class="n">informations</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;restaurerCorbeille&quot;</span><span class="p">):</span>
+                <span class="n">client_socket</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restaurerCorbeille</span><span class="p">())</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s2">&quot;Commande inconnue.&quot;</span>
+
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors du traitement du client : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">try</span> <span class="p">:</span>
+                <span class="n">AESsocket</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="n">client_socket</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors de la fermeture du socket : </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Server.validationDesEntrées">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.validationDesEntrées">[docs]</a>
+    <span class="k">def</span> <span class="nf">validationDesEntrées</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_text</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Vérifie la présence de caractères interdits dans les champs de données.</span>
+
+<span class="sd">        :param input_text: Texte à valider.</span>
+<span class="sd">        :type input_text: str</span>
+<span class="sd">        :return: True si le texte est valide, False sinon.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">forbidden_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;[:;,&#39;]&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">forbidden_pattern</span><span class="p">,</span> <span class="n">input_text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Server.validationDesEmail">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.validationDesEmail">[docs]</a>
+    <span class="k">def</span> <span class="nf">validationDesEmail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">email</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Vérifie si une adresse email est valide selon un regex.</span>
+
+<span class="sd">        :param email: Adresse email à valider.</span>
+<span class="sd">        :type email: str</span>
+<span class="sd">        :return: True si l&#39;email est valide, False sinon.</span>
+<span class="sd">        :rtype: bool</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">email_regex</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^[a-zA-Z0-9._+-]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$&#39;</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">email_regex</span><span class="p">,</span> <span class="n">email</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Server.broadcast">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.broadcast">[docs]</a>
+    <span class="k">def</span> <span class="nf">broadcast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">,</span> <span class="n">sender_address</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Envoie un message à tous les clients connectés, sauf à l&#39;expéditeur.</span>
+
+<span class="sd">        :param message: Message à envoyer.</span>
+<span class="sd">        :type message: str</span>
+<span class="sd">        :param sender_address: Adresse de l&#39;expéditeur.</span>
+<span class="sd">        :type sender_address: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">client</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">client</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">message</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_client</span><span class="p">(</span><span class="n">client</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="Server.remove_client">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.remove_client">[docs]</a>
+    <span class="k">def</span> <span class="nf">remove_client</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_socket</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Supprime un client de la liste des clients connectés.</span>
+
+<span class="sd">        :param client_socket: Socket du client à supprimer.</span>
+<span class="sd">        :type client_socket: AESsocket</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">client</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">client</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">client_socket</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">clients</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">client</span><span class="p">)</span></div>
+
+
+
+
+<div class="viewcode-block" id="Server.commande">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.commande">[docs]</a>
+    <span class="k">def</span> <span class="nf">commande</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interface pour l&#39;administration du serveur via des commandes dans la console.</span>
+
+<span class="sd">        (Non utilisé pour le moment.)</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="o">==</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span></div>
+
+            <span class="c1"># non utilisé pour le moment</span>
+
+<div class="viewcode-block" id="Server.getUserId">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.getUserId">[docs]</a>
+    <span class="k">def</span> <span class="nf">getUserId</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère les ID et pseudonymes des utilisateurs depuis la base de données.</span>
+
+<span class="sd">        :return: Une chaîne JSON contenant les utilisateurs ou un message d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbConnection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT id_utilisateur, pseudonyme_utilisateur FROM utilisateurs&quot;</span><span class="p">)</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="n">users</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;id_utilisateur&quot;</span><span class="p">],</span> <span class="s2">&quot;pseudo&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;pseudonyme_utilisateur&quot;</span><span class="p">]}</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">users</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="s2">&quot;Aucun utilisateur trouvé.&quot;</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Erreur MySQL.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Server.getListId">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.getListId">[docs]</a>
+    <span class="k">def</span> <span class="nf">getListId</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère les IDs et noms de toutes les listes disponibles.</span>
+
+<span class="sd">        :return: Une chaîne JSON contenant les listes ou un message d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbConnection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT id_liste, nom_liste FROM listes&quot;</span><span class="p">)</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+                <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="n">lists</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;id_liste&quot;</span><span class="p">],</span> <span class="s2">&quot;nom_liste&quot;</span><span class="p">:</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;nom_liste&quot;</span><span class="p">]}</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">lists</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="s2">&quot;Aucune liste disponible.&quot;</span><span class="p">})</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Erreur MySQL.&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="Server.createTask">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.createTask">[docs]</a>
+    <span class="k">def</span> <span class="nf">createTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">userId</span><span class="p">,</span> <span class="n">listId</span><span class="p">,</span> <span class="n">taskTitle</span><span class="p">,</span> <span class="n">taskDescription</span><span class="p">,</span> <span class="n">dueDate</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">reminderDate</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Crée une nouvelle tâche dans la base de données.</span>
+
+<span class="sd">        :param userId: ID de l&#39;utilisateur assigné.</span>
+<span class="sd">        :type userId: str</span>
+<span class="sd">        :param listId: ID de la liste associée.</span>
+<span class="sd">        :type listId: str</span>
+<span class="sd">        :param taskTitle: Titre de la tâche.</span>
+<span class="sd">        :type taskTitle: str</span>
+<span class="sd">        :param taskDescription: Description de la tâche.</span>
+<span class="sd">        :type taskDescription: str</span>
+<span class="sd">        :param dueDate: Date d&#39;échéance (format &#39;YYYY-MM-DD&#39;).</span>
+<span class="sd">        :type dueDate: str</span>
+<span class="sd">        :param status: Statut de la tâche.</span>
+<span class="sd">        :type status: str</span>
+<span class="sd">        :param reminderDate: Date de rappel (format &#39;YYYY-MM-DD&#39;).</span>
+<span class="sd">        :type reminderDate: str</span>
+<span class="sd">        :return: Message de succès ou d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">dbConnection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">sql</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;INSERT INTO taches (taches_id_utilisateur, taches_id_liste, titre_tache, description_tache, &quot;</span>
+                    <span class="s2">&quot;datecreation_tache, datefin_tache, statut_tache, daterappel_tache) &quot;</span>
+                    <span class="s2">&quot;VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, CURRENT_TIMESTAMP, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)&quot;</span>
+                <span class="p">)</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">sql</span><span class="p">,</span> <span class="p">(</span><span class="n">userId</span><span class="p">,</span> <span class="n">listId</span><span class="p">,</span> <span class="n">taskTitle</span><span class="p">,</span> <span class="n">taskDescription</span><span class="p">,</span> <span class="n">dueDate</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">reminderDate</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">dbConnection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+                <span class="n">taskId</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span>
+                <span class="n">listeY</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;titre_tache&quot;</span><span class="p">,</span> <span class="s2">&quot;description_tache&quot;</span><span class="p">,</span> <span class="s2">&quot;datefin_tache&quot;</span><span class="p">,</span> <span class="s2">&quot;statut_tache&quot;</span><span class="p">,</span> <span class="s2">&quot;daterappel_tache&quot;</span><span class="p">]</span>
+                <span class="n">listeZ</span> <span class="o">=</span> <span class="p">[</span><span class="n">taskTitle</span><span class="p">,</span> <span class="n">taskDescription</span><span class="p">,</span> <span class="n">dueDate</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">reminderDate</span><span class="p">]</span>
+
+                <span class="n">chaineEvenement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">creerChaineEvenement</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">taskId</span><span class="p">,</span> <span class="n">listeY</span><span class="p">,</span> <span class="n">listeZ</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">chaineEvenement</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">journalisation</span><span class="p">(</span><span class="n">userId</span><span class="p">,</span> <span class="n">chaineEvenement</span><span class="p">)</span>
+
+                <span class="k">return</span> <span class="s2">&quot;Tâche créée avec succès.&quot;</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Erreur lors de la création de la tâche.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Server.getListeTache">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.getListeTache">[docs]</a>
+    <span class="k">def</span> <span class="nf">getListeTache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère toutes les tâches depuis la base de données.</span>
+
+<span class="sd">        :return: Une chaîne JSON contenant les tâches ou un message d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT id_tache, titre_tache, statut_tache, datesuppression_tache FROM taches;&quot;</span><span class="p">)</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="n">serialized_results</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">serialized_results</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([])</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Erreur MySQL.&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="Server.getListeSousTache">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.getListeSousTache">[docs]</a>
+    <span class="k">def</span> <span class="nf">getListeSousTache</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère toutes les sous-tâches depuis la base de données.</span>
+
+<span class="sd">        :return: Une chaîne JSON contenant les sous-tâches ou un message d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT id_soustache, titre_soustache, soustache_id_tache, statut_soustache, datesuppression_soustache FROM soustaches;&quot;</span><span class="p">)</span>
+
+                <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="n">serialized_results</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="p">[</span><span class="n">value</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span><span class="p">]</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">serialized_results</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([])</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Erreur MySQL.&quot;</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="Server.getTache">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.getTache">[docs]</a>
+    <span class="k">def</span> <span class="nf">getTache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idTache</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère les informations d&#39;une tâche spécifique.</span>
+
+<span class="sd">        :param idTache: ID de la tâche.</span>
+<span class="sd">        :type idTache: str</span>
+<span class="sd">        :return: Une chaîne JSON contenant les détails de la tâche ou un message d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="s2">&quot;SELECT titre_tache, description_tache, datefin_tache, recurrence_tache, daterappel_tache FROM taches WHERE id_tache = </span><span class="si">%s</span><span class="s2">;&quot;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">idTache</span><span class="p">,)</span>
+                <span class="p">)</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="n">serialized_results</span> <span class="o">=</span> <span class="p">[[</span> <span class="n">value</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span> <span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span> <span class="p">]</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">serialized_results</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([])</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Erreur MySQL.&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="Server.getTacheDetail">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.getTacheDetail">[docs]</a>
+    <span class="k">def</span> <span class="nf">getTacheDetail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idTache</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère les détails approfondis d&#39;une tâche.</span>
+
+<span class="sd">        :param idTache: ID de la tâche.</span>
+<span class="sd">        :type idTache: str</span>
+<span class="sd">        :return: Une chaîne JSON contenant les détails ou un message d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="s2">&quot;SELECT titre_tache, description_tache,datecreation_tache, datefin_tache, statut_tache, daterappel_tache FROM taches WHERE id_tache = </span><span class="si">%s</span><span class="s2">;&quot;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">idTache</span><span class="p">,)</span>
+                <span class="p">)</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="n">serialized_results</span> <span class="o">=</span> <span class="p">[[</span> <span class="n">value</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span> <span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span> <span class="p">]</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">serialized_results</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([])</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Erreur MySQL.&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="Server.getSousTacheDetail">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.getSousTacheDetail">[docs]</a>
+    <span class="k">def</span> <span class="nf">getSousTacheDetail</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idSousTache</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère les détails approfondis d&#39;une sous-tâche.</span>
+
+<span class="sd">        :param idSousTache: ID de la sous-tâche.</span>
+<span class="sd">        :type idSousTache: str</span>
+<span class="sd">        :return: Une chaîne JSON contenant les détails ou un message d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="s2">&quot;SELECT titre_soustache, description_soustache, datecreation_soustache,datefin_soustache, statut_soustache,daterappel_soustache, soustache_id_tache FROM soustaches WHERE id_soustache = </span><span class="si">%s</span><span class="s2"> &quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">idSousTache</span><span class="p">))</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="n">serialized_results</span> <span class="o">=</span> <span class="p">[[</span> <span class="n">value</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span> <span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span> <span class="p">]</span>
+                    <span class="n">idTache</span> <span class="o">=</span> <span class="n">serialized_results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT titre_tache FROM taches WHERE id_tache = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,(</span><span class="n">idTache</span><span class="p">))</span>
+                    <span class="n">resultsT</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+                    <span class="n">nomTache</span> <span class="o">=</span> <span class="n">resultsT</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">serialized_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nomTache</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">serialized_results</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([])</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Erreur MySQL.&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="Server.supprimerTache">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.supprimerTache">[docs]</a>
+    <span class="k">def</span> <span class="nf">supprimerTache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idTache</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Marque une tâche comme supprimée.</span>
+
+<span class="sd">        :param idTache: ID de la tâche à supprimer.</span>
+<span class="sd">        :type idTache: str</span>
+<span class="sd">        :return: Message de succès ou d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;UPDATE taches SET datesuppression_tache = NOW() WHERE id_tache = &quot;</span><span class="si">{</span><span class="n">idTache</span><span class="si">}</span><span class="s1">&quot;;&#39;</span><span class="p">)</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE soustaches SET datesuppression_soustache = NOW() WHERE soustache_id_tache = </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,(</span><span class="n">idTache</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;Tâche supprimer avec succès.&quot;</span>
+
+
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Erreur MySQL.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Server.supprimerSousTache">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.supprimerSousTache">[docs]</a>
+    <span class="k">def</span> <span class="nf">supprimerSousTache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idTache</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Marque une sous-tâche comme supprimée.</span>
+
+<span class="sd">        :param idTache: ID de la sous-tâche à supprimer.</span>
+<span class="sd">        :type idTache: str</span>
+<span class="sd">        :return: Message de succès ou d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;UPDATE soustaches SET datesuppression_soustache = NOW() &#39;</span>
+                                <span class="sa">f</span><span class="s1">&#39;WHERE id_soustache = &quot;</span><span class="si">{</span><span class="n">idTache</span><span class="si">}</span><span class="s1">&quot;;&#39;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;Sous tâche supprimer avec succès.&quot;</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Erreur MySQL.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Server.modifTache">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.modifTache">[docs]</a>
+    <span class="k">def</span> <span class="nf">modifTache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idTache</span><span class="p">,</span> <span class="n">titre</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">dateFin</span><span class="p">,</span> <span class="n">recurrence</span><span class="p">,</span> <span class="n">dateRappel</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modifie une tâche existante.</span>
+
+<span class="sd">        :param idTache: ID de la tâche.</span>
+<span class="sd">        :type idTache: str</span>
+<span class="sd">        :param titre: Nouveau titre.</span>
+<span class="sd">        :type titre: str</span>
+<span class="sd">        :param description: Nouvelle description.</span>
+<span class="sd">        :type description: str</span>
+<span class="sd">        :param dateFin: Nouvelle date de fin.</span>
+<span class="sd">        :type dateFin: str</span>
+<span class="sd">        :param recurrence: Nouvelle récurrence.</span>
+<span class="sd">        :type recurrence: str</span>
+<span class="sd">        :param dateRappel: Nouvelle date de rappel.</span>
+<span class="sd">        :type dateRappel: str</span>
+<span class="sd">        :return: Message de succès ou d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                    UPDATE taches SET titre_tache = </span><span class="si">%s</span><span class="s2">, description_tache = </span><span class="si">%s</span><span class="s2">, datefin_tache = </span><span class="si">%s</span><span class="s2">, recurrence_tache = </span><span class="si">%s</span><span class="s2">, daterappel_tache = </span><span class="si">%s</span>
+<span class="s2">                    WHERE id_tache = </span><span class="si">%s</span><span class="s2">;</span>
+<span class="s2">                &quot;&quot;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">titre</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">dateFin</span><span class="p">,</span> <span class="n">recurrence</span><span class="p">,</span> <span class="n">dateRappel</span> <span class="k">if</span> <span class="n">dateRappel</span> <span class="o">!=</span> <span class="s1">&#39;NULL&#39;</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">idTache</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;Tâche modifiée avec succès.&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Erreur MySQL.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Server.getSousTache">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.getSousTache">[docs]</a>
+    <span class="k">def</span> <span class="nf">getSousTache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idSousTache</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Récupère les informations sur une sous-tâche spécifique.</span>
+
+<span class="sd">        :param idSousTache: ID de la sous-tâche à récupérer</span>
+<span class="sd">        :type idSousTache: str</span>
+<span class="sd">        :return: JSON contenant les informations sur la sous-tâche (avec datetime sérialisé)</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL se produit</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                    <span class="s2">&quot;SELECT titre_soustache, description_soustache, datefin_soustache, daterappel_soustache FROM soustaches WHERE id_soustache = </span><span class="si">%s</span><span class="s2">;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">idSousTache</span><span class="p">,)</span>
+                <span class="p">)</span>
+                <span class="n">results</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">results</span><span class="p">:</span>
+                    <span class="n">serialized_results</span> <span class="o">=</span> <span class="p">[[</span> <span class="n">value</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">datetime</span><span class="p">)</span> <span class="k">else</span> <span class="n">value</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">row</span> <span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">results</span> <span class="p">]</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">serialized_results</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">([])</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Erreur MySQL.&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="Server.modifSousTache">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.modifSousTache">[docs]</a>
+    <span class="k">def</span> <span class="nf">modifSousTache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idSousTache</span><span class="p">,</span> <span class="n">titre</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">dateFin</span><span class="p">,</span> <span class="n">dateRappel</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modifie une sous-tâche existante.</span>
+
+<span class="sd">        :param idSousTache: ID de la sous-tâche.</span>
+<span class="sd">        :type idSousTache: str</span>
+<span class="sd">        :param titre: Nouveau titre.</span>
+<span class="sd">        :type titre: str</span>
+<span class="sd">        :param description: Nouvelle description.</span>
+<span class="sd">        :type description: str</span>
+<span class="sd">        :param dateFin: Nouvelle date de fin.</span>
+<span class="sd">        :type dateFin: str</span>
+<span class="sd">        :param dateRappel: Nouvelle date de rappel.</span>
+<span class="sd">        :type dateRappel: str</span>
+<span class="sd">        :return: Message de succès ou d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                    UPDATE soustaches SET titre_soustache = </span><span class="si">%s</span><span class="s2">, description_soustache = </span><span class="si">%s</span><span class="s2">, datefin_soustache = </span><span class="si">%s</span><span class="s2">, daterappel_soustache = </span><span class="si">%s</span>
+<span class="s2">                            WHERE id_soustache = </span><span class="si">%s</span><span class="s2">;</span>
+<span class="s2">                &quot;&quot;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">titre</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">dateFin</span><span class="p">,</span><span class="n">dateRappel</span> <span class="k">if</span> <span class="n">dateRappel</span> <span class="o">!=</span> <span class="s1">&#39;NULL&#39;</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">idSousTache</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;Sous tâche modifiée avec succès.&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Erreur MySQL.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Server.creationSousTache">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.creationSousTache">[docs]</a>
+    <span class="k">def</span> <span class="nf">creationSousTache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">soustache_id_tache</span><span class="p">,</span> <span class="n">titre_soustache</span><span class="p">,</span> <span class="n">description_soustache</span><span class="p">,</span> <span class="n">datefin_soustache</span><span class="p">,</span> <span class="n">daterappel_soustache</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Crée une nouvelle sous-tâche.</span>
+
+<span class="sd">        :param soustache_id_tache: ID de la tâche parent.</span>
+<span class="sd">        :type soustache_id_tache: str</span>
+<span class="sd">        :param titre_soustache: Titre de la sous-tâche.</span>
+<span class="sd">        :type titre_soustache: str</span>
+<span class="sd">        :param description_soustache: Description de la sous-tâche.</span>
+<span class="sd">        :type description_soustache: str</span>
+<span class="sd">        :param datefin_soustache: Date de fin.</span>
+<span class="sd">        :type datefin_soustache: str</span>
+<span class="sd">        :param daterappel_soustache: Date de rappel.</span>
+<span class="sd">        :type daterappel_soustache: str</span>
+<span class="sd">        :return: Message de succès ou d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL survient.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                    INSERT INTO soustaches (soustache_id_tache, titre_soustache, description_soustache, datefin_soustache, daterappel_soustache, datecreation_soustache, statut_soustache)</span>
+<span class="s2">                            VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, NOW(), 0);</span>
+<span class="s2">                        &quot;&quot;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">soustache_id_tache</span><span class="p">,</span> <span class="n">titre_soustache</span><span class="p">,</span> <span class="n">description_soustache</span><span class="p">,</span> <span class="n">datefin_soustache</span><span class="p">,</span>
+                              <span class="n">daterappel_soustache</span> <span class="k">if</span> <span class="n">daterappel_soustache</span> <span class="o">!=</span> <span class="s1">&#39;NULL&#39;</span> <span class="k">else</span> <span class="kc">None</span><span class="p">)</span> <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;Sous tâche crée avec succès.&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Erreur MySQL.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Server.validation">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.validation">[docs]</a>
+    <span class="k">def</span> <span class="nf">validation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idTache</span><span class="p">,</span> <span class="n">etatValidation</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modifie le statut de validation d&#39;une tâche.</span>
+
+<span class="sd">        :param idTache: ID de la tâche à valider.</span>
+<span class="sd">        :type idTache: str</span>
+<span class="sd">        :param etatValidation: Nouveau statut de validation (ex. &quot;1&quot; pour validé, &quot;0&quot; pour non validé).</span>
+<span class="sd">        :type etatValidation: str</span>
+<span class="sd">        :return: Message de succès ou d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL se produit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE taches SET statut_tache = </span><span class="si">%s</span><span class="s2"> WHERE id_tache = </span><span class="si">%s</span><span class="s2">;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">etatValidation</span><span class="p">,</span> <span class="n">idTache</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;Validation modifier avec succes&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Erreur MySQL.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Server.validationSousTache">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.validationSousTache">[docs]</a>
+    <span class="k">def</span> <span class="nf">validationSousTache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idSousTache</span><span class="p">,</span> <span class="n">etatValidationSousTache</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Modifie le statut de validation d&#39;une sous-tâche.</span>
+
+<span class="sd">        :param idSousTache: ID de la sous-tâche à valider.</span>
+<span class="sd">        :type idSousTache: str</span>
+<span class="sd">        :param etatValidationSousTache: Nouveau statut de validation (ex. &quot;1&quot; pour validé, &quot;0&quot; pour non validé).</span>
+<span class="sd">        :type etatValidationSousTache: str</span>
+<span class="sd">        :return: Message de succès ou d&#39;erreur.</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL se produit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE soustaches SET statut_soustache = </span><span class="si">%s</span><span class="s2"> WHERE id_soustache = </span><span class="si">%s</span><span class="s2">;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">etatValidationSousTache</span><span class="p">,</span> <span class="n">idSousTache</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="k">return</span> <span class="s2">&quot;Validation sous tache modifier avec succes&quot;</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s2">&quot;Erreur MySQL.&quot;</span></div>
+
+
+<div class="viewcode-block" id="Server.journalisation">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.journalisation">[docs]</a>
+    <span class="k">def</span> <span class="nf">journalisation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">utilisateurId</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">typeEvenement</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Enregistre un événement dans la table de journalisation.</span>
+
+<span class="sd">        :param utilisateurId: Identifiant de l&#39;utilisateur.</span>
+<span class="sd">        :type utilisateurId: int</span>
+<span class="sd">        :param typeEvenement: Chaine d&#39;evenement, il est conseiller d&#39;utiliser la fonction &quot;creerChaineEvenement&quot;.</span>
+<span class="sd">        :type typeEvenement: str</span>
+<span class="sd">        :raises pymysql.MySQLError: Erreur lors de l&#39;insertion dans la base de données.</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">dateEvenement</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+                <span class="n">requete</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                INSERT INTO journalisation (journalisation_id_utilisateur, type_evenement, date_evenement)</span>
+<span class="s2">                VALUES (</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2">)</span>
+<span class="s2">                &quot;&quot;&quot;</span>
+                <span class="n">valeurs</span> <span class="o">=</span> <span class="p">(</span><span class="n">utilisateurId</span><span class="p">,</span> <span class="n">typeEvenement</span><span class="p">,</span> <span class="n">dateEvenement</span><span class="p">)</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">requete</span><span class="p">,</span> <span class="n">valeurs</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Informations insérées dans la table &#39;journalisation&#39;.&quot;</span><span class="p">)</span>
+
+        <span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">MySQLError</span> <span class="k">as</span> <span class="n">erreur</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur d&#39;insertion : </span><span class="si">{</span><span class="n">erreur</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Server.creerChaineEvenement">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.creerChaineEvenement">[docs]</a>
+    <span class="k">def</span> <span class="nf">creerChaineEvenement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">premierX</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">deuxiemeX</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">troisiemeX</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">listeY</span><span class="p">,</span> <span class="n">listeZ</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Crée une chaîne d&#39;événements formatée pour la fonction journalisation.</span>
+
+<span class="sd">        :param premierX: Type d&#39;évènement : 0 Ajout ; 1 Modification ; 2 Suppression.</span>
+<span class="sd">        :type premierX: int</span>
+<span class="sd">        :param deuxiemeX:  Objet affecté par l&#39;évènement : 0 Utilisateur ; 1 Tache ; 2 Sous tâche ; 3 Liste ; 4 Group ; 5 Groupes_utilisateurs ; 6 Etiquettes ; 7 Etiquettes_elements</span>
+<span class="sd">        :type deuxiemeX: int</span>
+<span class="sd">        :param troisiemeX: Id de l&#39;entrée affectée.</span>
+<span class="sd">        :type troisiemeX: int</span>
+<span class="sd">        :param listeY: Liste de noms ou d&#39;indices de colonnes, selon le cas.</span>
+<span class="sd">        :type listeY: list | str</span>
+<span class="sd">        :param listeZ: Liste des valeurs modifiées dans l&#39;ordre des N° de colonne.</span>
+<span class="sd">        :type listeZ: list</span>
+<span class="sd">        :raises pymysql.MySQLError: Erreur lors de la connexion à la base de données.</span>
+<span class="sd">        :raises ValueError: Si certaines colonnes dans listeY ne correspondent pas.</span>
+<span class="sd">        :return: Chaîne d’événements formatée.</span>
+<span class="sd">        :rtype: str | None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">listeY</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">listeY</span><span class="p">):</span>
+                    <span class="n">tables</span> <span class="o">=</span> <span class="p">[</span>
+                        <span class="s2">&quot;utilisateurs&quot;</span><span class="p">,</span> <span class="s2">&quot;taches&quot;</span><span class="p">,</span> <span class="s2">&quot;soustaches&quot;</span><span class="p">,</span> <span class="s2">&quot;listes&quot;</span><span class="p">,</span> <span class="s2">&quot;groupes&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;groupes_utilisateurs&quot;</span><span class="p">,</span> <span class="s2">&quot;etiquettes&quot;</span><span class="p">,</span> <span class="s2">&quot;etiquettes_elements&quot;</span>
+                    <span class="p">]</span>
+                    <span class="n">nomTable</span> <span class="o">=</span> <span class="n">tables</span><span class="p">[</span><span class="n">deuxiemeX</span><span class="p">]</span>
+                    <span class="n">colonnesValides</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">colonne</span> <span class="ow">in</span> <span class="n">listeY</span><span class="p">:</span>
+                        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                            <span class="n">requete</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;SHOW COLUMNS FROM </span><span class="si">{</span><span class="n">nomTable</span><span class="si">}</span><span class="s2"> LIKE %s&quot;</span>
+                            <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">requete</span><span class="p">,</span> <span class="p">(</span><span class="n">colonne</span><span class="p">,))</span>
+                            <span class="n">resultat</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+                        <span class="k">if</span> <span class="n">resultat</span><span class="p">:</span>
+                            <span class="n">colonnesValides</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resultat</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">colonnesValides</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">listeY</span><span class="p">):</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Certaines colonnes ne correspondent pas, annulation de l&#39;opération.&quot;</span><span class="p">)</span>
+                        <span class="k">return</span> <span class="kc">None</span>
+                    <span class="n">listeY</span> <span class="o">=</span> <span class="p">[</span><span class="n">colonnesValides</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">colonne</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">colonne</span> <span class="ow">in</span> <span class="n">colonnesValides</span><span class="p">]</span>
+
+            <span class="n">listeYStr</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">listeY</span><span class="p">))</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">listeY</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">else</span> <span class="nb">str</span><span class="p">(</span><span class="n">listeY</span><span class="p">)</span>
+            <span class="n">zStr</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">listeZ</span><span class="p">))</span>
+            <span class="n">chaineEvenement</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">premierX</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">deuxiemeX</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">troisiemeX</span><span class="si">}</span><span class="s2">.</span><span class="se">{{</span><span class="si">{</span><span class="n">listeYStr</span><span class="si">}</span><span class="se">}}</span><span class="s2">.</span><span class="se">{{</span><span class="si">{</span><span class="n">zStr</span><span class="si">}</span><span class="se">}}</span><span class="s2">&quot;</span>
+
+            <span class="k">return</span> <span class="n">chaineEvenement</span>
+
+        <span class="k">except</span> <span class="n">pymysql</span><span class="o">.</span><span class="n">MySQLError</span> <span class="k">as</span> <span class="n">erreur</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur de connexion : </span><span class="si">{</span><span class="n">erreur</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Server.viderCorbeille">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.viderCorbeille">[docs]</a>
+    <span class="k">def</span> <span class="nf">viderCorbeille</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Supprime définitivement toutes les tâches et sous-tâches marquées comme supprimées.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL se produit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE FROM soustaches WHERE datesuppression_soustache is not NULL;&quot;</span><span class="p">)</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE FROM taches WHERE datesuppression_tache is not NULL;&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Erreur MySQL.&quot;</span><span class="p">})</span></div>
+
+
+<div class="viewcode-block" id="Server.restaurerCorbeille">
+<a class="viewcode-back" href="../serveurv5.html#serveurv5.Server.restaurerCorbeille">[docs]</a>
+    <span class="k">def</span> <span class="nf">restaurerCorbeille</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Restaure toutes les tâches et sous-tâches marquées comme supprimées.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :rtype: None</span>
+<span class="sd">        :raises Exception: Si une erreur MySQL se produit.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span> <span class="k">as</span> <span class="n">cursor</span><span class="p">:</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE taches SET datesuppression_tache = NULL WHERE datesuppression_tache IS NOT NULL;&quot;</span><span class="p">)</span>
+                <span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;UPDATE soustaches SET datesuppression_soustache = NULL WHERE datesuppression_soustache IS NOT NULL;&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">db_connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur MySQL: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span><span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="s2">&quot;Erreur MySQL.&quot;</span><span class="p">})</span></div>
+</div>
+
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+
+    <span class="n">server</span> <span class="o">=</span> <span class="n">Server</span><span class="p">()</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Toto&amp;Co
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=d1a510d7"></script>
+    <script src="../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="../_static/translations.js?v=bf059b8c"></script>
+    </body>
+</html>

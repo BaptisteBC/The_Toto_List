@@ -1,0 +1,907 @@
+<!doctype html>
+<html class="no-js" lang="fr" data-content_root="./">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Recherche" href="search.html" /><link rel="next" title="Custom package Diffie Hellman" href="custom.html" /><link rel="prev" title="The_Toto_List" href="modules.html" />
+
+    <!-- Generated with Sphinx 7.3.7 and Furo 2024.08.06 -->
+        <title>Serveur - Documentation The_Toto_List</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=362ab14a" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=354aac6f" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=302659d7" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">Documentation The_Toto_List </div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  <div class="sidebar-logo-container">
+    <img class="sidebar-logo only-light" src="_static/TOTO_2.png" alt="Light Logo"/>
+    <img class="sidebar-logo only-dark" src="_static/TOTO_1.png" alt="Dark Logo"/>
+  </div>
+  
+  <span class="sidebar-brand-text">Documentation The_Toto_List </span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Recherche" name="q" aria-label="Recherche">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Documentation:</span></p>
+<ul class="current">
+<li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">The_Toto_List</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of The_Toto_List</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Serveur</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom.html">Custom package Diffie Hellman</a></li>
+</ul>
+</li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="_sources/serveurv5.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section id="module-serveurv5">
+<span id="serveur"></span><h1>Serveur<a class="headerlink" href="#module-serveurv5" title="Lien vers cette rubrique">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="serveurv5.Server">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">serveurv5.</span></span><span class="sig-name descname"><span class="pre">Server</span></span><a class="reference internal" href="_modules/serveurv5.html#Server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Classe représentant le serveur de l’application.</p>
+<p>Cette classe gère les connexions des clients, la communication avec la base de données,
+et l’exécution des commandes envoyées par les clients.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.broadcast">
+<span class="sig-name descname"><span class="pre">broadcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sender_address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.broadcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.broadcast" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Envoie un message à tous les clients connectés, sauf à l’expéditeur.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>message</strong> (<em>str</em>) – Message à envoyer.</p></li>
+<li><p><strong>sender_address</strong> (<em>str</em>) – Adresse de l’expéditeur.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.commande">
+<span class="sig-name descname"><span class="pre">commande</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.commande"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.commande" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Interface pour l’administration du serveur via des commandes dans la console.</p>
+<p>(Non utilisé pour le moment.)
+:return: None
+:rtype: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.createTask">
+<span class="sig-name descname"><span class="pre">createTask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">userId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listId</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taskTitle</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">taskDescription</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dueDate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reminderDate</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.createTask"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.createTask" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Crée une nouvelle tâche dans la base de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>userId</strong> (<em>str</em>) – ID de l’utilisateur assigné.</p></li>
+<li><p><strong>listId</strong> (<em>str</em>) – ID de la liste associée.</p></li>
+<li><p><strong>taskTitle</strong> (<em>str</em>) – Titre de la tâche.</p></li>
+<li><p><strong>taskDescription</strong> (<em>str</em>) – Description de la tâche.</p></li>
+<li><p><strong>dueDate</strong> (<em>str</em>) – Date d’échéance (format “YYYY-MM-DD”).</p></li>
+<li><p><strong>status</strong> (<em>str</em>) – Statut de la tâche.</p></li>
+<li><p><strong>reminderDate</strong> (<em>str</em>) – Date de rappel (format “YYYY-MM-DD”).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Message de succès ou d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.creationSousTache">
+<span class="sig-name descname"><span class="pre">creationSousTache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">soustache_id_tache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">titre_soustache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description_soustache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datefin_soustache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">daterappel_soustache</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.creationSousTache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.creationSousTache" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Crée une nouvelle sous-tâche.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>soustache_id_tache</strong> (<em>str</em>) – ID de la tâche parent.</p></li>
+<li><p><strong>titre_soustache</strong> (<em>str</em>) – Titre de la sous-tâche.</p></li>
+<li><p><strong>description_soustache</strong> (<em>str</em>) – Description de la sous-tâche.</p></li>
+<li><p><strong>datefin_soustache</strong> (<em>str</em>) – Date de fin.</p></li>
+<li><p><strong>daterappel_soustache</strong> (<em>str</em>) – Date de rappel.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Message de succès ou d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.creerChaineEvenement">
+<span class="sig-name descname"><span class="pre">creerChaineEvenement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">premierX</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deuxiemeX</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">troisiemeX</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listeY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">listeZ</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.creerChaineEvenement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.creerChaineEvenement" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Crée une chaîne d’événements formatée pour la fonction journalisation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>premierX</strong> (<em>int</em>) – Type d’évènement : 0 Ajout ; 1 Modification ; 2 Suppression.</p></li>
+<li><p><strong>deuxiemeX</strong> (<em>int</em>) – Objet affecté par l’évènement : 0 Utilisateur ; 1 Tache ; 2 Sous tâche ; 3 Liste ; 4 Group ; 5 Groupes_utilisateurs ; 6 Etiquettes ; 7 Etiquettes_elements</p></li>
+<li><p><strong>troisiemeX</strong> (<em>int</em>) – Id de l’entrée affectée.</p></li>
+<li><p><strong>listeY</strong> (<em>list</em><em> | </em><em>str</em>) – Liste de noms ou d’indices de colonnes, selon le cas.</p></li>
+<li><p><strong>listeZ</strong> (<em>list</em>) – Liste des valeurs modifiées dans l’ordre des N° de colonne.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>pymysql.MySQLError</strong> – Erreur lors de la connexion à la base de données.</p></li>
+<li><p><strong>ValueError</strong> – Si certaines colonnes dans listeY ne correspondent pas.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Chaîne d’événements formatée.</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>str | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.getListId">
+<span class="sig-name descname"><span class="pre">getListId</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.getListId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.getListId" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Récupère les IDs et noms de toutes les listes disponibles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Une chaîne JSON contenant les listes ou un message d’erreur.</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Lève<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.getListeSousTache">
+<span class="sig-name descname"><span class="pre">getListeSousTache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.getListeSousTache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.getListeSousTache" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Récupère toutes les sous-tâches depuis la base de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Une chaîne JSON contenant les sous-tâches ou un message d’erreur.</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Lève<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.getListeTache">
+<span class="sig-name descname"><span class="pre">getListeTache</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.getListeTache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.getListeTache" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Récupère toutes les tâches depuis la base de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Une chaîne JSON contenant les tâches ou un message d’erreur.</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Lève<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.getSousTache">
+<span class="sig-name descname"><span class="pre">getSousTache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idSousTache</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.getSousTache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.getSousTache" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Récupère les informations sur une sous-tâche spécifique.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idSousTache</strong> (<em>str</em>) – ID de la sous-tâche à récupérer</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>JSON contenant les informations sur la sous-tâche (avec datetime sérialisé)</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL se produit</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.getSousTacheDetail">
+<span class="sig-name descname"><span class="pre">getSousTacheDetail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idSousTache</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.getSousTacheDetail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.getSousTacheDetail" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Récupère les détails approfondis d’une sous-tâche.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idSousTache</strong> (<em>str</em>) – ID de la sous-tâche.</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Une chaîne JSON contenant les détails ou un message d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.getTache">
+<span class="sig-name descname"><span class="pre">getTache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idTache</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.getTache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.getTache" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Récupère les informations d’une tâche spécifique.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idTache</strong> (<em>str</em>) – ID de la tâche.</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Une chaîne JSON contenant les détails de la tâche ou un message d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.getTacheDetail">
+<span class="sig-name descname"><span class="pre">getTacheDetail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idTache</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.getTacheDetail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.getTacheDetail" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Récupère les détails approfondis d’une tâche.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idTache</strong> (<em>str</em>) – ID de la tâche.</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Une chaîne JSON contenant les détails ou un message d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.getUserId">
+<span class="sig-name descname"><span class="pre">getUserId</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.getUserId"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.getUserId" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Récupère les ID et pseudonymes des utilisateurs depuis la base de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Une chaîne JSON contenant les utilisateurs ou un message d’erreur.</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Lève<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.handle_client">
+<span class="sig-name descname"><span class="pre">handle_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client_socket</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">client_address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.handle_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.handle_client" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Gère les interactions avec un client, notamment l’authentification, les requêtes,
+et les réponses aux commandes envoyées par le client.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>client_socket</strong> (<a class="reference internal" href="custom.html#init__.AESsocket" title="__init__.AESsocket"><em>AESsocket</em></a>) – Socket du client.</p></li>
+<li><p><strong>client_address</strong> (<em>tuple</em>) – Adresse IP et port du client.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – En cas d’erreur lors du traitement des données du client.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.journalisation">
+<span class="sig-name descname"><span class="pre">journalisation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">utilisateurId</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">typeEvenement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.journalisation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.journalisation" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Enregistre un événement dans la table de journalisation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>utilisateurId</strong> (<em>int</em>) – Identifiant de l’utilisateur.</p></li>
+<li><p><strong>typeEvenement</strong> (<em>str</em>) – Chaine d’evenement, il est conseiller d’utiliser la fonction « creerChaineEvenement ».</p></li>
+</ul>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>pymysql.MySQLError</strong> – Erreur lors de l’insertion dans la base de données.</p>
+</dd>
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.listen_connections">
+<span class="sig-name descname"><span class="pre">listen_connections</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.listen_connections"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.listen_connections" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Écoute les nouvelles connexions des clients en continu grâce à un thread.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.modifSousTache">
+<span class="sig-name descname"><span class="pre">modifSousTache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idSousTache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">titre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateFin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateRappel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.modifSousTache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.modifSousTache" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Modifie une sous-tâche existante.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idSousTache</strong> (<em>str</em>) – ID de la sous-tâche.</p></li>
+<li><p><strong>titre</strong> (<em>str</em>) – Nouveau titre.</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Nouvelle description.</p></li>
+<li><p><strong>dateFin</strong> (<em>str</em>) – Nouvelle date de fin.</p></li>
+<li><p><strong>dateRappel</strong> (<em>str</em>) – Nouvelle date de rappel.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Message de succès ou d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.modifTache">
+<span class="sig-name descname"><span class="pre">modifTache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idTache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">titre</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateFin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dateRappel</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.modifTache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.modifTache" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Modifie une tâche existante.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idTache</strong> (<em>str</em>) – ID de la tâche.</p></li>
+<li><p><strong>titre</strong> (<em>str</em>) – Nouveau titre.</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – Nouvelle description.</p></li>
+<li><p><strong>dateFin</strong> (<em>str</em>) – Nouvelle date de fin.</p></li>
+<li><p><strong>recurrence</strong> (<em>str</em>) – Nouvelle récurrence.</p></li>
+<li><p><strong>dateRappel</strong> (<em>str</em>) – Nouvelle date de rappel.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Message de succès ou d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.remove_client">
+<span class="sig-name descname"><span class="pre">remove_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">client_socket</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.remove_client"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.remove_client" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Supprime un client de la liste des clients connectés.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>client_socket</strong> (<a class="reference internal" href="custom.html#init__.AESsocket" title="__init__.AESsocket"><em>AESsocket</em></a>) – Socket du client à supprimer.</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.restaurerCorbeille">
+<span class="sig-name descname"><span class="pre">restaurerCorbeille</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.restaurerCorbeille"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.restaurerCorbeille" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Restaure toutes les tâches et sous-tâches marquées comme supprimées.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Lève<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – Si une erreur MySQL se produit.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.supprimerSousTache">
+<span class="sig-name descname"><span class="pre">supprimerSousTache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idTache</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.supprimerSousTache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.supprimerSousTache" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Marque une sous-tâche comme supprimée.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idTache</strong> (<em>str</em>) – ID de la sous-tâche à supprimer.</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Message de succès ou d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.supprimerTache">
+<span class="sig-name descname"><span class="pre">supprimerTache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idTache</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.supprimerTache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.supprimerTache" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Marque une tâche comme supprimée.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>idTache</strong> (<em>str</em>) – ID de la tâche à supprimer.</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Message de succès ou d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL survient.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.validation">
+<span class="sig-name descname"><span class="pre">validation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idTache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etatValidation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.validation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.validation" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Modifie le statut de validation d’une tâche.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idTache</strong> (<em>str</em>) – ID de la tâche à valider.</p></li>
+<li><p><strong>etatValidation</strong> (<em>str</em>) – Nouveau statut de validation (ex. « 1 » pour validé, « 0 » pour non validé).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Message de succès ou d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL se produit.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.validationDesEmail">
+<span class="sig-name descname"><span class="pre">validationDesEmail</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">email</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.validationDesEmail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.validationDesEmail" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Vérifie si une adresse email est valide selon un regex.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>email</strong> (<em>str</em>) – Adresse email à valider.</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>True si l’email est valide, False sinon.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.validationDesEntrees">
+<span class="sig-name descname"><span class="pre">validationDesEntrées</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.validationDesEntrées"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.validationDesEntrees" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Vérifie la présence de caractères interdits dans les champs de données.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>input_text</strong> (<em>str</em>) – Texte à valider.</p>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>True si le texte est valide, False sinon.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.validationSousTache">
+<span class="sig-name descname"><span class="pre">validationSousTache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idSousTache</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">etatValidationSousTache</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.validationSousTache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.validationSousTache" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Modifie le statut de validation d’une sous-tâche.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>idSousTache</strong> (<em>str</em>) – ID de la sous-tâche à valider.</p></li>
+<li><p><strong>etatValidationSousTache</strong> (<em>str</em>) – Nouveau statut de validation (ex. « 1 » pour validé, « 0 » pour non validé).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Message de succès ou d’erreur.</p>
+</dd>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+<dt class="field-even">Lève<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>Exception</strong> – Si une erreur MySQL se produit.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="serveurv5.Server.viderCorbeille">
+<span class="sig-name descname"><span class="pre">viderCorbeille</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/serveurv5.html#Server.viderCorbeille"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#serveurv5.Server.viderCorbeille" title="Lien vers cette définition">¶</a></dt>
+<dd><p>Supprime définitivement toutes les tâches et sous-tâches marquées comme supprimées.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+<dt class="field-odd">Lève<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Exception</strong> – Si une erreur MySQL se produit.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="custom.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Custom package Diffie Hellman</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="modules.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">The_Toto_List</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2024, Toto&amp;Co
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Serveur</a><ul>
+<li><a class="reference internal" href="#serveurv5.Server"><code class="docutils literal notranslate"><span class="pre">Server</span></code></a><ul>
+<li><a class="reference internal" href="#serveurv5.Server.broadcast"><code class="docutils literal notranslate"><span class="pre">Server.broadcast()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.commande"><code class="docutils literal notranslate"><span class="pre">Server.commande()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.createTask"><code class="docutils literal notranslate"><span class="pre">Server.createTask()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.creationSousTache"><code class="docutils literal notranslate"><span class="pre">Server.creationSousTache()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.creerChaineEvenement"><code class="docutils literal notranslate"><span class="pre">Server.creerChaineEvenement()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.getListId"><code class="docutils literal notranslate"><span class="pre">Server.getListId()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.getListeSousTache"><code class="docutils literal notranslate"><span class="pre">Server.getListeSousTache()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.getListeTache"><code class="docutils literal notranslate"><span class="pre">Server.getListeTache()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.getSousTache"><code class="docutils literal notranslate"><span class="pre">Server.getSousTache()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.getSousTacheDetail"><code class="docutils literal notranslate"><span class="pre">Server.getSousTacheDetail()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.getTache"><code class="docutils literal notranslate"><span class="pre">Server.getTache()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.getTacheDetail"><code class="docutils literal notranslate"><span class="pre">Server.getTacheDetail()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.getUserId"><code class="docutils literal notranslate"><span class="pre">Server.getUserId()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.handle_client"><code class="docutils literal notranslate"><span class="pre">Server.handle_client()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.journalisation"><code class="docutils literal notranslate"><span class="pre">Server.journalisation()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.listen_connections"><code class="docutils literal notranslate"><span class="pre">Server.listen_connections()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.modifSousTache"><code class="docutils literal notranslate"><span class="pre">Server.modifSousTache()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.modifTache"><code class="docutils literal notranslate"><span class="pre">Server.modifTache()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.remove_client"><code class="docutils literal notranslate"><span class="pre">Server.remove_client()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.restaurerCorbeille"><code class="docutils literal notranslate"><span class="pre">Server.restaurerCorbeille()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.supprimerSousTache"><code class="docutils literal notranslate"><span class="pre">Server.supprimerSousTache()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.supprimerTache"><code class="docutils literal notranslate"><span class="pre">Server.supprimerTache()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.validation"><code class="docutils literal notranslate"><span class="pre">Server.validation()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.validationDesEmail"><code class="docutils literal notranslate"><span class="pre">Server.validationDesEmail()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.validationDesEntrees"><code class="docutils literal notranslate"><span class="pre">Server.validationDesEntrées()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.validationSousTache"><code class="docutils literal notranslate"><span class="pre">Server.validationSousTache()</span></code></a></li>
+<li><a class="reference internal" href="#serveurv5.Server.viderCorbeille"><code class="docutils literal notranslate"><span class="pre">Server.viderCorbeille()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="_static/documentation_options.js?v=d1a510d7"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/scripts/furo.js?v=5fa4622c"></script>
+    <script src="_static/translations.js?v=bf059b8c"></script>
+    </body>
+</html>
