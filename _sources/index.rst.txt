@@ -20,5 +20,12 @@ Cette documentation couvre :
    modules
 
 
+Schéma de la base de donnée
+----------------------------
+.. image:: _static/image.png
+   :width: 600
+
+
+
 .. note::
    Cette Todolist a été réaliser dans le cadre d'un projet étudiant
