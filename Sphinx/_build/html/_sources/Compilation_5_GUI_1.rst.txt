@@ -1,0 +1,7 @@
+Compilation\_5\_GUI\_1 module
+=============================
+
+.. automodule:: Compilation_5_GUI_1
+   :members:
+   :undoc-members:
+   :show-inheritance:

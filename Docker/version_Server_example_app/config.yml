@@ -1,7 +1,0 @@
-version: "2"
-authtoken: [NGROK_AUTH_TOKEN]
-tunnels:
-  default:
-    proto: http
-    addr: 80
-    hostname: version.pnoutlet.site # Ici on peut mettre le sous-domaine configuré pour ngrok

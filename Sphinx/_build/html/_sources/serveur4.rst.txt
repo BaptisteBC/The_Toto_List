@@ -1,0 +1,7 @@
+serveur4 module
+===============
+
+.. automodule:: serveur4
+   :members:
+   :undoc-members:
+   :show-inheritance:

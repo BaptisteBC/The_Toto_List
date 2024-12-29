@@ -1,0 +1,7 @@
+test\_AESSocket module
+======================
+
+.. automodule:: test_AESSocket
+   :members:
+   :undoc-members:
+   :show-inheritance:
