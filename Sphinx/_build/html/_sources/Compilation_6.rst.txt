@@ -1,7 +1,0 @@
-Compilation\_6 module
-=====================
-
-.. automodule:: Compilation_6
-   :members:
-   :undoc-members:
-   :show-inheritance:

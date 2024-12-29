@@ -1,7 +1,0 @@
-Compilation\_3 module
-=====================
-
-.. automodule:: Compilation_3
-   :members:
-   :undoc-members:
-   :show-inheritance:
