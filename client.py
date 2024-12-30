@@ -242,7 +242,7 @@ class TodoListApp(QMainWindow):
 
         try:
             super().__init__()
-            self.HOST = '127.0.0.1'
+            self.HOST = '85.10.235.60'
             self.PORT = 55555
             self.utilisateur = pseudonyme_utilisateur
             self.motdepasse = motdepasse_utilisateur
@@ -2311,7 +2311,7 @@ class FenetreAuthentification(QDialog):
         """
 
         super().__init__()
-        self.HOST = '127.0.0.1'
+        self.HOST = '85.10.235.60'
         self.PORT = 55555
         self.mode = "login"
         self.initUI()
@@ -2774,7 +2774,7 @@ class FenetreChangerMotDePasse(QDialog):
         self.initUI()
         self.utilisateur = utilisateur
         try:
-            self.HOST = '127.0.0.1'
+            self.HOST = '85.10.235.60'
             self.PORT = 55555
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.client_socket.connect((self.HOST, self.PORT))
