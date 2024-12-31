@@ -1,15 +1,17 @@
-.. The_Toto_List documentation master file, created by
-   sphinx-quickstart on Sat Dec 28 10:09:43 2024.
+.. The_Totot_List documentation master file, created by
+   sphinx-quickstart on Tue Dec 31 13:23:33 2024.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
 Documentation The_toto_list
-=========================================
+==========================================
 
 Cette documentation couvre :
 
-- Le code de l'application cliente,
+- Le code de l’application cliente,
+
 - Le code du serveur,
+
 - Et le code développé par notre équipe pour sécuriser la transmission des données entre le client et le serveur.
 
 
@@ -20,12 +22,13 @@ Cette documentation couvre :
    modules
 
 
+
 Schéma de la base de donnée
-----------------------------
+-----------------------------
+
 .. image:: _static/image.png
    :width: 600
 
-
-
 .. note::
-   Cette Todolist a été réaliser dans le cadre d'un projet étudiant
+   Cette Todolist a été réaliser dans le cadre d’un projet étudiant
+
